@@ -38,6 +38,8 @@ import {
   Phone,
   Euro,
   Box,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react'
 
 export function Orders() {
@@ -48,6 +50,19 @@ export function Orders() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set())
+
+  const toggleExpanded = (orderId: string) => {
+    setExpandedOrders(prev => {
+      const next = new Set(prev)
+      if (next.has(orderId)) {
+        next.delete(orderId)
+      } else {
+        next.add(orderId)
+      }
+      return next
+    })
+  }
   
   // Form state
   const [formData, setFormData] = useState({
@@ -242,6 +257,7 @@ export function Orders() {
             <Table>
               <TableHeader>
                 <TableRow className="border-white/10">
+                  <TableHead className="w-10"></TableHead>
                   <TableHead>Reference</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Pickup Location</TableHead>
@@ -254,79 +270,165 @@ export function Orders() {
               </TableHeader>
               <TableBody>
                 <AnimatePresence>
-                  {filteredOrders.map((order, index) => (
-                    <motion.tr
-                      key={order.id}
-                      className="border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ delay: index * 0.03 }}
-                      onClick={() => navigate(`/orders/${order.id}`)}
-                    >
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className={cn(
-                            'w-8 h-8 rounded-lg flex items-center justify-center',
-                            order.status === 'pickup' && 'bg-amber-500/20',
-                            order.status === 'warehouse' && 'bg-blue-500/20',
-                            order.status === 'delivered' && 'bg-emerald-500/20',
-                          )}>
-                            {getStatusIcon(order.status)}
-                          </div>
-                          <span className="font-medium">{order.internal_ref}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={order.status} pulse={order.status !== 'delivered'}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <MapPin className="h-3 w-3 text-muted-foreground" />
-                          {order.pickup_address.city}, {order.pickup_address.country}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {formatDate(order.collection_date)}
-                      </TableCell>
-                      <TableCell>{order.receiver_name}</TableCell>
-                      <TableCell>{order.total_weight_kg} kg</TableCell>
-                      <TableCell className="font-medium">{formatCurrency(order.total_price)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                          <motion.button
-                            className="p-2 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => navigate(`/orders/${order.id}`)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </motion.button>
-                          {user?.role === 'admin' && (
-                            <>
+                  {filteredOrders.map((order, index) => {
+                    const isExpanded = expandedOrders.has(order.id)
+                    const hasBoxes = order.order_boxes && order.order_boxes.length > 0
+                    
+                    return (
+                      <>
+                        <motion.tr
+                          key={order.id}
+                          className="border-white/5 hover:bg-white/5 transition-colors"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ delay: index * 0.03 }}
+                        >
+                          <TableCell className="w-10">
+                            {hasBoxes && (
+                              <motion.button
+                                className="p-1 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  toggleExpanded(order.id)
+                                }}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="h-4 w-4" />
+                                ) : (
+                                  <ChevronRight className="h-4 w-4" />
+                                )}
+                              </motion.button>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <div className={cn(
+                                'w-8 h-8 rounded-lg flex items-center justify-center',
+                                order.status === 'pickup' && 'bg-amber-500/20',
+                                order.status === 'warehouse' && 'bg-blue-500/20',
+                                order.status === 'delivered' && 'bg-emerald-500/20',
+                              )}>
+                                {getStatusIcon(order.status)}
+                              </div>
+                              <div>
+                                <span className="font-medium">{order.internal_ref}</span>
+                                {hasBoxes && (
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    ({order.order_boxes?.length} boxes)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={order.status} pulse={order.status !== 'delivered'}>
+                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1 text-sm">
+                              <MapPin className="h-3 w-3 text-muted-foreground" />
+                              {order.pickup_address.city}, {order.pickup_address.country}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {formatDate(order.collection_date)}
+                          </TableCell>
+                          <TableCell>{order.receiver_name}</TableCell>
+                          <TableCell>{order.total_weight_kg} kg</TableCell>
+                          <TableCell className="font-medium">{formatCurrency(order.total_price)}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                               <motion.button
                                 className="p-2 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
+                                onClick={() => navigate(`/orders/${order.id}`)}
                               >
-                                <Edit className="h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                               </motion.button>
-                              <motion.button
-                                className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => deleteOrder(order.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </motion.button>
-                            </>
+                              {user?.role === 'admin' && (
+                                <>
+                                  <motion.button
+                                    className="p-2 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </motion.button>
+                                  <motion.button
+                                    className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() => deleteOrder(order.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </motion.button>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
+                        </motion.tr>
+                        
+                        {/* Expanded boxes row */}
+                        <AnimatePresence>
+                          {isExpanded && hasBoxes && (
+                            <motion.tr
+                              key={`${order.id}-boxes`}
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="bg-white/[0.02]"
+                            >
+                              <TableCell colSpan={9} className="py-0">
+                                <motion.div
+                                  initial={{ opacity: 0, y: -10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -10 }}
+                                  className="py-4 pl-12"
+                                >
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Box className="h-4 w-4 text-indigo-400" />
+                                    <span className="text-sm font-medium">Order Boxes</span>
+                                  </div>
+                                  <div className="grid gap-2">
+                                    {order.order_boxes?.map((box, boxIndex) => (
+                                      <motion.div
+                                        key={box.id}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: boxIndex * 0.05 }}
+                                        className="flex items-center gap-6 py-2 px-4 rounded-lg bg-white/5 border border-white/10"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-6 h-6 rounded bg-indigo-500/20 flex items-center justify-center text-xs font-medium text-indigo-400">
+                                            {boxIndex + 1}
+                                          </div>
+                                          <span className="font-mono text-sm">{box.client_ref}</span>
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                          <span className="text-foreground font-medium">{box.weight_kg}</span> kg
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                          <span className="text-foreground">{box.dimensions}</span> cm
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                          <span className="text-foreground font-medium">{box.packages}</span> pkg
+                                        </div>
+                                      </motion.div>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              </TableCell>
+                            </motion.tr>
                           )}
-                        </div>
-                      </TableCell>
-                    </motion.tr>
-                  ))}
+                        </AnimatePresence>
+                      </>
+                    )
+                  })}
                 </AnimatePresence>
               </TableBody>
             </Table>

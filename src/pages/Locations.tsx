@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Layout } from '../components/layout/Layout'
 import { Card, Button, Input, Modal, Badge } from '../components/ui'
 import { demoLocations, WAREHOUSE_COORDS, WAREHOUSE_ADDRESS } from '../lib/supabase'
+import { cn } from '../lib/utils'
 import {
   Plus,
   Search,
@@ -18,6 +19,12 @@ import {
   CheckCircle,
   AlertCircle,
 } from 'lucide-react'
+
+interface LocationItem {
+  id: string
+  name: string
+  coords: { lat: number; lng: number }
+}
 
 // Geocoding function using Google Maps API
 async function geocodeAddress(address: string, apiKey: string): Promise<{ lat: number; lng: number } | null> {
@@ -40,7 +47,7 @@ async function geocodeAddress(address: string, apiKey: string): Promise<{ lat: n
 
 export function Locations() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [locations, setLocations] = useState(demoLocations)
+  const [locations, setLocations] = useState<LocationItem[]>(demoLocations)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditWarehouseOpen, setIsEditWarehouseOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -51,6 +58,9 @@ export function Locations() {
   })
   const [isLookingUp, setIsLookingUp] = useState(false)
   const [lookupStatus, setLookupStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  // Selected location for map display (null = warehouse)
+  const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null)
 
   // Editable warehouse state
   const [warehouse, setWarehouse] = useState({
@@ -73,6 +83,36 @@ export function Locations() {
   const filteredLocations = locations.filter(location =>
     location.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // Get the currently selected location for the map
+  const selectedLocation = useMemo(() => {
+    if (!selectedLocationId) {
+      return { 
+        name: 'Main Warehouse', 
+        lat: warehouse.lat, 
+        lng: warehouse.lng,
+        address: warehouse.address,
+        isWarehouse: true 
+      }
+    }
+    const loc = locations.find(l => l.id === selectedLocationId)
+    if (loc) {
+      return { 
+        name: loc.name, 
+        lat: loc.coords.lat, 
+        lng: loc.coords.lng,
+        address: loc.name,
+        isWarehouse: false 
+      }
+    }
+    return { 
+      name: 'Main Warehouse', 
+      lat: warehouse.lat, 
+      lng: warehouse.lng,
+      address: warehouse.address,
+      isWarehouse: true 
+    }
+  }, [selectedLocationId, warehouse, locations])
 
   // Lookup address for new location
   const handleAddressLookup = async () => {
@@ -161,19 +201,18 @@ export function Locations() {
     setIsEditWarehouseOpen(true)
   }
 
-  // Build Google Maps embed URL with all locations
+  // Build Google Maps embed URL for selected location
   const mapEmbedUrl = useMemo(() => {
     if (!mapsApiKey || mapsApiKey === 'your-google-maps-api-key') {
       return null
     }
     
-    // Center on Europe with warehouse marker
-    const center = `${warehouse.lat},${warehouse.lng}`
-    return `https://www.google.com/maps/embed/v1/place?key=${mapsApiKey}&q=${encodeURIComponent(warehouse.address)}&center=${center}&zoom=4`
-  }, [mapsApiKey, warehouse])
+    const center = `${selectedLocation.lat},${selectedLocation.lng}`
+    return `https://www.google.com/maps/embed/v1/place?key=${mapsApiKey}&q=${selectedLocation.lat},${selectedLocation.lng}&center=${center}&zoom=12`
+  }, [mapsApiKey, selectedLocation])
 
-  // Static map URL for warehouse preview (doesn't require API key for basic usage)
-  const warehouseStaticMapUrl = `https://maps.google.com/maps?q=${warehouse.lat},${warehouse.lng}&t=&z=13&ie=UTF8&iwloc=&output=embed`
+  // Static map URL for selected location (fallback without API key)
+  const staticMapUrl = `https://maps.google.com/maps?q=${selectedLocation.lat},${selectedLocation.lng}&t=&z=13&ie=UTF8&iwloc=&output=embed`
 
   return (
     <Layout>
@@ -205,7 +244,17 @@ export function Locations() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card variant="glass" className="h-80 overflow-hidden p-0">
+          <Card variant="glass" className="h-80 overflow-hidden p-0 relative">
+            {/* Location indicator overlay */}
+            <div className="absolute top-3 left-3 z-10 flex items-center gap-2 px-3 py-2 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10">
+              {selectedLocation.isWarehouse ? (
+                <Warehouse className="h-4 w-4 text-blue-400" />
+              ) : (
+                <MapPin className="h-4 w-4 text-amber-400" />
+              )}
+              <span className="text-sm font-medium">{selectedLocation.name}</span>
+            </div>
+            
             {mapEmbedUrl ? (
               <iframe
                 src={mapEmbedUrl}
@@ -218,17 +267,15 @@ export function Locations() {
                 title="Locations Map"
               />
             ) : (
-              <div className="h-full flex flex-col items-center justify-center p-6">
-                <iframe
-                  src={warehouseStaticMapUrl}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0, borderRadius: '0.75rem' }}
-                  allowFullScreen
-                  loading="lazy"
-                  title="Warehouse Location"
-                />
-              </div>
+              <iframe
+                src={staticMapUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                title="Location Map"
+              />
             )}
           </Card>
         </motion.div>
@@ -239,7 +286,18 @@ export function Locations() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card variant="glass" className="h-80 flex flex-col">
+          <motion.div
+            className={cn(
+              "h-80 flex flex-col rounded-2xl p-6 cursor-pointer transition-all",
+              "bg-white/[0.04] border-2",
+              selectedLocationId === null 
+                ? "border-blue-500/50 ring-2 ring-blue-500/20" 
+                : "border-white/[0.08] hover:border-white/20"
+            )}
+            onClick={() => setSelectedLocationId(null)}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+          >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
@@ -252,7 +310,10 @@ export function Locations() {
               </div>
               <motion.button
                 className="p-2 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
-                onClick={openEditWarehouse}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  openEditWarehouse()
+                }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -289,13 +350,14 @@ export function Locations() {
                 href={`https://www.google.com/maps/search/?api=1&query=${warehouse.lat},${warehouse.lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
                 className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors"
               >
                 <ExternalLink className="h-3 w-3" />
                 Open in Maps
               </a>
             </div>
-          </Card>
+          </motion.div>
         </motion.div>
       </div>
 
@@ -333,61 +395,84 @@ export function Locations() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ delay: index * 0.03 }}
+              className={cn(
+                "rounded-2xl p-6 cursor-pointer transition-all",
+                "bg-white/[0.04] border-2",
+                selectedLocationId === location.id 
+                  ? "border-amber-500/50 ring-2 ring-amber-500/20" 
+                  : "border-white/[0.08] hover:border-white/20"
+              )}
+              onClick={() => setSelectedLocationId(location.id)}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
             >
-              <Card variant="glass" hover>
-                <div className="flex items-start justify-between mb-4">
-                  <motion.div
-                    className="w-12 h-12 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <MapPin className="h-6 w-6 text-neutral-400" />
-                  </motion.div>
-                  
-                  <div className="flex gap-1">
-                    <motion.button
-                      className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Edit className="h-3.5 w-3.5" />
-                    </motion.button>
-                    <motion.button
-                      className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => setLocations(prev => prev.filter(l => l.id !== location.id))}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </motion.button>
-                  </div>
-                </div>
-
-                <h3 className="font-semibold mb-2">{location.name}</h3>
+              <div className="flex items-start justify-between mb-4">
+                <motion.div
+                  className={cn(
+                    "w-12 h-12 rounded-xl flex items-center justify-center",
+                    selectedLocationId === location.id 
+                      ? "bg-amber-500/20" 
+                      : "bg-white/8 border border-white/10"
+                  )}
+                >
+                  <MapPin className={cn(
+                    "h-6 w-6",
+                    selectedLocationId === location.id ? "text-amber-400" : "text-neutral-400"
+                  )} />
+                </motion.div>
                 
-                <div className="flex items-center gap-1 text-sm text-muted-foreground font-mono">
-                  <Navigation className="h-3 w-3" />
-                  <span>{location.coords.lat.toFixed(4)}, {location.coords.lng.toFixed(4)}</span>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
-                    ~{Math.round(
-                      Math.sqrt(
-                        Math.pow((location.coords.lat - warehouse.lat) * 111, 2) +
-                        Math.pow((location.coords.lng - warehouse.lng) * 85, 2)
-                      )
-                    )} km to warehouse
-                  </p>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${location.coords.lat},${location.coords.lng}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                <div className="flex gap-1">
+                  <motion.button
+                    className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
+                    <Edit className="h-3.5 w-3.5" />
+                  </motion.button>
+                  <motion.button
+                    className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (selectedLocationId === location.id) {
+                        setSelectedLocationId(null)
+                      }
+                      setLocations(prev => prev.filter(l => l.id !== location.id))
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </motion.button>
                 </div>
-              </Card>
+              </div>
+
+              <h3 className="font-semibold mb-2">{location.name}</h3>
+              
+              <div className="flex items-center gap-1 text-sm text-muted-foreground font-mono">
+                <Navigation className="h-3 w-3" />
+                <span>{location.coords.lat.toFixed(4)}, {location.coords.lng.toFixed(4)}</span>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  ~{Math.round(
+                    Math.sqrt(
+                      Math.pow((location.coords.lat - warehouse.lat) * 111, 2) +
+                      Math.pow((location.coords.lng - warehouse.lng) * 85, 2)
+                    )
+                  )} km to warehouse
+                </p>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${location.coords.lat},${location.coords.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
             </motion.div>
           ))}
         </AnimatePresence>

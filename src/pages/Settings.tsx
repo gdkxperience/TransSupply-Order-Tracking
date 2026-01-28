@@ -15,23 +15,72 @@ import {
   Upload,
   Save,
   CheckCircle,
+  AlertCircle,
 } from 'lucide-react'
 
 export function Settings() {
-  const { user } = useAuth()
+  const { user, updateProfile, updatePassword } = useAuth()
   const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [settings, setSettings] = useState({
     name: user?.name || '',
-    email: user?.email || '',
     notifications: true,
     emailAlerts: true,
     darkMode: true,
     language: 'en',
   })
+  
+  // Password change state
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState(false)
+  const [changingPassword, setChangingPassword] = useState(false)
 
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  const handleSave = async () => {
+    setSaving(true)
+    const success = await updateProfile(settings.name)
+    setSaving(false)
+    
+    if (success) {
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    }
+  }
+  
+  const handlePasswordChange = async () => {
+    setPasswordError('')
+    setPasswordSuccess(false)
+    
+    if (!passwordData.currentPassword) {
+      setPasswordError('Please enter your current password')
+      return
+    }
+    
+    if (!passwordData.newPassword) {
+      setPasswordError('Please enter a new password')
+      return
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('New passwords do not match')
+      return
+    }
+    
+    setChangingPassword(true)
+    const result = await updatePassword(passwordData.currentPassword, passwordData.newPassword)
+    setChangingPassword(false)
+    
+    if (result.success) {
+      setPasswordSuccess(true)
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      setTimeout(() => setPasswordSuccess(false), 3000)
+    } else {
+      setPasswordError(result.error || 'Failed to update password')
+    }
   }
 
   return (
@@ -99,13 +148,17 @@ export function Settings() {
                     onChange={(e) => setSettings(prev => ({ ...prev, name: e.target.value }))}
                     icon={<User className="h-4 w-4" />}
                   />
-                  <Input
-                    label="Email Address"
-                    type="email"
-                    value={settings.email}
-                    onChange={(e) => setSettings(prev => ({ ...prev, email: e.target.value }))}
-                    icon={<Mail className="h-4 w-4" />}
-                  />
+                  <div>
+                    <Input
+                      label="Email Address"
+                      type="email"
+                      value={user?.email || ''}
+                      disabled
+                      icon={<Mail className="h-4 w-4" />}
+                      className="opacity-60 cursor-not-allowed"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -133,6 +186,8 @@ export function Settings() {
                   label="Current Password"
                   type="password"
                   placeholder="••••••••"
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
                   icon={<Lock className="h-4 w-4" />}
                 />
                 <div className="grid grid-cols-2 gap-4">
@@ -140,17 +195,48 @@ export function Settings() {
                     label="New Password"
                     type="password"
                     placeholder="••••••••"
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
                   />
                   <Input
                     label="Confirm Password"
                     type="password"
                     placeholder="••••••••"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                   />
                 </div>
 
-                <Button variant="secondary" className="mt-2">
+                {passwordError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-red-400 text-sm"
+                  >
+                    <AlertCircle className="h-4 w-4" />
+                    {passwordError}
+                  </motion.div>
+                )}
+                
+                {passwordSuccess && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-emerald-400 text-sm"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                    Password updated successfully
+                  </motion.div>
+                )}
+
+                <Button 
+                  variant="secondary" 
+                  className="mt-2"
+                  onClick={handlePasswordChange}
+                  disabled={changingPassword}
+                >
                   <Lock className="h-4 w-4" />
-                  Update Password
+                  {changingPassword ? 'Updating...' : 'Update Password'}
                 </Button>
               </div>
             </Card>
@@ -286,11 +372,16 @@ export function Settings() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <Button className="w-full" size="lg" onClick={handleSave}>
+            <Button className="w-full" size="lg" onClick={handleSave} disabled={saving}>
               {saved ? (
                 <>
                   <CheckCircle className="h-4 w-4" />
                   Saved Successfully
+                </>
+              ) : saving ? (
+                <>
+                  <Save className="h-4 w-4 animate-spin" />
+                  Saving...
                 </>
               ) : (
                 <>

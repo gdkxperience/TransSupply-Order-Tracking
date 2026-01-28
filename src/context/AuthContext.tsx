@@ -13,6 +13,8 @@ interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
+  updateProfile: (name: string) => Promise<boolean>
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>
   isLoading: boolean
 }
 
@@ -76,8 +78,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('transsupply_user')
   }
 
+  const updateProfile = async (name: string): Promise<boolean> => {
+    if (!user) return false
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    const updatedUser = { ...user, name }
+    setUser(updatedUser)
+    localStorage.setItem('transsupply_user', JSON.stringify(updatedUser))
+    return true
+  }
+
+  const updatePassword = async (currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
+    if (!user) return { success: false, error: 'Not logged in' }
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    // Check current password (demo: admin123 for admin, client123 for clients)
+    const expectedPassword = user.role === 'admin' ? 'admin123' : 'client123'
+    
+    if (currentPassword !== expectedPassword) {
+      return { success: false, error: 'Current password is incorrect' }
+    }
+    
+    if (newPassword.length < 6) {
+      return { success: false, error: 'New password must be at least 6 characters' }
+    }
+    
+    // In a real app, this would update the password in the database
+    // For demo purposes, we just return success
+    return { success: true }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateProfile, updatePassword, isLoading }}>
       {children}
     </AuthContext.Provider>
   )

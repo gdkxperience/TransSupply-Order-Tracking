@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useOrders } from '../context/OrderContext'
 import { Layout } from '../components/layout/Layout'
@@ -7,8 +8,10 @@ import {
   Button,
   Input,
   Modal,
+  Badge,
 } from '../components/ui'
-import { formatDate, cn } from '../lib/utils'
+import { formatDate, formatCurrency, cn } from '../lib/utils'
+import type { ClientRecord } from '../lib/supabase'
 import {
   Plus,
   Search,
@@ -21,10 +24,15 @@ import {
   Edit,
   Trash2,
   UserPlus,
+  Save,
+  Lock,
+  ArrowRight,
+  X,
 } from 'lucide-react'
 
 export function Clients() {
-  const { clients, orders, createClient } = useOrders()
+  const navigate = useNavigate()
+  const { clients, orders, createClient, updateClient } = useOrders()
   
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -33,6 +41,19 @@ export function Clients() {
     email: '',
     password: '',
   })
+  
+  // View orders modal state
+  const [viewOrdersClient, setViewOrdersClient] = useState<ClientRecord | null>(null)
+  
+  // Edit client modal state
+  const [editClient, setEditClient] = useState<ClientRecord | null>(null)
+  const [editForm, setEditForm] = useState({
+    name: '',
+    password: '',
+    confirmPassword: '',
+  })
+  const [editError, setEditError] = useState('')
+  const [editSuccess, setEditSuccess] = useState(false)
 
   const filteredClients = clients.filter(client =>
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -42,6 +63,10 @@ export function Clients() {
   const getClientOrderCount = (clientId: string) => {
     return orders.filter(o => o.client_id === clientId).length
   }
+  
+  const getClientOrders = (clientId: string) => {
+    return orders.filter(o => o.client_id === clientId)
+  }
 
   const handleCreateClient = () => {
     createClient({
@@ -50,6 +75,51 @@ export function Clients() {
     })
     setIsCreateModalOpen(false)
     setFormData({ name: '', email: '', password: '' })
+  }
+  
+  const openViewOrders = (client: ClientRecord) => {
+    setViewOrdersClient(client)
+  }
+  
+  const openEditClient = (client: ClientRecord) => {
+    setEditClient(client)
+    setEditForm({
+      name: client.name,
+      password: '',
+      confirmPassword: '',
+    })
+    setEditError('')
+    setEditSuccess(false)
+  }
+  
+  const handleEditClient = async () => {
+    if (!editClient) return
+    
+    // Validate passwords match if provided
+    if (editForm.password && editForm.password !== editForm.confirmPassword) {
+      setEditError('Passwords do not match')
+      return
+    }
+    
+    // Update client
+    await updateClient(editClient.id, {
+      name: editForm.name,
+    })
+    
+    setEditSuccess(true)
+    setTimeout(() => {
+      setEditClient(null)
+      setEditSuccess(false)
+    }, 1500)
+  }
+  
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'pickup': return 'pickup'
+      case 'warehouse': return 'warehouse'
+      case 'delivered': return 'delivered'
+      default: return 'default'
+    }
   }
 
   return (
@@ -196,17 +266,19 @@ export function Clients() {
                 {/* Actions */}
                 <div className="mt-4 flex gap-2">
                   <motion.button
-                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-white/5 text-sm text-muted-foreground hover:text-foreground hover:bg-white/10 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-blue-500/10 text-sm text-blue-400 hover:bg-blue-500/20 transition-colors"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => openViewOrders(client)}
                   >
                     <Eye className="h-4 w-4" />
-                    View
+                    View Orders
                   </motion.button>
                   <motion.button
                     className="flex items-center justify-center p-2 rounded-lg bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-colors"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={() => openEditClient(client)}
                   >
                     <Edit className="h-4 w-4" />
                   </motion.button>
@@ -278,6 +350,165 @@ export function Clients() {
             </Button>
             <Button type="submit">
               Create Client
+            </Button>
+          </div>
+        </form>
+      </Modal>
+      
+      {/* View Orders Modal */}
+      <Modal
+        isOpen={!!viewOrdersClient}
+        onClose={() => setViewOrdersClient(null)}
+        title={`Orders - ${viewOrdersClient?.name || ''}`}
+        description={`${getClientOrders(viewOrdersClient?.id || '').length} orders found`}
+        size="lg"
+      >
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {viewOrdersClient && getClientOrders(viewOrdersClient.id).length === 0 ? (
+            <div className="text-center py-8">
+              <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+              <p className="text-muted-foreground">No orders found for this client</p>
+            </div>
+          ) : (
+            viewOrdersClient && getClientOrders(viewOrdersClient.id).map((order) => (
+              <motion.div
+                key={order.id}
+                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
+                onClick={() => {
+                  setViewOrdersClient(null)
+                  navigate(`/orders/${order.id}`)
+                }}
+                whileHover={{ x: 4 }}
+              >
+                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <Package className="h-5 w-5 text-blue-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{order.internal_ref}</p>
+                    <Badge variant={getStatusVariant(order.status) as 'pickup' | 'warehouse' | 'delivered' | 'default'}>
+                      {order.status}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {order.pickup_address.city} → Baku • {formatDate(order.collection_date)}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-blue-400">{formatCurrency(order.total_price)}</p>
+                  <p className="text-xs text-muted-foreground">{order.total_weight_kg} kg</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+              </motion.div>
+            ))
+          )}
+        </div>
+        
+        <div className="flex justify-end gap-3 pt-4 mt-4 border-t border-white/10">
+          <Button variant="ghost" onClick={() => setViewOrdersClient(null)}>
+            Close
+          </Button>
+          <Button onClick={() => {
+            setViewOrdersClient(null)
+            navigate('/orders')
+          }}>
+            <Package className="h-4 w-4" />
+            View All Orders
+          </Button>
+        </div>
+      </Modal>
+      
+      {/* Edit Client Modal */}
+      <Modal
+        isOpen={!!editClient}
+        onClose={() => setEditClient(null)}
+        title="Edit Client"
+        description={`Update details for ${editClient?.name || ''}`}
+        size="md"
+      >
+        <form onSubmit={(e) => { e.preventDefault(); handleEditClient(); }} className="space-y-4">
+          {/* Email (read-only) */}
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Email Address
+            </label>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground">{editClient?.email}</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
+          </div>
+          
+          <Input
+            label="Company Name"
+            placeholder="Enter company name"
+            value={editForm.name}
+            onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+            icon={<Building2 className="h-4 w-4" />}
+          />
+          
+          <div className="pt-2 border-t border-white/10">
+            <p className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              Change Password (optional)
+            </p>
+            
+            <div className="space-y-3">
+              <Input
+                label="New Password"
+                type="password"
+                placeholder="Leave blank to keep current"
+                value={editForm.password}
+                onChange={(e) => {
+                  setEditForm(prev => ({ ...prev, password: e.target.value }))
+                  setEditError('')
+                }}
+              />
+              
+              {editForm.password && (
+                <Input
+                  label="Confirm New Password"
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={editForm.confirmPassword}
+                  onChange={(e) => {
+                    setEditForm(prev => ({ ...prev, confirmPassword: e.target.value }))
+                    setEditError('')
+                  }}
+                />
+              )}
+            </div>
+          </div>
+          
+          {editError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 text-red-400 text-sm"
+            >
+              <X className="h-4 w-4" />
+              {editError}
+            </motion.div>
+          )}
+          
+          {editSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-sm"
+            >
+              <Save className="h-4 w-4" />
+              Client updated successfully!
+            </motion.div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+            <Button type="button" variant="ghost" onClick={() => setEditClient(null)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={editSuccess}>
+              <Save className="h-4 w-4" />
+              Save Changes
             </Button>
           </div>
         </form>

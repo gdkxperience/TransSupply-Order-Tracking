@@ -19,6 +19,7 @@ interface OrderContextType {
   deleteOrder: (id: string) => Promise<void>
   addPackageToOrder: (orderId: string, pkg: Omit<OrderPackage, 'id' | 'order_id'>) => Promise<void>
   createClient: (client: Omit<ClientRecord, 'id' | 'created_at'>) => Promise<ClientRecord>
+  updateClient: (id: string, updates: Partial<Omit<ClientRecord, 'id' | 'created_at' | 'email'>>) => Promise<void>
   refreshData: () => Promise<void>
   getStats: () => {
     totalOrders: number
@@ -326,6 +327,23 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const updateClient = async (id: string, updates: Partial<Omit<ClientRecord, 'id' | 'created_at' | 'email'>>): Promise<void> => {
+    if (!USE_SUPABASE) {
+      setClients(prev => prev.map(client => 
+        client.id === id ? { ...client, ...updates } : client
+      ))
+      return
+    }
+
+    const { error } = await supabase
+      .from('clients')
+      .update(updates)
+      .eq('id', id)
+
+    if (error) throw error
+    await refreshData()
+  }
+
   const getStats = () => {
     const filteredOrders = user?.role === 'admin' 
       ? orders 
@@ -355,6 +373,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       deleteOrder,
       addPackageToOrder,
       createClient,
+      updateClient,
       refreshData,
       getStats,
     }}>

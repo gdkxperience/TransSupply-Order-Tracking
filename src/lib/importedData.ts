@@ -15,7 +15,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2025-04-0090',
     client_id: 'client-bpsd',
-    internal_ref: '2025Q2-090',
+    internal_ref: '2025-04-0090',
     status: 'delivered',
     pickup_address: { city: 'Eibergen', country: 'Netherlands' },
     collection_date: '2025-04-15',
@@ -34,7 +34,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2025-04-0091',
     client_id: 'client-aioc',
-    internal_ref: '2025Q2-091',
+    internal_ref: '2025-04-0091',
     status: 'delivered',
     pickup_address: { city: 'Vienna', country: 'Austria' },
     collection_date: '2025-04-16',
@@ -58,7 +58,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2025-04-0092',
     client_id: 'client-aioc',
-    internal_ref: '2025Q2-092',
+    internal_ref: '2025-04-0092',
     status: 'delivered',
     pickup_address: { city: 'Norderstedt', country: 'Germany' },
     collection_date: '2025-04-18',
@@ -77,7 +77,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2025-04-0094',
     client_id: 'client-btc',
-    internal_ref: '2025Q2-094',
+    internal_ref: '2025-04-0094',
     status: 'delivered',
     pickup_address: { city: 'Pavlov', country: 'Czech Republic' },
     collection_date: '2025-04-20',
@@ -98,7 +98,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2025-04-0096',
     client_id: 'client-bpsd',
-    internal_ref: '2025Q2-096',
+    internal_ref: '2025-04-0096',
     status: 'delivered',
     pickup_address: { city: 'Agotnes', country: 'Norway' },
     collection_date: '2025-04-22',
@@ -117,7 +117,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0001',
     client_id: 'client-scpc',
-    internal_ref: '2026Q1-001',
+    internal_ref: '2026-01-0001',
     status: 'warehouse',
     pickup_address: { city: 'Vienna', country: 'Austria' },
     collection_date: '2026-01-10',
@@ -142,7 +142,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0002',
     client_id: 'client-btc',
-    internal_ref: '2026Q1-002',
+    internal_ref: '2026-01-0002',
     status: 'warehouse',
     pickup_address: { city: 'Oskarshamn', country: 'Sweden' },
     collection_date: '2026-01-12',
@@ -166,7 +166,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0003',
     client_id: 'client-btc',
-    internal_ref: '2026Q1-003',
+    internal_ref: '2026-01-0003',
     status: 'delivered',
     pickup_address: { city: 'Llanera', country: 'Spain' },
     collection_date: '2026-01-14',
@@ -187,7 +187,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0011',
     client_id: 'client-bpsd',
-    internal_ref: '2026Q1-011',
+    internal_ref: '2026-01-0011',
     status: 'warehouse',
     pickup_address: { city: 'Norderstedt', country: 'Germany' },
     collection_date: '2026-01-16',
@@ -206,7 +206,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0012',
     client_id: 'client-aioc',
-    internal_ref: '2026Q1-012',
+    internal_ref: '2026-01-0012',
     status: 'warehouse',
     pickup_address: { city: 'Campina', country: 'Romania' },
     collection_date: '2026-01-17',
@@ -225,7 +225,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0021',
     client_id: 'client-bpsd',
-    internal_ref: '2026Q1-021',
+    internal_ref: '2026-01-0021',
     status: 'pickup',
     pickup_address: { city: 'Arras', country: 'France' },
     collection_date: '2026-01-28',
@@ -250,7 +250,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0022',
     client_id: 'client-aioc',
-    internal_ref: '2026Q1-022',
+    internal_ref: '2026-01-0022',
     status: 'pickup',
     pickup_address: { city: 'Zurich', country: 'Switzerland' },
     collection_date: '2026-01-29',
@@ -269,7 +269,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0035',
     client_id: 'client-btc',
-    internal_ref: '2026Q1-035',
+    internal_ref: '2026-01-0035',
     status: 'pickup',
     pickup_address: { city: 'Arras', country: 'France' },
     collection_date: '2026-01-30',
@@ -290,7 +290,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0036',
     client_id: 'client-aioc',
-    internal_ref: '2026Q1-036',
+    internal_ref: '2026-01-0036',
     status: 'warehouse',
     pickup_address: { city: 'Vienna', country: 'Austria' },
     collection_date: '2026-01-24',
@@ -314,7 +314,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0039',
     client_id: 'client-aioc',
-    internal_ref: '2026Q1-039',
+    internal_ref: '2026-01-0039',
     status: 'pickup',
     pickup_address: { city: 'Pavlov', country: 'Czech Republic' },
     collection_date: '2026-01-31',
@@ -336,7 +336,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0040',
     client_id: 'client-aioc',
-    internal_ref: '2026Q1-040',
+    internal_ref: '2026-01-0040',
     status: 'delivered',
     pickup_address: { city: 'Milan', country: 'Italy' },
     collection_date: '2026-01-20',
@@ -355,7 +355,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0043',
     client_id: 'client-aioc',
-    internal_ref: '2026Q1-043',
+    internal_ref: '2026-01-0043',
     status: 'warehouse',
     pickup_address: { city: 'Vienna', country: 'Austria' },
     collection_date: '2026-01-26',
@@ -376,7 +376,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0044',
     client_id: 'client-bpsd',
-    internal_ref: '2026Q1-044',
+    internal_ref: '2026-01-0044',
     status: 'pickup',
     pickup_address: { city: 'Zurich', country: 'Switzerland' },
     collection_date: '2026-01-30',
@@ -397,7 +397,7 @@ export const importedOrders: Order[] = [
   {
     id: 'ord-2026-01-0048',
     client_id: 'client-aioc',
-    internal_ref: '2026Q1-048',
+    internal_ref: '2026-01-0048',
     status: 'pickup',
     pickup_address: { city: 'Cologne', country: 'Germany' },
     collection_date: '2026-01-31',

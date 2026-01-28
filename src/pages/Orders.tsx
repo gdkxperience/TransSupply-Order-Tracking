@@ -63,17 +63,6 @@ export function Orders() {
       return next
     })
   }
-
-  const ordersWithBoxes = filteredOrders.filter(o => o.order_boxes && o.order_boxes.length > 0)
-  const allExpanded = ordersWithBoxes.length > 0 && ordersWithBoxes.every(o => expandedOrders.has(o.id))
-
-  const toggleExpandAll = () => {
-    if (allExpanded) {
-      setExpandedOrders(new Set())
-    } else {
-      setExpandedOrders(new Set(ordersWithBoxes.map(o => o.id)))
-    }
-  }
   
   // Form state
   const [formData, setFormData] = useState({
@@ -99,6 +88,17 @@ export function Orders() {
     
     return matchesSearch && matchesStatus
   })
+
+  const ordersWithBoxes = filteredOrders.filter(o => o.order_boxes && o.order_boxes.length > 0)
+  const allExpanded = ordersWithBoxes.length > 0 && ordersWithBoxes.every(o => expandedOrders.has(o.id))
+
+  const toggleExpandAll = () => {
+    if (allExpanded) {
+      setExpandedOrders(new Set())
+    } else {
+      setExpandedOrders(new Set(ordersWithBoxes.map(o => o.id)))
+    }
+  }
 
   const handleCreateOrder = async () => {
     const totalWeight = formData.boxes.reduce((sum, box) => sum + Number(box.weight_kg), 0)

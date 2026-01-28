@@ -1,73 +1,115 @@
-# React + TypeScript + Vite
+# TransSupply Order Tracking
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern logistics and order tracking application for managing shipments, clients, and locations.
 
-Currently, two official plugins are available:
+## Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Demo Login
+- **Admin**: `admin@transsupply.com` / `admin123`
+- **Client**: `client@example.com` / `client123`
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Running Locally
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## User Manual
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Dashboard
+The main dashboard provides an overview of your logistics operations:
+- **Stats Cards**: Quick view of total orders, in-transit shipments, delivered orders, and revenue
+- **Recent Orders**: List of the latest orders with status indicators
+- Click any order to view its details
+
+### Orders
+Manage all shipments from the Orders page:
+
+**Viewing Orders**
+- Orders are displayed in a list with status, reference number, route, and pricing
+- Use status filter buttons (All, Pending, In Transit, Delivered) to filter the list
+- Click on an order number to view full details
+- Use the copy button next to order numbers to copy the reference
+
+**Creating Orders** (Admin only)
+1. Click the **+** button (or "New Order" on desktop)
+2. Fill in pickup address and destination
+3. Select or create a client
+4. Add packages with dimensions and weight
+5. Set pricing and notes
+6. Click "Create Order"
+
+**Exporting Orders**
+- Click the download icon to export orders
+- Options: CSV Summary, CSV with Packages, or PDF Report
+
+### Order Details
+View complete order information:
+- **Status Timeline**: Visual progress from pickup to delivery
+- **Route Map**: Shows pickup and destination locations
+- **Packages**: List of all packages with dimensions and weight
+- **Photos**: Upload and view shipment photos
+
+**Actions**
+- Add packages to existing orders
+- Upload photos
+- Export order as PDF
+- Edit order details (Admin only)
+
+### Clients (Admin Only)
+Manage your client database:
+- View all clients with order counts
+- Click a client to see their orders
+- Edit client name and password
+- Create new clients
+
+### Locations (Admin Only)
+Manage warehouse and pickup locations:
+- **Main Warehouse**: Your primary location shown on the map
+- **Pickup Locations**: Additional locations for pickups
+- Add new locations with address lookup
+- View distances from main warehouse
+- Edit or delete locations
+
+### Settings
+Manage your account:
+- Update profile name
+- Change password
+- View account information
+
+### Search (⌘K / Ctrl+K)
+Use the universal search to quickly find:
+- Orders by reference number, client, or location
+- Clients by name or email
+- Navigate to any page
+
+---
+
+## Mobile App
+
+The app is fully responsive with mobile-specific features:
+- **Bottom Navigation**: Quick access to main sections
+- **Bottom Sheets**: Tap on items for action menus
+- **Swipe Gestures**: Swipe down to dismiss bottom sheets
+- **Compact Views**: Optimized layouts for smaller screens
+
+---
+
+## Tech Stack
+
+- React 18 + TypeScript
+- Vite
+- Tailwind CSS v4
+- Framer Motion
+- Supabase (Database)
+- Google Maps API (Location services)
+
+## Environment Variables
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ```

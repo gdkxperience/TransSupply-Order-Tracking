@@ -60,8 +60,6 @@ export function Dashboard() {
           value={stats.totalOrders}
           icon={Package}
           color="blue"
-          change="+12% from last month"
-          changeType="increase"
           delay={0}
         />
         <StatsCard
@@ -97,8 +95,6 @@ export function Dashboard() {
           value={formatCurrency(stats.totalRevenue)}
           icon={Euro}
           color="rose"
-          change="+8% growth"
-          changeType="increase"
           delay={0.25}
         />
       </div>

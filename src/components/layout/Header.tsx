@@ -49,7 +49,7 @@ export function Header() {
         <div className="flex items-center gap-2 md:ml-6">
           {/* Mobile Search Button */}
           <motion.button
-            className="md:hidden relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all"
+            className="md:hidden relative w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all flex items-center justify-center"
             onClick={() => {
               window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, ctrlKey: true }))
             }}
@@ -60,7 +60,7 @@ export function Header() {
           
           {/* Theme toggle - hidden on mobile */}
           <motion.button
-            className="hidden md:flex relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all"
+            className="hidden md:flex relative w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all items-center justify-center"
             onClick={() => setIsDark(!isDark)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -92,14 +92,14 @@ export function Header() {
 
           {/* Notifications */}
           <motion.button
-            className="relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all"
+            className="relative w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all flex items-center justify-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <Bell className="h-4 w-4" />
             {hasNotifications && (
               <motion.span
-                className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"
+                className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}

@@ -1,8 +1,8 @@
-import { forwardRef, HTMLAttributes } from 'react'
+import { forwardRef, type HTMLAttributes } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '../../lib/utils'
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart'> {
   variant?: 'glass' | 'solid' | 'outline' | 'gradient'
   hover?: boolean
   glow?: boolean

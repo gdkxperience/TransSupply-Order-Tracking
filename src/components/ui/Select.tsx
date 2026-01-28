@@ -1,4 +1,4 @@
-import { forwardRef, SelectHTMLAttributes, useState } from 'react'
+import { forwardRef, useState, type SelectHTMLAttributes } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../../lib/utils'
 import { ChevronDown } from 'lucide-react'

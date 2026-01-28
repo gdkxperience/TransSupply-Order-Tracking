@@ -19,12 +19,10 @@ import {
   TableCell,
 } from '../components/ui'
 import { formatDate, formatCurrency, cn } from '../lib/utils'
-import type { Order, OrderStatus } from '../lib/supabase'
-import { demoLocations } from '../lib/supabase'
+import type { OrderStatus } from '../lib/supabase'
 import {
   Plus,
   Search,
-  Filter,
   Download,
   Eye,
   Edit,
@@ -38,20 +36,18 @@ import {
   Calendar,
   User,
   Phone,
-  Weight,
   Euro,
   Box,
 } from 'lucide-react'
 
 export function Orders() {
   const { user } = useAuth()
-  const { orders, clients, createOrder, updateOrder, deleteOrder, addBoxToOrder } = useOrders()
+  const { orders, clients, createOrder, deleteOrder, loading } = useOrders()
   const navigate = useNavigate()
   
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [editingOrder, setEditingOrder] = useState<Order | null>(null)
   
   // Form state
   const [formData, setFormData] = useState({
@@ -78,10 +74,10 @@ export function Orders() {
     return matchesSearch && matchesStatus
   })
 
-  const handleCreateOrder = () => {
+  const handleCreateOrder = async () => {
     const totalWeight = formData.boxes.reduce((sum, box) => sum + Number(box.weight_kg), 0)
     
-    const newOrder = createOrder({
+    await createOrder({
       client_id: formData.client_id || user?.clientId || '',
       status: formData.status,
       pickup_address: {
@@ -92,7 +88,7 @@ export function Orders() {
       collection_date: formData.collection_date,
       receiver_name: formData.receiver_name,
       receiver_phone: formData.receiver_phone,
-      receiver_address: { city: 'Schwanendael', country: 'Netherlands' },
+      receiver_address: { city: 'Baku', country: 'Azerbaijan' },
       total_weight_kg: totalWeight,
       total_price: Number(formData.total_price),
       photos: [],
@@ -152,6 +148,19 @@ export function Orders() {
       case 'warehouse': return <Warehouse className="h-4 w-4" />
       case 'delivered': return <CheckCircle2 className="h-4 w-4" />
     }
+  }
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-96">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-muted-foreground">Loading orders...</p>
+          </div>
+        </div>
+      </Layout>
+    )
   }
 
   return (

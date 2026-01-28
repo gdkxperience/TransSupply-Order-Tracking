@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useOrders } from '../context/OrderContext'
 import { Layout } from '../components/layout/Layout'
-import { Card, CardContent, Badge, StatsCard } from '../components/ui'
+import { Card, Badge, StatsCard } from '../components/ui'
 import { formatDate, formatCurrency } from '../lib/utils'
 import {
   Package,
@@ -19,11 +19,24 @@ import {
 
 export function Dashboard() {
   const { user } = useAuth()
-  const { orders, getStats } = useOrders()
+  const { orders, getStats, loading } = useOrders()
   const navigate = useNavigate()
   const stats = getStats()
 
   const recentOrders = orders.slice(0, 5)
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-96">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-muted-foreground">Loading dashboard...</p>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout>

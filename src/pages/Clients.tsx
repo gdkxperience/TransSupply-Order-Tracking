@@ -5,15 +5,8 @@ import { Layout } from '../components/layout/Layout'
 import {
   Card,
   Button,
-  Badge,
   Input,
   Modal,
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
 } from '../components/ui'
 import { formatDate, cn } from '../lib/utils'
 import {

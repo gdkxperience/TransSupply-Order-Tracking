@@ -1,4 +1,4 @@
-import type { Order, OrderBox, ClientRecord } from './supabase'
+import type { Order, ClientRecord } from './supabase'
 
 // Imported clients from CSV data
 export const importedClients: ClientRecord[] = [
@@ -9,33 +9,6 @@ export const importedClients: ClientRecord[] = [
   { id: 'client-scpc', email: 'logistics@scpc.az', name: 'SCPC', created_at: '2025-01-01' },
   { id: 'client-gpc', email: 'shipping@gpc.ge', name: 'GPC', created_at: '2025-01-01' },
 ]
-
-// Helper to get client ID by receiver code
-const getClientId = (receiver: string): string => {
-  const mapping: Record<string, string> = {
-    'AIOC': 'client-aioc',
-    'BPSD': 'client-bpsd',
-    'BTC': 'client-btc',
-    'BPCS': 'client-bpcs',
-    'SCPC': 'client-scpc',
-    'GPC': 'client-gpc',
-  }
-  return mapping[receiver] || 'client-aioc'
-}
-
-// Parse price from string like "115,00" or "310.00" or "400 USD AIR"
-const parsePrice = (priceStr: string): number => {
-  if (!priceStr) return 0
-  const cleaned = priceStr.replace(/[^0-9.,]/g, '').replace(',', '.')
-  return parseFloat(cleaned) || 0
-}
-
-// Parse weight from string
-const parseWeight = (weightStr: string): number => {
-  if (!weightStr) return 0
-  const cleaned = weightStr.replace(',', '.')
-  return parseFloat(cleaned) || 0
-}
 
 // Imported orders from CSV data - parsed and structured
 export const importedOrders: Order[] = [

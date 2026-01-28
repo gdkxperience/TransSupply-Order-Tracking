@@ -1,8 +1,8 @@
-import { HTMLAttributes, forwardRef } from 'react'
+import { forwardRef, type HTMLAttributes } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '../../lib/utils'
 
-interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart'> {
   variant?: 'default' | 'pickup' | 'warehouse' | 'delivered' | 'success' | 'warning' | 'danger'
   pulse?: boolean
 }

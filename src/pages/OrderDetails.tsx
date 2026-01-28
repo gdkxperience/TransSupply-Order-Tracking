@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useOrders } from '../context/OrderContext'
 import { Layout } from '../components/layout/Layout'
-import { Card, CardContent, Badge, Button } from '../components/ui'
+import { Card, Badge, Button } from '../components/ui'
 import { formatDate, formatCurrency, cn } from '../lib/utils'
 import { WAREHOUSE_ADDRESS } from '../lib/supabase'
 import {
@@ -12,8 +12,6 @@ import {
   Calendar,
   User,
   Phone,
-  Weight,
-  Euro,
   Package,
   Box,
   Truck,

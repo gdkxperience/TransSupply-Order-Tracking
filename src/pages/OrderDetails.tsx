@@ -365,12 +365,12 @@ export function OrderDetails() {
     <Layout>
       {/* Back button & Header */}
       <motion.div
-        className="mb-6"
+        className="mb-4 md:mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         <motion.button
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-3 md:mb-4 transition-colors text-sm"
           onClick={() => navigate('/orders')}
           whileHover={{ x: -4 }}
         >
@@ -378,28 +378,28 @@ export function OrderDetails() {
           Back to Orders
         </motion.button>
 
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold">{order.internal_ref}</h1>
+            <div className="flex items-center gap-3 mb-1 md:mb-2">
+              <h1 className="text-xl md:text-2xl font-bold">{order.internal_ref}</h1>
               <Badge variant={order.status} pulse={order.status !== 'delivered'}>
                 {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
               </Badge>
             </div>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Created on {formatDate(order.created_at)}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={handleExportPDF}>
+            <Button variant="secondary" size="sm" onClick={handleExportPDF} className="flex-1 md:flex-none">
               <FileText className="h-4 w-4" />
-              Export PDF
+              <span className="md:inline">Export</span>
             </Button>
             {user?.role === 'admin' && (
-              <Button variant="secondary" onClick={openEditModal}>
+              <Button variant="secondary" size="sm" onClick={openEditModal} className="flex-1 md:flex-none">
                 <Edit className="h-4 w-4" />
-                Edit
+                <span className="md:inline">Edit</span>
               </Button>
             )}
           </div>
@@ -412,12 +412,12 @@ export function OrderDetails() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card variant="glass" className="mb-6">
-          <h2 className="text-lg font-semibold mb-6">Order Status</h2>
+        <Card variant="glass" className="mb-4 md:mb-6">
+          <h2 className="text-base md:text-lg font-semibold mb-4 md:mb-6">Order Status</h2>
           
           <div className="relative">
             {/* Progress line */}
-            <div className="absolute top-6 left-0 right-0 h-1 bg-white/10 rounded-full">
+            <div className="absolute top-5 md:top-6 left-0 right-0 h-1 bg-white/10 rounded-full">
               <motion.div
                 className="h-full bg-indigo-500 rounded-full"
                 initial={{ width: 0 }}
@@ -442,7 +442,7 @@ export function OrderDetails() {
                   >
                     <motion.button
                       className={cn(
-                        'relative w-12 h-12 rounded-full flex items-center justify-center transition-all',
+                        'relative w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all',
                         isCompleted
                           ? 'bg-indigo-500 text-white'
                           : 'bg-white/10 text-muted-foreground',
@@ -453,7 +453,7 @@ export function OrderDetails() {
                       whileHover={user?.role === 'admin' ? { scale: 1.1 } : undefined}
                       whileTap={user?.role === 'admin' ? { scale: 0.95 } : undefined}
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-4 w-4 md:h-5 md:w-5" />
                       {isCurrent && (
                         <motion.div
                           className="absolute -inset-1 bg-indigo-500/30 rounded-full"
@@ -463,12 +463,12 @@ export function OrderDetails() {
                       )}
                     </motion.button>
                     <p className={cn(
-                      'mt-3 text-sm font-medium',
+                      'mt-2 md:mt-3 text-xs md:text-sm font-medium',
                       isCompleted ? 'text-foreground' : 'text-muted-foreground'
                     )}>
                       {step.label}
                     </p>
-                    <p className="text-xs text-muted-foreground">{step.description}</p>
+                    <p className="text-xs text-muted-foreground hidden md:block">{step.description}</p>
                   </motion.div>
                 )
               })}
@@ -478,7 +478,7 @@ export function OrderDetails() {
       </motion.div>
 
       {/* Main content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Order Details */}
         <motion.div
           className="lg:col-span-2 space-y-6"

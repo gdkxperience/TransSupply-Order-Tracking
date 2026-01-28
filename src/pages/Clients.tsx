@@ -28,6 +28,7 @@ import {
   Lock,
   ArrowRight,
   X,
+  ChevronRight,
 } from 'lucide-react'
 
 export function Clients() {
@@ -126,26 +127,26 @@ export function Clients() {
     <Layout>
       {/* Header */}
       <motion.div
-        className="flex items-center justify-between mb-6"
+        className="flex items-center justify-between mb-4 md:mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         <div>
-          <h1 className="text-2xl font-bold">Clients</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl md:text-2xl font-bold">Clients</h1>
+          <p className="text-muted-foreground text-sm hidden md:block">
             Manage your client accounts and access
           </p>
         </div>
         
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button onClick={() => setIsCreateModalOpen(true)} className="px-3 md:px-4">
           <Plus className="h-4 w-4" />
-          New Client
+          <span className="hidden md:inline">New Client</span>
         </Button>
       </motion.div>
 
-      {/* Stats */}
+      {/* Stats - Hidden on mobile */}
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
+        className="hidden md:grid grid-cols-4 gap-4 mb-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -181,12 +182,12 @@ export function Clients() {
 
       {/* Search */}
       <motion.div
-        className="mb-6"
+        className="mb-4 md:mb-6"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <div className="relative max-w-md">
+        <div className="relative md:max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
@@ -198,9 +199,51 @@ export function Clients() {
         </div>
       </motion.div>
 
-      {/* Clients Grid */}
+      {/* Mobile Client List */}
+      <div className="md:hidden space-y-1 mb-4">
+        {filteredClients.map((client, index) => (
+          <motion.div
+            key={client.id}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.02 }}
+            className="flex items-center gap-3 p-3 bg-white/[0.02] hover:bg-white/[0.06] active:bg-white/[0.08] rounded-xl transition-colors"
+            onClick={() => openViewOrders(client)}
+          >
+            {/* Avatar */}
+            <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0">
+              <span className="text-base font-bold text-white">
+                {client.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm truncate">{client.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{client.email}</p>
+            </div>
+            
+            {/* Order count */}
+            <div className="text-right flex-shrink-0">
+              <p className="font-semibold text-sm">{getClientOrderCount(client.id)}</p>
+              <p className="text-xs text-muted-foreground">orders</p>
+            </div>
+            
+            <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          </motion.div>
+        ))}
+        
+        {filteredClients.length === 0 && (
+          <div className="text-center py-12">
+            <Users className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+            <p className="text-sm text-muted-foreground">No clients found</p>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Clients Grid */}
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}

@@ -605,70 +605,54 @@ export function Orders() {
         </Button>
       </motion.div>
 
-      {/* Mobile Order Cards */}
-      <div className="md:hidden space-y-3">
+      {/* Mobile Order List */}
+      <div className="md:hidden space-y-1">
         {filteredOrders.map((order, index) => (
           <motion.div
             key={order.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.03 }}
-            className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 active:bg-white/[0.08] transition-colors"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.02 }}
+            className="flex items-center gap-3 p-3 bg-white/[0.02] hover:bg-white/[0.06] active:bg-white/[0.08] rounded-xl transition-colors"
             onClick={() => openActionSheet(order)}
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  'w-10 h-10 rounded-xl flex items-center justify-center',
-                  order.status === 'pickup' && 'bg-amber-500/20 text-amber-400',
-                  order.status === 'warehouse' && 'bg-blue-500/20 text-blue-400',
-                  order.status === 'delivered' && 'bg-emerald-500/20 text-emerald-400',
-                )}>
-                  {getStatusIcon(order.status)}
-                </div>
-                <div>
-                  <button
-                    className="font-semibold text-blue-400"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      navigate(`/orders/${order.id}`)
-                    }}
-                  >
-                    {order.internal_ref}
-                  </button>
-                  <p className="text-xs text-muted-foreground">{formatDate(order.collection_date)}</p>
-                </div>
-              </div>
-              <Badge variant={order.status} pulse={order.status !== 'delivered'}>
-                {order.status}
-              </Badge>
+            {/* Status Icon */}
+            <div className={cn(
+              'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
+              order.status === 'pickup' && 'bg-amber-500/20 text-amber-400',
+              order.status === 'warehouse' && 'bg-blue-500/20 text-blue-400',
+              order.status === 'delivered' && 'bg-emerald-500/20 text-emerald-400',
+            )}>
+              {getStatusIcon(order.status)}
             </div>
             
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <p className="text-muted-foreground text-xs">Pickup</p>
-                <p className="font-medium truncate">{order.pickup_address.city}</p>
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-sm">{order.internal_ref}</span>
+                <span className="text-xs text-muted-foreground">· {order.pickup_address.city}</span>
               </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Receiver</p>
-                <p className="font-medium truncate">{order.receiver_name}</p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>{order.receiver_name}</span>
+                <span>· {order.total_weight_kg}kg</span>
               </div>
             </div>
             
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
-              <div className="flex items-center gap-4 text-sm">
-                <span className="text-muted-foreground">{order.total_weight_kg} kg</span>
-                <span className="text-muted-foreground">{order.order_packages?.length || 0} pkg</span>
-              </div>
-              <span className="font-semibold text-blue-400">{formatCurrency(order.total_price)}</span>
+            {/* Price */}
+            <div className="text-right flex-shrink-0">
+              <p className="font-semibold text-sm text-blue-400">{formatCurrency(order.total_price)}</p>
+              <p className="text-xs text-muted-foreground">{order.order_packages?.length || 0} pkg</p>
             </div>
+            
+            {/* Chevron */}
+            <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
           </motion.div>
         ))}
         
         {filteredOrders.length === 0 && (
           <div className="text-center py-12">
-            <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-            <p className="text-muted-foreground">No orders found</p>
+            <Package className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+            <p className="text-sm text-muted-foreground">No orders found</p>
           </div>
         )}
       </div>

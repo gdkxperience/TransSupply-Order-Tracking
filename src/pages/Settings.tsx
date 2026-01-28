@@ -87,17 +87,17 @@ export function Settings() {
     <Layout>
       {/* Header */}
       <motion.div
-        className="mb-6"
+        className="mb-4 md:mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-xl md:text-2xl font-bold">Settings</h1>
+        <p className="text-muted-foreground text-sm hidden md:block">
           Manage your account and preferences
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Main Settings */}
         <div className="lg:col-span-2 space-y-6">
           {/* Profile Settings */}
@@ -141,7 +141,7 @@ export function Settings() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                   <Input
                     label="Full Name"
                     value={settings.name}

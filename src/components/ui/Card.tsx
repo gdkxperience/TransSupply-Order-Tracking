@@ -11,10 +11,10 @@ interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onDrag' | 'onD
 const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'glass', hover = false, glow = false, children, ...props }, ref) => {
     const variants = {
-      glass: 'bg-white/5 border border-white/10',
+      glass: 'bg-white/3 border border-white/8',
       solid: 'bg-card border border-border',
-      outline: 'border border-white/10 bg-transparent',
-      gradient: 'bg-indigo-500/10 border border-indigo-500/20',
+      outline: 'border border-white/8 bg-transparent',
+      gradient: 'bg-blue-500/10 border border-blue-500/20',
     }
 
     return (
@@ -24,7 +24,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           'rounded-2xl p-6 shadow-xl',
           variants[variant],
           hover && 'transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl cursor-pointer',
-          glow && 'shadow-lg shadow-indigo-500/10',
+          glow && 'shadow-lg shadow-blue-500/10',
           className
         )}
         whileHover={hover ? { y: -4 } : undefined}

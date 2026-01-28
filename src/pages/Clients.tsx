@@ -81,33 +81,28 @@ export function Clients() {
         transition={{ delay: 0.1 }}
       >
         {[
-          { label: 'Total Clients', value: clients.length, icon: Users, color: 'from-indigo-500 to-purple-600' },
-          { label: 'Active This Month', value: clients.length, icon: UserPlus, color: 'from-emerald-500 to-green-600' },
-          { label: 'Total Orders', value: orders.length, icon: Package, color: 'from-blue-500 to-cyan-600' },
-          { label: 'Avg. Orders/Client', value: (orders.length / Math.max(clients.length, 1)).toFixed(1), icon: Building2, color: 'from-amber-500 to-orange-600' },
+          { label: 'Total Clients', value: clients.length, icon: Users, accent: true },
+          { label: 'Active This Month', value: clients.length, icon: UserPlus, accent: false },
+          { label: 'Total Orders', value: orders.length, icon: Package, accent: false },
+          { label: 'Avg. Orders/Client', value: (orders.length / Math.max(clients.length, 1)).toFixed(1), icon: Building2, accent: false },
         ].map((stat, index) => (
           <motion.div
             key={stat.label}
-            className="relative overflow-hidden rounded-xl backdrop-blur-xl bg-white/5 border border-white/10 p-4 group"
+            className="relative overflow-hidden rounded-xl bg-white/3 border border-white/8 p-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + index * 0.05 }}
           >
-            <div className={cn(
-              'absolute top-0 right-0 w-20 h-20 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity',
-              stat.color
-            )} />
-            
             <div className="flex items-center gap-3">
               <div className={cn(
                 'w-10 h-10 rounded-lg flex items-center justify-center',
-                stat.color
+                stat.accent ? 'bg-blue-500' : 'bg-neutral-700'
               )}>
                 <stat.icon className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <p className="text-xs text-neutral-400">{stat.label}</p>
               </div>
             </div>
           </motion.div>
@@ -126,7 +121,7 @@ export function Clients() {
           <input
             type="text"
             placeholder="Search clients..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-indigo-500/50 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/8 text-sm focus:outline-none focus:border-blue-500/50 transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -156,12 +151,12 @@ export function Clients() {
                     className="relative flex-shrink-0"
                     whileHover={{ scale: 1.1 }}
                   >
-                    <div className="w-14 h-14 rounded-xl bg-indigo-500 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-xl bg-neutral-700 flex items-center justify-center">
                       <span className="text-xl font-bold text-white">
                         {client.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
-                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-card rounded-full" />
+                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 border-2 border-card rounded-full" />
                   </motion.div>
 
                   {/* Info */}

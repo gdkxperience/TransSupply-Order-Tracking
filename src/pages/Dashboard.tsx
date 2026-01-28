@@ -30,7 +30,7 @@ export function Dashboard() {
       <Layout>
         <div className="flex items-center justify-center h-96">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-muted-foreground">Loading dashboard...</p>
           </div>
         </div>
@@ -47,7 +47,7 @@ export function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-3xl font-bold">
-          Welcome back, <span className="text-indigo-400">{user?.name.split(' ')[0]}</span>
+          Welcome back, <span className="text-blue-400">{user?.name.split(' ')[0]}</span>
         </h1>
         <p className="text-muted-foreground mt-1">
           Here's what's happening with your logistics today.
@@ -60,7 +60,7 @@ export function Dashboard() {
           title="Total Orders"
           value={stats.totalOrders}
           icon={Package}
-          color="bg-indigo-500"
+          accent
           change="+12% from last month"
           changeType="increase"
           delay={0}
@@ -69,35 +69,31 @@ export function Dashboard() {
           title="Pending Pickups"
           value={stats.pendingPickups}
           icon={Truck}
-          color="bg-amber-500"
           delay={0.05}
         />
         <StatsCard
           title="In Warehouse"
           value={stats.inWarehouse}
           icon={Warehouse}
-          color="bg-blue-500"
           delay={0.1}
         />
         <StatsCard
           title="Delivered"
           value={stats.delivered}
           icon={CheckCircle2}
-          color="bg-emerald-500"
           delay={0.15}
         />
         <StatsCard
           title="Total Weight"
           value={`${stats.totalWeight.toLocaleString()} kg`}
           icon={Weight}
-          color="bg-violet-500"
           delay={0.2}
         />
         <StatsCard
           title="Revenue"
           value={formatCurrency(stats.totalRevenue)}
           icon={Euro}
-          color="bg-rose-500"
+          accent
           change="+8% growth"
           changeType="increase"
           delay={0.25}
@@ -120,7 +116,7 @@ export function Dashboard() {
                 <p className="text-sm text-muted-foreground">Track your latest shipments</p>
               </div>
               <motion.button
-                className="flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
                 onClick={() => navigate('/orders')}
                 whileHover={{ x: 4 }}
               >
@@ -142,9 +138,7 @@ export function Dashboard() {
                 >
                   <div className="flex-shrink-0">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      order.status === 'pickup' ? 'bg-amber-500' :
-                      order.status === 'warehouse' ? 'bg-blue-500' :
-                      'bg-emerald-500'
+                      order.status === 'warehouse' ? 'bg-blue-500' : 'bg-neutral-700'
                     }`}>
                       {order.status === 'pickup' && <Truck className="h-5 w-5 text-white" />}
                       {order.status === 'warehouse' && <Warehouse className="h-5 w-5 text-white" />}
@@ -202,9 +196,9 @@ export function Dashboard() {
               {/* Status bars */}
               <div className="space-y-4">
                 {[
-                  { label: 'Pending Pickup', value: stats.pendingPickups, total: stats.totalOrders, color: 'bg-amber-500' },
+                  { label: 'Pending Pickup', value: stats.pendingPickups, total: stats.totalOrders, color: 'bg-neutral-500' },
                   { label: 'In Warehouse', value: stats.inWarehouse, total: stats.totalOrders, color: 'bg-blue-500' },
-                  { label: 'Delivered', value: stats.delivered, total: stats.totalOrders, color: 'bg-emerald-500' },
+                  { label: 'Delivered', value: stats.delivered, total: stats.totalOrders, color: 'bg-neutral-600' },
                 ].map((item, index) => (
                   <motion.div
                     key={item.label}
@@ -230,18 +224,18 @@ export function Dashboard() {
 
               {/* Quick action */}
               <motion.div
-                className="mt-8 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20"
+                className="mt-8 p-4 rounded-xl bg-white/5 border border-white/8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-emerald-500">
+                  <div className="p-2 rounded-lg bg-blue-500">
                     <TrendingUp className="h-5 w-5 text-white" />
                   </div>
                   <div>
                     <p className="text-sm font-medium">Great progress!</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-neutral-400">
                       {stats.delivered} orders delivered this quarter
                     </p>
                   </div>

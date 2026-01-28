@@ -10,13 +10,13 @@ interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'onDrag' | 'o
 const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = 'default', pulse = false, children, ...props }, ref) => {
     const variants = {
-      default: 'bg-white/10 text-white border-white/20',
-      pickup: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-      warehouse: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      delivered: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-      success: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-      warning: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-      danger: 'bg-red-500/20 text-red-400 border-red-500/30',
+      default: 'bg-white/8 text-neutral-300 border-white/10',
+      pickup: 'bg-white/8 text-neutral-300 border-white/10',
+      warehouse: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
+      delivered: 'bg-white/8 text-neutral-400 border-white/10',
+      success: 'bg-white/8 text-neutral-400 border-white/10',
+      warning: 'bg-white/8 text-neutral-300 border-white/10',
+      danger: 'bg-white/8 text-neutral-400 border-white/10',
     }
 
     return (
@@ -35,15 +35,11 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
           <span className="relative flex h-2 w-2">
             <span className={cn(
               'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
-              variant === 'pickup' && 'bg-amber-400',
-              variant === 'warehouse' && 'bg-blue-400',
-              variant === 'delivered' && 'bg-emerald-400',
+              variant === 'warehouse' ? 'bg-blue-400' : 'bg-neutral-400',
             )} />
             <span className={cn(
               'relative inline-flex rounded-full h-2 w-2',
-              variant === 'pickup' && 'bg-amber-400',
-              variant === 'warehouse' && 'bg-blue-400',
-              variant === 'delivered' && 'bg-emerald-400',
+              variant === 'warehouse' ? 'bg-blue-400' : 'bg-neutral-400',
             )} />
           </span>
         )}

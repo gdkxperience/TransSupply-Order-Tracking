@@ -12,11 +12,11 @@ interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onD
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, type = 'button', ...props }, ref) => {
     const variants = {
-      primary: 'bg-indigo-500 text-white hover:bg-indigo-600',
-      secondary: 'bg-white/10 text-white border border-white/20 hover:bg-white/20',
-      ghost: 'text-muted-foreground hover:text-foreground hover:bg-white/5',
-      danger: 'bg-red-500 text-white hover:bg-red-600',
-      success: 'bg-emerald-500 text-white hover:bg-emerald-600',
+      primary: 'bg-blue-500 text-white hover:bg-blue-600',
+      secondary: 'bg-white/8 text-white border border-white/10 hover:bg-white/12',
+      ghost: 'text-neutral-400 hover:text-white hover:bg-white/5',
+      danger: 'bg-neutral-700 text-white hover:bg-neutral-600',
+      success: 'bg-neutral-700 text-white hover:bg-neutral-600',
     }
 
     const sizes = {

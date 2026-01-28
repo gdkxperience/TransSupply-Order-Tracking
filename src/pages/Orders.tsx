@@ -196,7 +196,7 @@ export function Orders() {
       <Layout>
         <div className="flex items-center justify-center h-96">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-muted-foreground">Loading orders...</p>
           </div>
         </div>
@@ -243,7 +243,7 @@ export function Orders() {
             <input
               type="text"
               placeholder="Search by reference, receiver, or location..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-indigo-500/50 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/8 text-sm focus:outline-none focus:border-blue-500/50 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -257,8 +257,8 @@ export function Orders() {
               className={cn(
                 'px-4 py-2 rounded-xl text-sm font-medium transition-all',
                 statusFilter === status
-                  ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                  : 'bg-white/5 text-muted-foreground border border-white/10 hover:bg-white/10'
+                  ? 'bg-blue-500/15 text-blue-400 border border-blue-500/25'
+                  : 'bg-white/5 text-neutral-400 border border-white/8 hover:bg-white/8'
               )}
               onClick={() => setStatusFilter(status)}
               whileHover={{ scale: 1.02 }}
@@ -354,9 +354,7 @@ export function Orders() {
                             <div className="flex items-center gap-2">
                               <div className={cn(
                                 'w-8 h-8 rounded-lg flex items-center justify-center',
-                                order.status === 'pickup' && 'bg-amber-500/20',
-                                order.status === 'warehouse' && 'bg-blue-500/20',
-                                order.status === 'delivered' && 'bg-emerald-500/20',
+                                order.status === 'warehouse' ? 'bg-blue-500/20' : 'bg-white/8',
                               )}>
                                 {getStatusIcon(order.status)}
                               </div>
@@ -438,7 +436,7 @@ export function Orders() {
                                   className="py-4 pl-12"
                                 >
                                   <div className="flex items-center gap-2 mb-3">
-                                    <Box className="h-4 w-4 text-indigo-400" />
+                                    <Box className="h-4 w-4 text-blue-400" />
                                     <span className="text-sm font-medium">Order Boxes</span>
                                   </div>
                                   <div className="grid gap-2">
@@ -451,7 +449,7 @@ export function Orders() {
                                         className="flex items-center gap-6 py-2 px-4 rounded-lg bg-white/5 border border-white/10"
                                       >
                                         <div className="flex items-center gap-2">
-                                          <div className="w-6 h-6 rounded bg-indigo-500/20 flex items-center justify-center text-xs font-medium text-indigo-400">
+                                          <div className="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">
                                             {boxIndex + 1}
                                           </div>
                                           <span className="font-mono text-sm">{box.client_ref}</span>

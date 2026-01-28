@@ -57,7 +57,7 @@ export function Sidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <div className="flex items-center justify-center w-10 h-10 bg-indigo-500 rounded-lg">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-500 rounded-lg">
                 <Truck className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -86,10 +86,10 @@ export function Sidebar() {
               <motion.div
                 className={cn(
                   'relative flex items-center gap-3 px-4 py-3 rounded-xl',
-                  'transition-all duration-300',
+                  'transition-all duration-200',
                   isActive
-                    ? 'bg-indigo-500/15 text-white'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                    ? 'bg-white/8 text-white'
+                    : 'text-neutral-400 hover:text-white hover:bg-white/5'
                 )}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -98,11 +98,11 @@ export function Sidebar() {
               >
                 {isActive && (
                   <motion.div
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-500 rounded-full"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-full"
                     layoutId="activeIndicator"
                   />
                 )}
-                <item.icon className={cn('h-5 w-5 flex-shrink-0', isActive && 'text-indigo-400')} />
+                <item.icon className={cn('h-5 w-5 flex-shrink-0', isActive && 'text-blue-400')} />
                 <AnimatePresence>
                   {!isCollapsed && (
                     <motion.span
@@ -132,12 +132,12 @@ export function Sidebar() {
               exit={{ opacity: 0 }}
             >
               <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center">
                   <span className="text-sm font-bold text-white">
                     {user?.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-card rounded-full" />
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 border-2 border-card rounded-full" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{user?.name}</p>
@@ -174,7 +174,7 @@ export function Sidebar() {
 
       {/* Collapse button */}
       <motion.button
-        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-card border border-white/10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-indigo-500/50 transition-colors"
+        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-card border border-white/10 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:border-blue-500/50 transition-colors"
         onClick={() => setIsCollapsed(!isCollapsed)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}

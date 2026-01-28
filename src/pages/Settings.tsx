@@ -59,8 +59,8 @@ export function Settings() {
           >
             <Card variant="glass">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-                  <User className="h-5 w-5 text-indigo-400" />
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <User className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
                   <h2 className="font-semibold">Profile Information</h2>
@@ -74,7 +74,7 @@ export function Settings() {
                     className="relative"
                     whileHover={{ scale: 1.05 }}
                   >
-                    <div className="w-20 h-20 rounded-2xl bg-indigo-500 flex items-center justify-center">
+                    <div className="w-20 h-20 rounded-2xl bg-neutral-700 flex items-center justify-center">
                       <span className="text-2xl font-bold text-white">
                         {user?.name.charAt(0).toUpperCase()}
                       </span>
@@ -119,8 +119,8 @@ export function Settings() {
           >
             <Card variant="glass">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                  <Shield className="h-5 w-5 text-emerald-400" />
+                <div className="w-10 h-10 rounded-xl bg-white/8 flex items-center justify-center">
+                  <Shield className="h-5 w-5 text-neutral-400" />
                 </div>
                 <div>
                   <h2 className="font-semibold">Security</h2>
@@ -164,8 +164,8 @@ export function Settings() {
           >
             <Card variant="glass">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                  <Bell className="h-5 w-5 text-amber-400" />
+                <div className="w-10 h-10 rounded-xl bg-white/8 flex items-center justify-center">
+                  <Bell className="h-5 w-5 text-neutral-400" />
                 </div>
                 <div>
                   <h2 className="font-semibold">Notifications</h2>
@@ -190,7 +190,7 @@ export function Settings() {
                     <motion.button
                       className={`w-12 h-7 rounded-full transition-colors ${
                         settings[item.key as keyof typeof settings]
-                          ? 'bg-indigo-500'
+                          ? 'bg-blue-500'
                           : 'bg-white/20'
                       }`}
                       onClick={() => setSettings(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof settings] }))}
@@ -221,8 +221,8 @@ export function Settings() {
           >
             <Card variant="glass">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                  <Palette className="h-5 w-5 text-purple-400" />
+                <div className="w-10 h-10 rounded-xl bg-white/8 flex items-center justify-center">
+                  <Palette className="h-5 w-5 text-neutral-400" />
                 </div>
                 <div>
                   <h2 className="font-semibold">Preferences</h2>

@@ -89,8 +89,8 @@ export function Locations() {
         >
           <Card variant="glass" className="h-80">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                <Warehouse className="h-6 w-6 text-emerald-400" />
+              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <Warehouse className="h-6 w-6 text-blue-400" />
               </div>
               <div>
                 <h3 className="font-semibold">Main Warehouse</h3>
@@ -140,7 +140,7 @@ export function Locations() {
           <input
             type="text"
             placeholder="Search locations..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-indigo-500/50 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/8 text-sm focus:outline-none focus:border-blue-500/50 transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -166,10 +166,10 @@ export function Locations() {
               <Card variant="glass" hover>
                 <div className="flex items-start justify-between mb-4">
                   <motion.div
-                    className="w-12 h-12 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center"
+                    className="w-12 h-12 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center"
                     whileHover={{ scale: 1.1, rotate: 5 }}
                   >
-                    <MapPin className="h-6 w-6 text-indigo-400" />
+                    <MapPin className="h-6 w-6 text-neutral-400" />
                   </motion.div>
                   
                   <div className="flex gap-1">

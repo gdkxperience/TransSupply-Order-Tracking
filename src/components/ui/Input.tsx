@@ -34,7 +34,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <AnimatePresence>
             {isFocused && (
               <motion.div
-                className="absolute -inset-[2px] bg-gradient-to-r from-indigo-500/50 to-purple-500/50 rounded-xl blur-sm"
+                className="absolute -inset-[2px] bg-blue-500/30 rounded-xl blur-sm"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -53,9 +53,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               type={inputType}
               className={cn(
                 'w-full px-4 py-3 rounded-xl',
-                'bg-white/5 border border-white/10',
-                'text-foreground placeholder:text-muted-foreground',
-                'focus:outline-none focus:border-indigo-500/50',
+                'bg-white/5 border border-white/8',
+                'text-foreground placeholder:text-neutral-500',
+                'focus:outline-none focus:border-blue-500/50',
                 'transition-all duration-300',
                 icon && 'pl-11',
                 isPassword && 'pr-11',

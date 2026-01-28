@@ -54,8 +54,7 @@ export function Dashboard() {
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="w-full max-w-[1200px] mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-5 mb-6 md:mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-5 mb-6 md:mb-8">
         <StatsCard
           title="Total Orders"
           value={stats.totalOrders}
@@ -102,12 +101,10 @@ export function Dashboard() {
           changeType="increase"
           delay={0.25}
         />
-        </div>
       </div>
 
       {/* Main content grid */}
-      <div className="w-full max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Recent Orders */}
         <motion.div
           className="lg:col-span-2"
@@ -247,7 +244,6 @@ export function Dashboard() {
             </div>
           </Card>
         </motion.div>
-        </div>
       </div>
     </Layout>
   )

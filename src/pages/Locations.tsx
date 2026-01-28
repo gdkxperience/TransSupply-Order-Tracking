@@ -14,7 +14,29 @@ import {
   Warehouse,
   Save,
   ExternalLink,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react'
+
+// Geocoding function using Google Maps API
+async function geocodeAddress(address: string, apiKey: string): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
+    )
+    const data = await response.json()
+    
+    if (data.status === 'OK' && data.results.length > 0) {
+      const { lat, lng } = data.results[0].geometry.location
+      return { lat, lng }
+    }
+    return null
+  } catch (error) {
+    console.error('Geocoding error:', error)
+    return null
+  }
+}
 
 export function Locations() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -23,9 +45,12 @@ export function Locations() {
   const [isEditWarehouseOpen, setIsEditWarehouseOpen] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
+    address: '',
     lat: '',
     lng: '',
   })
+  const [isLookingUp, setIsLookingUp] = useState(false)
+  const [lookupStatus, setLookupStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
   // Editable warehouse state
   const [warehouse, setWarehouse] = useState({
@@ -39,20 +64,81 @@ export function Locations() {
     lat: WAREHOUSE_COORDS.lat.toString(),
     lng: WAREHOUSE_COORDS.lng.toString(),
   })
+  const [warehouseLookingUp, setWarehouseLookingUp] = useState(false)
+  const [warehouseLookupStatus, setWarehouseLookupStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  // Get Google Maps API key from env
+  const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
   const filteredLocations = locations.filter(location =>
     location.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  // Lookup address for new location
+  const handleAddressLookup = async () => {
+    if (!formData.address || !mapsApiKey || mapsApiKey === 'your-google-maps-api-key') {
+      setLookupStatus('error')
+      return
+    }
+    
+    setIsLookingUp(true)
+    setLookupStatus('idle')
+    
+    const coords = await geocodeAddress(formData.address, mapsApiKey)
+    
+    if (coords) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || formData.address,
+        lat: coords.lat.toString(),
+        lng: coords.lng.toString(),
+      }))
+      setLookupStatus('success')
+    } else {
+      setLookupStatus('error')
+    }
+    
+    setIsLookingUp(false)
+  }
+
+  // Lookup address for warehouse
+  const handleWarehouseAddressLookup = async () => {
+    if (!warehouseForm.address || !mapsApiKey || mapsApiKey === 'your-google-maps-api-key') {
+      setWarehouseLookupStatus('error')
+      return
+    }
+    
+    setWarehouseLookingUp(true)
+    setWarehouseLookupStatus('idle')
+    
+    const coords = await geocodeAddress(warehouseForm.address, mapsApiKey)
+    
+    if (coords) {
+      setWarehouseForm(prev => ({
+        ...prev,
+        lat: coords.lat.toString(),
+        lng: coords.lng.toString(),
+      }))
+      setWarehouseLookupStatus('success')
+    } else {
+      setWarehouseLookupStatus('error')
+    }
+    
+    setWarehouseLookingUp(false)
+  }
+
   const handleCreateLocation = () => {
+    if (!formData.lat || !formData.lng) return
+    
     const newLocation = {
       id: `loc-${Date.now()}`,
-      name: formData.name,
+      name: formData.name || formData.address,
       coords: { lat: parseFloat(formData.lat), lng: parseFloat(formData.lng) },
     }
     setLocations(prev => [...prev, newLocation])
     setIsCreateModalOpen(false)
-    setFormData({ name: '', lat: '', lng: '' })
+    setFormData({ name: '', address: '', lat: '', lng: '' })
+    setLookupStatus('idle')
   }
 
   const handleSaveWarehouse = () => {
@@ -62,6 +148,7 @@ export function Locations() {
       lng: parseFloat(warehouseForm.lng),
     })
     setIsEditWarehouseOpen(false)
+    setWarehouseLookupStatus('idle')
   }
 
   const openEditWarehouse = () => {
@@ -70,11 +157,9 @@ export function Locations() {
       lat: warehouse.lat.toString(),
       lng: warehouse.lng.toString(),
     })
+    setWarehouseLookupStatus('idle')
     setIsEditWarehouseOpen(true)
   }
-
-  // Get Google Maps API key from env
-  const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
   // Build Google Maps embed URL with all locations
   const mapEmbedUrl = useMemo(() => {
@@ -327,40 +412,106 @@ export function Locations() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         title="Add Pickup Location"
-        description="Add a new frequent pickup location"
+        description="Enter an address and we'll find the coordinates automatically"
         size="md"
       >
         <form onSubmit={(e) => { e.preventDefault(); handleCreateLocation(); }} className="space-y-4">
+          {/* Address Input with Lookup */}
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Address
+            </label>
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="e.g., Vienna, Austria or full street address"
+                  value={formData.address}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, address: e.target.value }))
+                    setLookupStatus('idle')
+                  }}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-foreground focus:outline-none focus:border-blue-500/50 transition-all"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleAddressLookup}
+                disabled={isLookingUp || !formData.address}
+              >
+                {isLookingUp ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+                {isLookingUp ? 'Looking up...' : 'Find'}
+              </Button>
+            </div>
+            
+            {/* Lookup Status */}
+            {lookupStatus === 'success' && (
+              <motion.p 
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-emerald-400 flex items-center gap-1"
+              >
+                <CheckCircle className="h-3.5 w-3.5" />
+                Location found! Coordinates filled in below.
+              </motion.p>
+            )}
+            {lookupStatus === 'error' && (
+              <motion.p 
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-400 flex items-center gap-1"
+              >
+                <AlertCircle className="h-3.5 w-3.5" />
+                Could not find location. Try a more specific address or enter coordinates manually.
+              </motion.p>
+            )}
+          </div>
+
           <Input
-            label="Location Name"
-            placeholder="e.g., Vienna, Austria"
+            label="Display Name (optional)"
+            placeholder="e.g., Vienna Office"
             value={formData.name}
             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-            icon={<MapPin className="h-4 w-4" />}
           />
           
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Latitude"
-              type="number"
-              step="any"
-              placeholder="e.g., 48.2082"
-              value={formData.lat}
-              onChange={(e) => setFormData(prev => ({ ...prev, lat: e.target.value }))}
-            />
-            <Input
-              label="Longitude"
-              type="number"
-              step="any"
-              placeholder="e.g., 16.3738"
-              value={formData.lng}
-              onChange={(e) => setFormData(prev => ({ ...prev, lng: e.target.value }))}
-            />
+          {/* Coordinates (auto-filled or manual) */}
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">
+              Coordinates (auto-filled from address lookup, or enter manually)
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Latitude"
+                type="number"
+                step="any"
+                placeholder="e.g., 48.2082"
+                value={formData.lat}
+                onChange={(e) => setFormData(prev => ({ ...prev, lat: e.target.value }))}
+              />
+              <Input
+                label="Longitude"
+                type="number"
+                step="any"
+                placeholder="e.g., 16.3738"
+                value={formData.lng}
+                onChange={(e) => setFormData(prev => ({ ...prev, lng: e.target.value }))}
+              />
+            </div>
           </div>
 
           {/* Map Preview */}
           {formData.lat && formData.lng && (
-            <div className="rounded-xl overflow-hidden border border-white/10">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl overflow-hidden border border-white/10"
+            >
               <iframe
                 src={`https://maps.google.com/maps?q=${formData.lat},${formData.lng}&t=&z=10&ie=UTF8&iwloc=&output=embed`}
                 width="100%"
@@ -369,14 +520,14 @@ export function Locations() {
                 loading="lazy"
                 title="Location Preview"
               />
-            </div>
+            </motion.div>
           )}
 
           <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
             <Button type="button" variant="ghost" onClick={() => setIsCreateModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" disabled={!formData.lat || !formData.lng}>
               Add Location
             </Button>
           </div>
@@ -388,40 +539,99 @@ export function Locations() {
         isOpen={isEditWarehouseOpen}
         onClose={() => setIsEditWarehouseOpen(false)}
         title="Edit Main Warehouse"
-        description="Update the primary destination location"
+        description="Enter an address to update the primary destination location"
         size="md"
       >
         <form onSubmit={(e) => { e.preventDefault(); handleSaveWarehouse(); }} className="space-y-4">
-          <Input
-            label="Address"
-            placeholder="e.g., Baku Logistics Hub, Azerbaijan"
-            value={warehouseForm.address}
-            onChange={(e) => setWarehouseForm(prev => ({ ...prev, address: e.target.value }))}
-            icon={<MapPin className="h-4 w-4" />}
-          />
+          {/* Address Input with Lookup */}
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Address
+            </label>
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="e.g., Baku Logistics Hub, Azerbaijan"
+                  value={warehouseForm.address}
+                  onChange={(e) => {
+                    setWarehouseForm(prev => ({ ...prev, address: e.target.value }))
+                    setWarehouseLookupStatus('idle')
+                  }}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-foreground focus:outline-none focus:border-blue-500/50 transition-all"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleWarehouseAddressLookup}
+                disabled={warehouseLookingUp || !warehouseForm.address}
+              >
+                {warehouseLookingUp ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+                {warehouseLookingUp ? 'Looking up...' : 'Find'}
+              </Button>
+            </div>
+            
+            {/* Lookup Status */}
+            {warehouseLookupStatus === 'success' && (
+              <motion.p 
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-emerald-400 flex items-center gap-1"
+              >
+                <CheckCircle className="h-3.5 w-3.5" />
+                Location found! Coordinates updated.
+              </motion.p>
+            )}
+            {warehouseLookupStatus === 'error' && (
+              <motion.p 
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-sm text-red-400 flex items-center gap-1"
+              >
+                <AlertCircle className="h-3.5 w-3.5" />
+                Could not find location. Try a more specific address or enter coordinates manually.
+              </motion.p>
+            )}
+          </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Latitude"
-              type="number"
-              step="any"
-              placeholder="e.g., 40.4093"
-              value={warehouseForm.lat}
-              onChange={(e) => setWarehouseForm(prev => ({ ...prev, lat: e.target.value }))}
-            />
-            <Input
-              label="Longitude"
-              type="number"
-              step="any"
-              placeholder="e.g., 49.8671"
-              value={warehouseForm.lng}
-              onChange={(e) => setWarehouseForm(prev => ({ ...prev, lng: e.target.value }))}
-            />
+          {/* Coordinates (auto-filled or manual) */}
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">
+              Coordinates (auto-filled from address lookup, or enter manually)
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Latitude"
+                type="number"
+                step="any"
+                placeholder="e.g., 40.4093"
+                value={warehouseForm.lat}
+                onChange={(e) => setWarehouseForm(prev => ({ ...prev, lat: e.target.value }))}
+              />
+              <Input
+                label="Longitude"
+                type="number"
+                step="any"
+                placeholder="e.g., 49.8671"
+                value={warehouseForm.lng}
+                onChange={(e) => setWarehouseForm(prev => ({ ...prev, lng: e.target.value }))}
+              />
+            </div>
           </div>
 
           {/* Map Preview */}
           {warehouseForm.lat && warehouseForm.lng && (
-            <div className="rounded-xl overflow-hidden border border-white/10">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl overflow-hidden border border-white/10"
+            >
               <iframe
                 src={`https://maps.google.com/maps?q=${warehouseForm.lat},${warehouseForm.lng}&t=&z=12&ie=UTF8&iwloc=&output=embed`}
                 width="100%"
@@ -430,14 +640,14 @@ export function Locations() {
                 loading="lazy"
                 title="Warehouse Preview"
               />
-            </div>
+            </motion.div>
           )}
 
           <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
             <Button type="button" variant="ghost" onClick={() => setIsEditWarehouseOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" disabled={!warehouseForm.lat || !warehouseForm.lng}>
               <Save className="h-4 w-4" />
               Save Changes
             </Button>

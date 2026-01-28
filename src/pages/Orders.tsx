@@ -37,7 +37,6 @@ import {
   User,
   Phone,
   Euro,
-  Box,
   ChevronDown,
   ChevronRight,
   Hash,
@@ -88,7 +87,7 @@ export function Orders() {
     receiver_phone: '',
     total_price: '',
     status: 'pickup' as OrderStatus,
-    boxes: [{ client_ref: '', weight_kg: '', dimensions: '', packages: 1 }],
+    packages: [{ client_ref: '', weight_kg: '', dimensions: '', colli: 1 }],
   })
 
   const filteredOrders = orders.filter(order => {
@@ -102,19 +101,19 @@ export function Orders() {
     return matchesSearch && matchesStatus
   })
 
-  const ordersWithBoxes = filteredOrders.filter(o => o.order_boxes && o.order_boxes.length > 0)
-  const allExpanded = ordersWithBoxes.length > 0 && ordersWithBoxes.every(o => expandedOrders.has(o.id))
+  const ordersWithPackages = filteredOrders.filter(o => o.order_packages && o.order_packages.length > 0)
+  const allExpanded = ordersWithPackages.length > 0 && ordersWithPackages.every(o => expandedOrders.has(o.id))
 
   const toggleExpandAll = () => {
     if (allExpanded) {
       setExpandedOrders(new Set())
     } else {
-      setExpandedOrders(new Set(ordersWithBoxes.map(o => o.id)))
+      setExpandedOrders(new Set(ordersWithPackages.map(o => o.id)))
     }
   }
 
   const handleCreateOrder = async () => {
-    const totalWeight = formData.boxes.reduce((sum, box) => sum + Number(box.weight_kg), 0)
+    const totalWeight = formData.packages.reduce((sum, pkg) => sum + Number(pkg.weight_kg), 0)
     
     await createOrder({
       internal_ref: formData.internal_ref,
@@ -132,13 +131,13 @@ export function Orders() {
       total_weight_kg: totalWeight,
       total_price: Number(formData.total_price),
       photos: [],
-      order_boxes: formData.boxes.map((box, i) => ({
-        id: `new-box-${i}`,
+      order_packages: formData.packages.map((pkg, i) => ({
+        id: `new-pkg-${i}`,
         order_id: '',
-        client_ref: box.client_ref,
-        weight_kg: Number(box.weight_kg),
-        dimensions: box.dimensions,
-        packages: box.packages,
+        client_ref: pkg.client_ref,
+        weight_kg: Number(pkg.weight_kg),
+        dimensions: pkg.dimensions,
+        colli: pkg.colli,
       })),
     })
 
@@ -158,28 +157,28 @@ export function Orders() {
       receiver_phone: '',
       total_price: '',
       status: 'pickup',
-      boxes: [{ client_ref: '', weight_kg: '', dimensions: '', packages: 1 }],
+      packages: [{ client_ref: '', weight_kg: '', dimensions: '', colli: 1 }],
     })
   }
 
-  const addBox = () => {
+  const addPackage = () => {
     setFormData(prev => ({
       ...prev,
-      boxes: [...prev.boxes, { client_ref: '', weight_kg: '', dimensions: '', packages: 1 }],
+      packages: [...prev.packages, { client_ref: '', weight_kg: '', dimensions: '', colli: 1 }],
     }))
   }
 
-  const removeBox = (index: number) => {
+  const removePackage = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      boxes: prev.boxes.filter((_, i) => i !== index),
+      packages: prev.packages.filter((_, i) => i !== index),
     }))
   }
 
-  const updateBox = (index: number, field: string, value: string | number) => {
+  const updatePackage = (index: number, field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
-      boxes: prev.boxes.map((box, i) => i === index ? { ...box, [field]: value } : box),
+      packages: prev.packages.map((pkg, i) => i === index ? { ...pkg, [field]: value } : pkg),
     }))
   }
 
@@ -272,7 +271,7 @@ export function Orders() {
         <Button 
           variant="ghost" 
           onClick={toggleExpandAll}
-          disabled={ordersWithBoxes.length === 0}
+          disabled={ordersWithPackages.length === 0}
         >
           {allExpanded ? (
             <>
@@ -319,7 +318,7 @@ export function Orders() {
                 <AnimatePresence>
                   {filteredOrders.map((order, index) => {
                     const isExpanded = expandedOrders.has(order.id)
-                    const hasBoxes = order.order_boxes && order.order_boxes.length > 0
+                    const hasPackages = order.order_packages && order.order_packages.length > 0
                     
                     return (
                       <>
@@ -332,7 +331,7 @@ export function Orders() {
                           transition={{ delay: index * 0.03 }}
                         >
                           <TableCell className="w-10">
-                            {hasBoxes && (
+                            {hasPackages && (
                               <motion.button
                                 className="p-1 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
                                 onClick={(e) => {
@@ -362,9 +361,9 @@ export function Orders() {
                               </div>
                               <div>
                                 <span className="font-medium">{order.internal_ref}</span>
-                                {hasBoxes && (
+                                {hasPackages && (
                                   <span className="text-xs text-muted-foreground ml-2">
-                                    ({order.order_boxes?.length} boxes)
+                                    ({order.order_packages?.length} packages)
                                   </span>
                                 )}
                               </div>
@@ -422,7 +421,7 @@ export function Orders() {
                         
                         {/* Expanded boxes row */}
                         <AnimatePresence>
-                          {isExpanded && hasBoxes && (
+                          {isExpanded && hasPackages && (
                             <motion.tr
                               key={`${order.id}-boxes`}
                               initial={{ opacity: 0, height: 0 }}
@@ -438,32 +437,32 @@ export function Orders() {
                                   className="py-4 pl-12"
                                 >
                                   <div className="flex items-center gap-2 mb-3">
-                                    <Box className="h-4 w-4 text-blue-400" />
-                                    <span className="text-sm font-medium">Order Boxes</span>
+                                    <Package className="h-4 w-4 text-blue-400" />
+                                    <span className="text-sm font-medium">Order Packages</span>
                                   </div>
                                   <div className="grid gap-2">
-                                    {order.order_boxes?.map((box, boxIndex) => (
+                                    {order.order_packages?.map((pkg, pkgIndex) => (
                                       <motion.div
-                                        key={box.id}
+                                        key={pkg.id}
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: boxIndex * 0.05 }}
+                                        transition={{ delay: pkgIndex * 0.05 }}
                                         className="flex items-center gap-6 py-2 px-4 rounded-lg bg-white/5 border border-white/10"
                                       >
                                         <div className="flex items-center gap-2">
                                           <div className="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">
-                                            {boxIndex + 1}
+                                            {pkgIndex + 1}
                                           </div>
-                                          <span className="font-mono text-sm">{box.client_ref}</span>
+                                          <span className="font-mono text-sm">{pkg.client_ref}</span>
                                         </div>
                                         <div className="text-sm text-muted-foreground">
-                                          <span className="text-foreground font-medium">{box.weight_kg}</span> kg
+                                          <span className="text-foreground font-medium">{pkg.weight_kg}</span> kg
                                         </div>
                                         <div className="text-sm text-muted-foreground">
-                                          <span className="text-foreground">{box.dimensions}</span> cm
+                                          <span className="text-foreground">{pkg.dimensions}</span> cm
                                         </div>
                                         <div className="text-sm text-muted-foreground">
-                                          <span className="text-foreground font-medium">{box.packages}</span> pkg
+                                          <span className="text-foreground font-medium">{pkg.colli}</span> colli
                                         </div>
                                       </motion.div>
                                     ))}
@@ -596,21 +595,21 @@ export function Orders() {
             icon={<Euro className="h-4 w-4" />}
           />
 
-          {/* Boxes */}
+          {/* Packages */}
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Box className="h-4 w-4" />
-                Order Boxes
+                <Package className="h-4 w-4" />
+                Order Packages
               </h3>
-              <Button type="button" variant="ghost" size="sm" onClick={addBox}>
+              <Button type="button" variant="ghost" size="sm" onClick={addPackage}>
                 <Plus className="h-4 w-4" />
-                Add Box
+                Add Package
               </Button>
             </div>
             
             <div className="space-y-3">
-              {formData.boxes.map((box, index) => (
+              {formData.packages.map((pkg, index) => (
                 <motion.div
                   key={index}
                   className="grid grid-cols-5 gap-3 p-3 rounded-xl bg-white/5 border border-white/10"
@@ -619,31 +618,31 @@ export function Orders() {
                 >
                   <Input
                     placeholder="Client Ref"
-                    value={box.client_ref}
-                    onChange={(e) => updateBox(index, 'client_ref', e.target.value)}
+                    value={pkg.client_ref}
+                    onChange={(e) => updatePackage(index, 'client_ref', e.target.value)}
                   />
                   <Input
                     placeholder="Weight (kg)"
                     type="number"
-                    value={box.weight_kg}
-                    onChange={(e) => updateBox(index, 'weight_kg', e.target.value)}
+                    value={pkg.weight_kg}
+                    onChange={(e) => updatePackage(index, 'weight_kg', e.target.value)}
                   />
                   <Input
                     placeholder="LxWxH cm"
-                    value={box.dimensions}
-                    onChange={(e) => updateBox(index, 'dimensions', e.target.value)}
+                    value={pkg.dimensions}
+                    onChange={(e) => updatePackage(index, 'dimensions', e.target.value)}
                   />
                   <Input
-                    placeholder="Packages"
+                    placeholder="Colli"
                     type="number"
-                    value={box.packages}
-                    onChange={(e) => updateBox(index, 'packages', parseInt(e.target.value) || 1)}
+                    value={pkg.colli}
+                    onChange={(e) => updatePackage(index, 'colli', parseInt(e.target.value) || 1)}
                   />
-                  {formData.boxes.length > 1 && (
+                  {formData.packages.length > 1 && (
                     <motion.button
                       type="button"
                       className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors self-center justify-self-center"
-                      onClick={() => removeBox(index)}
+                      onClick={() => removePackage(index)}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >

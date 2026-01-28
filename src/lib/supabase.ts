@@ -38,17 +38,17 @@ export type Order = {
   photos: string[]
   created_at: string
   updated_at: string
-  order_boxes?: OrderBox[]
+  order_packages?: OrderPackage[]
   client?: ClientRecord
 }
 
-export type OrderBox = {
+export type OrderPackage = {
   id: string
   order_id: string
   client_ref: string
   weight_kg: number
   dimensions: string
-  packages: number
+  colli: number
 }
 
 export type Location = {

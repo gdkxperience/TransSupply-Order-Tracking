@@ -6,6 +6,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Drop existing tables if they exist (for clean reset)
 DROP TABLE IF EXISTS order_photos CASCADE;
+DROP TABLE IF EXISTS order_packages CASCADE;
 DROP TABLE IF EXISTS order_boxes CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
 DROP TABLE IF EXISTS clients CASCADE;
@@ -39,14 +40,14 @@ CREATE TABLE orders (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Order boxes table
-CREATE TABLE order_boxes (
+-- Order packages table (formerly order_boxes)
+CREATE TABLE order_packages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
   client_ref TEXT,
   weight_kg DECIMAL(10,2),
   dimensions TEXT,
-  packages INTEGER DEFAULT 1,
+  colli INTEGER DEFAULT 1,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -70,14 +71,14 @@ CREATE TABLE locations (
 -- Disable RLS for development (enable later for production)
 ALTER TABLE clients DISABLE ROW LEVEL SECURITY;
 ALTER TABLE orders DISABLE ROW LEVEL SECURITY;
-ALTER TABLE order_boxes DISABLE ROW LEVEL SECURITY;
+ALTER TABLE order_packages DISABLE ROW LEVEL SECURITY;
 ALTER TABLE order_photos DISABLE ROW LEVEL SECURITY;
 ALTER TABLE locations DISABLE ROW LEVEL SECURITY;
 
 -- Grant public access via anon key
 GRANT ALL ON clients TO anon;
 GRANT ALL ON orders TO anon;
-GRANT ALL ON order_boxes TO anon;
+GRANT ALL ON order_packages TO anon;
 GRANT ALL ON order_photos TO anon;
 GRANT ALL ON locations TO anon;
 
@@ -100,7 +101,7 @@ CREATE TRIGGER orders_updated_at
 -- Create indexes
 CREATE INDEX idx_orders_client_id ON orders(client_id);
 CREATE INDEX idx_orders_status ON orders(status);
-CREATE INDEX idx_order_boxes_order_id ON order_boxes(order_id);
+CREATE INDEX idx_order_packages_order_id ON order_packages(order_id);
 CREATE INDEX idx_order_photos_order_id ON order_photos(order_id);
 
 -- ============================================
@@ -131,7 +132,7 @@ INSERT INTO locations (name, lat, lng) VALUES
   ('Eibergen, Netherlands', 52.0983, 6.6500),
   ('Agotnes, Norway', 60.4000, 5.0333);
 
--- Insert orders (with correct YYYY-MM-NNNN format)
+-- Insert orders
 INSERT INTO orders (id, client_id, internal_ref, status, pickup_city, pickup_country, collection_date, receiver_name, receiver_phone, receiver_city, receiver_country, total_weight_kg, total_price) VALUES
   ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '22222222-2222-2222-2222-222222222222', '2025-04-0090', 'delivered', 'Eibergen', 'Netherlands', '2025-04-15', 'BPSD Logistics', '+994 12 345 6789', 'Baku', 'Azerbaijan', 120, 115),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', '2025-04-0091', 'delivered', 'Vienna', 'Austria', '2025-04-16', 'AIOC Operations', '+994 12 345 6780', 'Baku', 'Azerbaijan', 36.6, 310),
@@ -141,8 +142,8 @@ INSERT INTO orders (id, client_id, internal_ref, status, pickup_city, pickup_cou
   ('ffffffff-ffff-ffff-ffff-ffffffffffff', '22222222-2222-2222-2222-222222222222', '2026-01-0021', 'pickup', 'Arras', 'France', '2026-01-28', 'BPSD France Ops', '+994 12 345 6785', 'Baku', 'Azerbaijan', 5741.47, 650),
   ('11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', '2026-01-0022', 'pickup', 'Zurich', 'Switzerland', '2026-01-29', 'AIOC Zurich', '+994 12 345 6786', 'Baku', 'Azerbaijan', 850, 320);
 
--- Insert order boxes
-INSERT INTO order_boxes (order_id, client_ref, weight_kg, dimensions, packages) VALUES
+-- Insert order packages (formerly order_boxes)
+INSERT INTO order_packages (order_id, client_ref, weight_kg, dimensions, colli) VALUES
   ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'N3178987', 120, '120x85x69', 1),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180282', 9.94, '32x32x32', 2),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180297', 0.75, '32x32x12', 1),

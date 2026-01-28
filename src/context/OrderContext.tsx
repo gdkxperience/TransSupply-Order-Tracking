@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
-import type { Order, OrderBox, ClientRecord, OrderStatus } from '../lib/supabase'
+import type { Order, OrderPackage, ClientRecord, OrderStatus } from '../lib/supabase'
 import { supabase, demoOrders, demoClients } from '../lib/supabase'
 import { useAuth } from './AuthContext'
 
@@ -17,7 +17,7 @@ interface OrderContextType {
   createOrder: (order: Omit<Order, 'id' | 'created_at' | 'updated_at'> & { internal_ref?: string }) => Promise<Order>
   updateOrder: (id: string, updates: Partial<Order>) => Promise<void>
   deleteOrder: (id: string) => Promise<void>
-  addBoxToOrder: (orderId: string, box: Omit<OrderBox, 'id' | 'order_id'>) => Promise<void>
+  addPackageToOrder: (orderId: string, pkg: Omit<OrderPackage, 'id' | 'order_id'>) => Promise<void>
   createClient: (client: Omit<ClientRecord, 'id' | 'created_at'>) => Promise<ClientRecord>
   refreshData: () => Promise<void>
   getStats: () => {
@@ -65,12 +65,12 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
       if (clientsError) throw clientsError
       
-      // Fetch orders with boxes
+      // Fetch orders with packages
       const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
         .select(`
           *,
-          order_boxes (*)
+          order_packages (*)
         `)
         .order('created_at', { ascending: false })
 
@@ -99,13 +99,13 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         photos: [],
         created_at: order.created_at,
         updated_at: order.updated_at,
-        order_boxes: (order.order_boxes || []).map((box: any) => ({
-          id: box.id,
-          order_id: box.order_id,
-          client_ref: box.client_ref,
-          weight_kg: parseFloat(box.weight_kg) || 0,
-          dimensions: box.dimensions,
-          packages: box.packages || 1,
+        order_packages: (order.order_packages || []).map((pkg: any) => ({
+          id: pkg.id,
+          order_id: pkg.order_id,
+          client_ref: pkg.client_ref,
+          weight_kg: parseFloat(pkg.weight_kg) || 0,
+          dimensions: pkg.dimensions,
+          colli: pkg.colli || 1,
         })),
       }))
 
@@ -188,19 +188,19 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
     if (error) throw error
 
-    // Insert boxes if any
-    if (orderData.order_boxes?.length) {
-      const { error: boxError } = await supabase
-        .from('order_boxes')
-        .insert(orderData.order_boxes.map(box => ({
+    // Insert packages if any
+    if (orderData.order_packages?.length) {
+      const { error: pkgError } = await supabase
+        .from('order_packages')
+        .insert(orderData.order_packages.map(pkg => ({
           order_id: data.id,
-          client_ref: box.client_ref,
-          weight_kg: box.weight_kg,
-          dimensions: box.dimensions,
-          packages: box.packages,
+          client_ref: pkg.client_ref,
+          weight_kg: pkg.weight_kg,
+          dimensions: pkg.dimensions,
+          colli: pkg.colli,
         })))
 
-      if (boxError) console.error('Error inserting boxes:', boxError)
+      if (pkgError) console.error('Error inserting packages:', pkgError)
     }
 
     await refreshData()
@@ -253,18 +253,18 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     await refreshData()
   }
 
-  const addBoxToOrder = async (orderId: string, boxData: Omit<OrderBox, 'id' | 'order_id'>) => {
+  const addPackageToOrder = async (orderId: string, pkgData: Omit<OrderPackage, 'id' | 'order_id'>) => {
     if (!USE_SUPABASE) {
-      const newBox: OrderBox = {
-        ...boxData,
-        id: `box-${Date.now()}`,
+      const newPkg: OrderPackage = {
+        ...pkgData,
+        id: `pkg-${Date.now()}`,
         order_id: orderId,
       }
       setOrders(prev => prev.map(o => {
         if (o.id === orderId) {
-          const boxes = [...(o.order_boxes || []), newBox]
-          const totalWeight = boxes.reduce((sum, b) => sum + b.weight_kg, 0)
-          return { ...o, order_boxes: boxes, total_weight_kg: totalWeight }
+          const packages = [...(o.order_packages || []), newPkg]
+          const totalWeight = packages.reduce((sum, p) => sum + p.weight_kg, 0)
+          return { ...o, order_packages: packages, total_weight_kg: totalWeight }
         }
         return o
       }))
@@ -272,13 +272,13 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     }
 
     const { error } = await supabase
-      .from('order_boxes')
+      .from('order_packages')
       .insert({
         order_id: orderId,
-        client_ref: boxData.client_ref,
-        weight_kg: boxData.weight_kg,
-        dimensions: boxData.dimensions,
-        packages: boxData.packages,
+        client_ref: pkgData.client_ref,
+        weight_kg: pkgData.weight_kg,
+        dimensions: pkgData.dimensions,
+        colli: pkgData.colli,
       })
 
     if (error) throw error
@@ -286,7 +286,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     // Update total weight
     const order = orders.find(o => o.id === orderId)
     if (order) {
-      const newTotalWeight = (order.order_boxes?.reduce((sum, b) => sum + b.weight_kg, 0) || 0) + boxData.weight_kg
+      const newTotalWeight = (order.order_packages?.reduce((sum, p) => sum + p.weight_kg, 0) || 0) + pkgData.weight_kg
       await supabase
         .from('orders')
         .update({ total_weight_kg: newTotalWeight })
@@ -353,7 +353,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       createOrder,
       updateOrder,
       deleteOrder,
-      addBoxToOrder,
+      addPackageToOrder,
       createClient,
       refreshData,
       getStats,

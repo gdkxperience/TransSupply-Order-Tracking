@@ -13,7 +13,6 @@ import {
   User,
   Phone,
   Package,
-  Box,
   Truck,
   Warehouse,
   CheckCircle2,
@@ -235,43 +234,43 @@ export function OrderDetails() {
             </div>
           </Card>
 
-          {/* Order Boxes */}
+          {/* Order Packages */}
           <Card variant="glass">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Box className="h-5 w-5 text-indigo-400" />
-              Order Boxes ({order.order_boxes?.length || 0})
+              <Package className="h-5 w-5 text-blue-400" />
+              Order Packages ({order.order_packages?.length || 0})
             </h2>
 
             <div className="space-y-3">
-              {order.order_boxes?.map((box, index) => (
+              {order.order_packages?.map((pkg, index) => (
                 <motion.div
-                  key={box.id}
+                  key={pkg.id}
                   className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 + index * 0.05 }}
                 >
-                  <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-                    <Package className="h-5 w-5 text-indigo-400" />
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <Package className="h-5 w-5 text-blue-400" />
                   </div>
                   
                   <div className="flex-1">
-                    <p className="font-medium">{box.client_ref}</p>
+                    <p className="font-medium">{pkg.client_ref}</p>
                     <p className="text-sm text-muted-foreground">
-                      {box.dimensions} • {box.packages} package{box.packages > 1 ? 's' : ''}
+                      {pkg.dimensions} • {pkg.colli} colli
                     </p>
                   </div>
 
                   <div className="text-right">
-                    <p className="font-medium">{box.weight_kg} kg</p>
+                    <p className="font-medium">{pkg.weight_kg} kg</p>
                   </div>
                 </motion.div>
               ))}
 
-              {(!order.order_boxes || order.order_boxes.length === 0) && (
+              {(!order.order_packages || order.order_packages.length === 0) && (
                 <div className="text-center py-8 text-muted-foreground">
-                  <Box className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                  <p>No boxes added yet</p>
+                  <Package className="h-10 w-10 mx-auto mb-2 opacity-50" />
+                  <p>No packages added yet</p>
                 </div>
               )}
             </div>
@@ -330,13 +329,13 @@ export function OrderDetails() {
                 <span className="font-medium">{order.total_weight_kg} kg</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Boxes</span>
-                <span className="font-medium">{order.order_boxes?.length || 0}</span>
+                <span className="text-muted-foreground">Packages</span>
+                <span className="font-medium">{order.order_packages?.length || 0}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Packages</span>
+                <span className="text-muted-foreground">Total Colli</span>
                 <span className="font-medium">
-                  {order.order_boxes?.reduce((sum, box) => sum + box.packages, 0) || 0}
+                  {order.order_packages?.reduce((sum, pkg) => sum + pkg.colli, 0) || 0}
                 </span>
               </div>
               <div className="border-t border-white/10 pt-4 flex items-center justify-between">

@@ -645,7 +645,12 @@ export function Orders() {
                                 {getStatusIcon(order.status)}
                               </div>
                               <div>
-                                <span className="font-medium">{order.internal_ref}</span>
+                                <button
+                                  className="font-medium text-blue-400 hover:text-blue-300 hover:underline transition-colors text-left"
+                                  onClick={() => navigate(`/orders/${order.id}`)}
+                                >
+                                  {order.internal_ref}
+                                </button>
                                 {hasPackages && (
                                   <span className="text-xs text-muted-foreground ml-2">
                                     ({order.order_packages?.length} packages)

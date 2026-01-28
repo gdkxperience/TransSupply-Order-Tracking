@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useOrders } from '../context/OrderContext'
 import { Layout } from '../components/layout/Layout'
@@ -28,6 +28,12 @@ import {
   Hash,
   Ruler,
   Scale,
+  Upload,
+  X,
+  ZoomIn,
+  ChevronLeft,
+  ChevronRight,
+  Trash2,
 } from 'lucide-react'
 
 export function OrderDetails() {
@@ -59,6 +65,11 @@ export function OrderDetails() {
     colli: '1',
   })
   const [isAddingPackage, setIsAddingPackage] = useState(false)
+  
+  // Photo state
+  const [photos, setPhotos] = useState<string[]>(order?.photos || [])
+  const [previewPhoto, setPreviewPhoto] = useState<{ url: string; index: number } | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
   
   // Initialize edit form when opening modal
   const openEditModal = () => {
@@ -115,6 +126,67 @@ export function OrderDetails() {
     } finally {
       setIsAddingPackage(false)
     }
+  }
+  
+  // Photo upload handler
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0 || !order) return
+    
+    setIsUploading(true)
+    
+    try {
+      const newPhotos: string[] = []
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        // Convert to base64 for demo (in production, upload to storage)
+        const reader = new FileReader()
+        const base64 = await new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string)
+          reader.readAsDataURL(file)
+        })
+        newPhotos.push(base64)
+      }
+      
+      const updatedPhotos = [...photos, ...newPhotos]
+      setPhotos(updatedPhotos)
+      
+      // Update order with new photos
+      await updateOrder(order.id, { photos: updatedPhotos })
+    } catch (error) {
+      console.error('Error uploading photos:', error)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+  
+  // Delete photo
+  const handleDeletePhoto = async (index: number) => {
+    if (!order) return
+    
+    const updatedPhotos = photos.filter((_, i) => i !== index)
+    setPhotos(updatedPhotos)
+    await updateOrder(order.id, { photos: updatedPhotos })
+    
+    // Close preview if viewing deleted photo
+    if (previewPhoto?.index === index) {
+      setPreviewPhoto(null)
+    }
+  }
+  
+  // Navigate preview
+  const navigatePreview = (direction: 'prev' | 'next') => {
+    if (!previewPhoto) return
+    
+    let newIndex = direction === 'next' 
+      ? previewPhoto.index + 1 
+      : previewPhoto.index - 1
+    
+    if (newIndex < 0) newIndex = photos.length - 1
+    if (newIndex >= photos.length) newIndex = 0
+    
+    setPreviewPhoto({ url: photos[newIndex], index: newIndex })
   }
   
   // PDF Export function
@@ -571,23 +643,79 @@ export function OrderDetails() {
 
           {/* Photos */}
           <Card variant="glass">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Image className="h-5 w-5 text-indigo-400" />
-              Photos
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Image className="h-5 w-5 text-indigo-400" />
+                Photos ({photos.length})
+              </h2>
+              {user?.role === 'admin' && (
+                <label className={cn(
+                "cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg",
+                "bg-white/10 border border-white/10 text-foreground",
+                "hover:bg-white/15 transition-colors",
+                isUploading && "opacity-50 cursor-not-allowed"
+              )}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handlePhotoUpload}
+                    disabled={isUploading}
+                  />
+                  {isUploading ? (
+                    <>Uploading...</>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4" />
+                      Upload
+                    </>
+                  )}
+                </label>
+              )}
+            </div>
 
             <div className="grid grid-cols-4 gap-4">
-              {order.photos.length > 0 ? (
-                order.photos.map((photo, index) => (
+              {photos.length > 0 ? (
+                photos.map((photo, index) => (
                   <motion.div
                     key={index}
-                    className="aspect-square rounded-xl bg-white/5 border border-white/10 overflow-hidden"
+                    className="relative group aspect-square rounded-xl bg-white/5 border border-white/10 overflow-hidden cursor-pointer"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.03 }}
+                    onClick={() => setPreviewPhoto({ url: photo, index })}
                   >
                     <img src={photo} alt={`Order photo ${index + 1}`} className="w-full h-full object-cover" />
+                    
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <motion.button
+                        className="p-2 rounded-lg bg-white/20 text-white hover:bg-white/30 transition-colors"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setPreviewPhoto({ url: photo, index })
+                        }}
+                      >
+                        <ZoomIn className="h-4 w-4" />
+                      </motion.button>
+                      {user?.role === 'admin' && (
+                        <motion.button
+                          className="p-2 rounded-lg bg-red-500/50 text-white hover:bg-red-500/70 transition-colors"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDeletePhoto(index)
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </motion.button>
+                      )}
+                    </div>
                   </motion.div>
                 ))
               ) : (
@@ -595,9 +723,21 @@ export function OrderDetails() {
                   <Image className="h-10 w-10 mx-auto mb-2 opacity-50" />
                   <p>No photos uploaded</p>
                   {user?.role === 'admin' && (
-                    <Button variant="ghost" size="sm" className="mt-2">
+                    <label className={cn(
+                      "cursor-pointer inline-flex items-center gap-2 mt-3 px-3 py-1.5 text-sm rounded-lg",
+                      "hover:bg-white/10 transition-colors text-muted-foreground hover:text-foreground"
+                    )}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handlePhotoUpload}
+                        disabled={isUploading}
+                      />
+                      <Upload className="h-4 w-4" />
                       Upload Photos
-                    </Button>
+                    </label>
                   )}
                 </div>
               )}
@@ -872,6 +1012,88 @@ export function OrderDetails() {
           </div>
         </form>
       </Modal>
+      
+      {/* Photo Preview Lightbox */}
+      <AnimatePresence>
+        {previewPhoto && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+              onClick={() => setPreviewPhoto(null)}
+            />
+            
+            {/* Close button */}
+            <motion.button
+              className="absolute top-4 right-4 z-10 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+              onClick={() => setPreviewPhoto(null)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <X className="h-6 w-6" />
+            </motion.button>
+            
+            {/* Navigation - Previous */}
+            {photos.length > 1 && (
+              <motion.button
+                className="absolute left-4 z-10 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                onClick={() => navigatePreview('prev')}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </motion.button>
+            )}
+            
+            {/* Navigation - Next */}
+            {photos.length > 1 && (
+              <motion.button
+                className="absolute right-4 z-10 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                onClick={() => navigatePreview('next')}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ChevronRight className="h-6 w-6" />
+              </motion.button>
+            )}
+            
+            {/* Image */}
+            <motion.img
+              key={previewPhoto.index}
+              src={previewPhoto.url}
+              alt={`Photo ${previewPhoto.index + 1}`}
+              className="relative z-10 max-w-[90vw] max-h-[85vh] rounded-xl shadow-2xl object-contain"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            />
+            
+            {/* Photo counter */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 px-4 py-2 rounded-full bg-black/50 text-white text-sm">
+              {previewPhoto.index + 1} / {photos.length}
+            </div>
+            
+            {/* Delete button (admin only) */}
+            {user?.role === 'admin' && (
+              <motion.button
+                className="absolute bottom-4 right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/80 text-white hover:bg-red-500 transition-colors"
+                onClick={() => handleDeletePhoto(previewPhoto.index)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </motion.button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Layout>
   )
 }

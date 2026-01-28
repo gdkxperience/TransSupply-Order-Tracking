@@ -112,6 +112,127 @@ export function Orders() {
     }
   }
 
+  // Export orders to CSV
+  const handleExportCSV = () => {
+    const headers = [
+      'Internal Ref',
+      'Status',
+      'Pickup City',
+      'Pickup Country',
+      'Collection Date',
+      'Receiver Name',
+      'Receiver Phone',
+      'Total Weight (kg)',
+      'Total Price (€)',
+      'Packages Count',
+      'Created At',
+    ]
+    
+    const rows = filteredOrders.map(order => [
+      order.internal_ref,
+      order.status,
+      order.pickup_address.city,
+      order.pickup_address.country,
+      order.collection_date,
+      order.receiver_name,
+      order.receiver_phone,
+      order.total_weight_kg.toString(),
+      order.total_price.toString(),
+      (order.order_packages?.length || 0).toString(),
+      formatDate(order.created_at),
+    ])
+    
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n')
+    
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `orders-export-${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+  
+  // Export orders with packages to CSV (detailed)
+  const handleExportDetailedCSV = () => {
+    const headers = [
+      'Internal Ref',
+      'Status',
+      'Pickup City',
+      'Pickup Country',
+      'Collection Date',
+      'Receiver Name',
+      'Receiver Phone',
+      'Package Client Ref',
+      'Package Dimensions',
+      'Package Weight (kg)',
+      'Package Colli',
+      'Order Total Weight (kg)',
+      'Order Total Price (€)',
+    ]
+    
+    const rows: string[][] = []
+    
+    filteredOrders.forEach(order => {
+      if (order.order_packages && order.order_packages.length > 0) {
+        order.order_packages.forEach(pkg => {
+          rows.push([
+            order.internal_ref,
+            order.status,
+            order.pickup_address.city,
+            order.pickup_address.country,
+            order.collection_date,
+            order.receiver_name,
+            order.receiver_phone,
+            pkg.client_ref,
+            pkg.dimensions,
+            pkg.weight_kg.toString(),
+            pkg.colli.toString(),
+            order.total_weight_kg.toString(),
+            order.total_price.toString(),
+          ])
+        })
+      } else {
+        rows.push([
+          order.internal_ref,
+          order.status,
+          order.pickup_address.city,
+          order.pickup_address.country,
+          order.collection_date,
+          order.receiver_name,
+          order.receiver_phone,
+          '',
+          '',
+          '',
+          '',
+          order.total_weight_kg.toString(),
+          order.total_price.toString(),
+        ])
+      }
+    })
+    
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n')
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `orders-detailed-${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const handleCreateOrder = async () => {
     const totalWeight = formData.packages.reduce((sum, pkg) => sum + Number(pkg.weight_kg), 0)
     
@@ -218,15 +339,44 @@ export function Orders() {
           </p>
         </div>
         
-        {user?.role === 'admin' && (
-          <Button onClick={() => {
-            setFormData(prev => ({ ...prev, internal_ref: generateDefaultRef() }))
-            setIsCreateModalOpen(true)
-          }}>
-            <Plus className="h-4 w-4" />
-            New Order
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Export Dropdown */}
+          <div className="relative group">
+            <Button variant="secondary">
+              <Download className="h-4 w-4" />
+              Export
+              <ChevronDown className="h-3 w-3 ml-1" />
+            </Button>
+            <div className="absolute right-0 mt-1 w-48 rounded-xl bg-[#1a1d24] border border-white/15 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div className="p-1">
+                <button
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left rounded-lg hover:bg-white/10 transition-colors"
+                  onClick={handleExportCSV}
+                >
+                  <Download className="h-4 w-4" />
+                  Export Summary (CSV)
+                </button>
+                <button
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left rounded-lg hover:bg-white/10 transition-colors"
+                  onClick={handleExportDetailedCSV}
+                >
+                  <Package className="h-4 w-4" />
+                  Export with Packages (CSV)
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {user?.role === 'admin' && (
+            <Button onClick={() => {
+              setFormData(prev => ({ ...prev, internal_ref: generateDefaultRef() }))
+              setIsCreateModalOpen(true)
+            }}>
+              <Plus className="h-4 w-4" />
+              New Order
+            </Button>
+          )}
+        </div>
       </motion.div>
 
       {/* Filters */}

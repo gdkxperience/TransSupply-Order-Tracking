@@ -63,6 +63,17 @@ export function Orders() {
       return next
     })
   }
+
+  const ordersWithBoxes = filteredOrders.filter(o => o.order_boxes && o.order_boxes.length > 0)
+  const allExpanded = ordersWithBoxes.length > 0 && ordersWithBoxes.every(o => expandedOrders.has(o.id))
+
+  const toggleExpandAll = () => {
+    if (allExpanded) {
+      setExpandedOrders(new Set())
+    } else {
+      setExpandedOrders(new Set(ordersWithBoxes.map(o => o.id)))
+    }
+  }
   
   // Form state
   const [formData, setFormData] = useState({
@@ -239,6 +250,24 @@ export function Orders() {
             </motion.button>
           ))}
         </div>
+
+        <Button 
+          variant="ghost" 
+          onClick={toggleExpandAll}
+          disabled={ordersWithBoxes.length === 0}
+        >
+          {allExpanded ? (
+            <>
+              <ChevronDown className="h-4 w-4" />
+              Collapse All
+            </>
+          ) : (
+            <>
+              <ChevronRight className="h-4 w-4" />
+              Expand All
+            </>
+          )}
+        </Button>
 
         <Button variant="secondary">
           <Download className="h-4 w-4" />

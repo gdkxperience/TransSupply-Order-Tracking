@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
@@ -65,10 +65,17 @@ export function OrderDetails() {
   })
   const [isAddingPackage, setIsAddingPackage] = useState(false)
   
-  // Photo state
-  const [photos, setPhotos] = useState<string[]>(order?.photos || [])
+  // Photo state - sync with order
+  const [photos, setPhotos] = useState<string[]>([])
   const [previewPhoto, setPreviewPhoto] = useState<{ url: string; index: number } | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  
+  // Sync photos when order loads/changes
+  useEffect(() => {
+    if (order?.photos) {
+      setPhotos(order.photos)
+    }
+  }, [order?.photos])
   
   // Initialize edit form when opening modal
   const openEditModal = () => {

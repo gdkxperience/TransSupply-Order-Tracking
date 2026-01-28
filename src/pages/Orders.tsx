@@ -60,6 +60,7 @@ export function Orders() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false)
+  const [isExportSheetOpen, setIsExportSheetOpen] = useState(false)
   
   const copyToClipboard = (text: string, orderId: string) => {
     navigator.clipboard.writeText(text)
@@ -496,7 +497,16 @@ export function Orders() {
         </div>
         
         <div className="flex items-center gap-2">
-          {/* Export Dropdown */}
+          {/* Mobile Export Button */}
+          <Button 
+            variant="secondary" 
+            className="md:hidden px-2"
+            onClick={() => setIsExportSheetOpen(true)}
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+          
+          {/* Desktop Export Dropdown */}
           <div className="relative group hidden md:block">
             <Button variant="secondary">
               <Download className="h-4 w-4" />
@@ -537,7 +547,7 @@ export function Orders() {
                 setFormData(prev => ({ ...prev, internal_ref: generateDefaultRef() }))
                 setIsCreateModalOpen(true)
               }}
-              className="px-3 md:px-4"
+              className="px-2 md:px-4"
             >
               <Plus className="h-4 w-4" />
               <span className="hidden md:inline">New Order</span>
@@ -1122,6 +1132,42 @@ export function Orders() {
             )}
           </div>
         )}
+      </BottomSheet>
+      
+      {/* Export Bottom Sheet (Mobile) */}
+      <BottomSheet
+        isOpen={isExportSheetOpen}
+        onClose={() => setIsExportSheetOpen(false)}
+        title="Export Orders"
+      >
+        <div className="space-y-2">
+          <BottomSheetAction
+            icon={<Download className="h-5 w-5" />}
+            label="Export Summary (CSV)"
+            onClick={() => {
+              handleExportCSV()
+              setIsExportSheetOpen(false)
+            }}
+          />
+          
+          <BottomSheetAction
+            icon={<Package className="h-5 w-5" />}
+            label="Export with Packages (CSV)"
+            onClick={() => {
+              handleExportDetailedCSV()
+              setIsExportSheetOpen(false)
+            }}
+          />
+          
+          <BottomSheetAction
+            icon={<FileText className="h-5 w-5" />}
+            label="Export Report (PDF)"
+            onClick={() => {
+              handleExportPDF()
+              setIsExportSheetOpen(false)
+            }}
+          />
+        </div>
       </BottomSheet>
     </Layout>
   )

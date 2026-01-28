@@ -575,11 +575,6 @@ export function Orders() {
             </>
           )}
         </Button>
-
-        <Button variant="secondary">
-          <Download className="h-4 w-4" />
-          Export PDF
-        </Button>
       </motion.div>
 
       {/* Orders Table */}

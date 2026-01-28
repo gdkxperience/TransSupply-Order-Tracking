@@ -41,6 +41,8 @@ import {
   ChevronRight,
   Hash,
   FileText,
+  Copy,
+  Check,
 } from 'lucide-react'
 
 export function Orders() {
@@ -52,6 +54,13 @@ export function Orders() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set())
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  
+  const copyToClipboard = (text: string, orderId: string) => {
+    navigator.clipboard.writeText(text)
+    setCopiedId(orderId)
+    setTimeout(() => setCopiedId(null), 2000)
+  }
 
   const toggleExpanded = (orderId: string) => {
     setExpandedOrders(prev => {
@@ -644,16 +653,27 @@ export function Orders() {
                               )}>
                                 {getStatusIcon(order.status)}
                               </div>
-                              <div>
+                              <div className="flex items-center gap-1">
                                 <button
                                   className="font-medium text-blue-400 hover:text-blue-300 hover:underline transition-colors text-left"
                                   onClick={() => navigate(`/orders/${order.id}`)}
                                 >
                                   {order.internal_ref}
                                 </button>
+                                <button
+                                  className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                                  onClick={() => copyToClipboard(order.internal_ref, order.id)}
+                                  title="Copy reference"
+                                >
+                                  {copiedId === order.id ? (
+                                    <Check className="h-3 w-3 text-emerald-400" />
+                                  ) : (
+                                    <Copy className="h-3 w-3" />
+                                  )}
+                                </button>
                                 {hasPackages && (
-                                  <span className="text-xs text-muted-foreground ml-2">
-                                    ({order.order_packages?.length} packages)
+                                  <span className="text-xs text-muted-foreground ml-1">
+                                    ({order.order_packages?.length} pkg)
                                   </span>
                                 )}
                               </div>

@@ -8,7 +8,7 @@ interface StatsCardProps {
   change?: string
   changeType?: 'increase' | 'decrease' | 'neutral'
   icon: ElementType
-  color?: 'blue' | 'amber' | 'emerald' | 'violet' | 'rose' | 'slate'
+  color?: 'blue' | 'amber' | 'emerald' | 'cyan' | 'rose' | 'slate'
   delay?: number
 }
 
@@ -25,7 +25,7 @@ export function StatsCard({
     blue: 'bg-blue-500',
     amber: 'bg-amber-500',
     emerald: 'bg-emerald-500',
-    violet: 'bg-violet-500',
+    cyan: 'bg-cyan-500',
     rose: 'bg-rose-500',
     slate: 'bg-slate-600',
   }

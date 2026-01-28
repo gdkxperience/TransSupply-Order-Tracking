@@ -307,8 +307,8 @@ export function Settings() {
           >
             <Card variant="glass">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
-                  <Palette className="h-5 w-5 text-violet-400" />
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                  <Palette className="h-5 w-5 text-cyan-400" />
                 </div>
                 <div>
                   <h2 className="font-semibold">Preferences</h2>

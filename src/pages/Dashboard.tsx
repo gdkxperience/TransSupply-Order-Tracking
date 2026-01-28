@@ -90,7 +90,7 @@ export function Dashboard() {
           title="Total Weight"
           value={`${stats.totalWeight.toLocaleString()} kg`}
           icon={Weight}
-          color="violet"
+          color="cyan"
           delay={0.2}
         />
         <StatsCard

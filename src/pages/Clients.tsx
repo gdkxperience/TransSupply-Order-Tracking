@@ -83,7 +83,7 @@ export function Clients() {
         {[
           { label: 'Total Clients', value: clients.length, icon: Users, color: 'bg-blue-500' },
           { label: 'Active This Month', value: clients.length, icon: UserPlus, color: 'bg-emerald-500' },
-          { label: 'Total Orders', value: orders.length, icon: Package, color: 'bg-violet-500' },
+          { label: 'Total Orders', value: orders.length, icon: Package, color: 'bg-cyan-500' },
           { label: 'Avg. Orders/Client', value: (orders.length / Math.max(clients.length, 1)).toFixed(1), icon: Building2, color: 'bg-amber-500' },
         ].map((stat, index) => (
           <motion.div

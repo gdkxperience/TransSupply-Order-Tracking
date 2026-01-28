@@ -25,7 +25,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <AnimatePresence>
             {isFocused && (
               <motion.div
-                className="absolute -inset-[2px] bg-gradient-to-r from-indigo-500/50 to-purple-500/50 rounded-xl blur-sm"
+                className="absolute -inset-[2px] bg-blue-500/30 rounded-xl blur-sm"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

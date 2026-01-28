@@ -20,8 +20,8 @@ function ProtectedRoute({ children, adminOnly = false }: { children: React.React
     return (
       <div className="min-h-screen flex items-center justify-center mesh-gradient">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-          <div className="absolute inset-0 w-16 h-16 border-4 border-purple-500/20 border-b-purple-500 rounded-full animate-spin animate-reverse" style={{ animationDirection: 'reverse' }} />
+          <div className="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+          <div className="absolute inset-0 w-16 h-16 border-4 border-emerald-500/20 border-b-emerald-500 rounded-full animate-spin" style={{ animationDirection: 'reverse' }} />
         </div>
       </div>
     )

@@ -54,8 +54,11 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Gradient border effect */}
-              <div className="absolute -inset-[1px] bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl -z-10 blur-sm" />
+              {/* Subtle glow effect */}
+              <div className="absolute -inset-[1px] bg-gradient-to-br from-blue-500/15 via-slate-500/10 to-emerald-500/15 rounded-2xl -z-10 blur-sm" />
+              
+              {/* Top accent line */}
+              <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
 
               {/* Close button */}
               <motion.button

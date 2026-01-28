@@ -1,11 +1,13 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useOrders } from '../context/OrderContext'
 import { Layout } from '../components/layout/Layout'
-import { Card, Badge, Button } from '../components/ui'
+import { Card, Badge, Button, Modal, Input, Select } from '../components/ui'
 import { formatDate, formatCurrency, cn } from '../lib/utils'
 import { WAREHOUSE_ADDRESS } from '../lib/supabase'
+import type { OrderStatus } from '../lib/supabase'
 import {
   ArrowLeft,
   MapPin,
@@ -16,11 +18,12 @@ import {
   Truck,
   Warehouse,
   CheckCircle2,
-  Download,
   Edit,
   Image,
   Navigation,
   Clock,
+  Save,
+  FileText,
 } from 'lucide-react'
 
 export function OrderDetails() {
@@ -30,6 +33,188 @@ export function OrderDetails() {
   const { getOrderById, updateOrder } = useOrders()
 
   const order = getOrderById(id || '')
+  
+  // Edit modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editForm, setEditForm] = useState({
+    status: '' as OrderStatus,
+    receiver_name: '',
+    receiver_phone: '',
+    pickup_city: '',
+    pickup_country: '',
+    collection_date: '',
+    total_price: '',
+  })
+  
+  // Initialize edit form when opening modal
+  const openEditModal = () => {
+    if (!order) return
+    setEditForm({
+      status: order.status,
+      receiver_name: order.receiver_name,
+      receiver_phone: order.receiver_phone,
+      pickup_city: order.pickup_address.city,
+      pickup_country: order.pickup_address.country,
+      collection_date: order.collection_date,
+      total_price: order.total_price.toString(),
+    })
+    setIsEditModalOpen(true)
+  }
+  
+  const handleSaveEdit = async () => {
+    if (!order) return
+    await updateOrder(order.id, {
+      status: editForm.status,
+      receiver_name: editForm.receiver_name,
+      receiver_phone: editForm.receiver_phone,
+      pickup_address: {
+        city: editForm.pickup_city,
+        country: editForm.pickup_country,
+      },
+      collection_date: editForm.collection_date,
+      total_price: parseFloat(editForm.total_price),
+    })
+    setIsEditModalOpen(false)
+  }
+  
+  // PDF Export function
+  const handleExportPDF = () => {
+    if (!order) return
+    
+    // Create a printable content
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Order ${order.internal_ref}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
+          h1 { color: #1a1a2e; border-bottom: 2px solid #4f46e5; padding-bottom: 10px; }
+          .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
+          .section { margin-bottom: 25px; }
+          .section h2 { font-size: 16px; color: #666; margin-bottom: 10px; text-transform: uppercase; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+          .field { margin-bottom: 10px; }
+          .label { font-size: 12px; color: #888; }
+          .value { font-size: 14px; font-weight: 500; }
+          .packages { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+          .packages th, .packages td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+          .packages th { background: #f5f5f5; font-size: 12px; text-transform: uppercase; }
+          .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+          .status.pickup { background: #fef3c7; color: #d97706; }
+          .status.warehouse { background: #dbeafe; color: #2563eb; }
+          .status.delivered { background: #d1fae5; color: #059669; }
+          .total { font-size: 24px; font-weight: bold; color: #4f46e5; }
+          .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #888; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1>Order ${order.internal_ref}</h1>
+            <p>Created: ${formatDate(order.created_at)}</p>
+          </div>
+          <div style="text-align: right;">
+            <span class="status ${order.status}">${order.status.toUpperCase()}</span>
+          </div>
+        </div>
+        
+        <div class="grid">
+          <div class="section">
+            <h2>Pickup Location</h2>
+            <div class="field">
+              <div class="label">City</div>
+              <div class="value">${order.pickup_address.city}, ${order.pickup_address.country}</div>
+            </div>
+            <div class="field">
+              <div class="label">Collection Date</div>
+              <div class="value">${formatDate(order.collection_date)}</div>
+            </div>
+          </div>
+          
+          <div class="section">
+            <h2>Receiver</h2>
+            <div class="field">
+              <div class="label">Name</div>
+              <div class="value">${order.receiver_name}</div>
+            </div>
+            <div class="field">
+              <div class="label">Phone</div>
+              <div class="value">${order.receiver_phone}</div>
+            </div>
+            <div class="field">
+              <div class="label">Destination</div>
+              <div class="value">${WAREHOUSE_ADDRESS}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h2>Packages (${order.order_packages?.length || 0})</h2>
+          <table class="packages" width="100%">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Client Ref</th>
+                <th>Dimensions</th>
+                <th>Weight</th>
+                <th>Colli</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.order_packages?.map((pkg, i) => `
+                <tr>
+                  <td>${i + 1}</td>
+                  <td>${pkg.client_ref}</td>
+                  <td>${pkg.dimensions}</td>
+                  <td>${pkg.weight_kg} kg</td>
+                  <td>${pkg.colli}</td>
+                </tr>
+              `).join('') || '<tr><td colspan="5">No packages</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="section">
+          <h2>Summary</h2>
+          <div class="grid">
+            <div>
+              <div class="field">
+                <div class="label">Total Weight</div>
+                <div class="value">${order.total_weight_kg} kg</div>
+              </div>
+              <div class="field">
+                <div class="label">Total Packages</div>
+                <div class="value">${order.order_packages?.length || 0}</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div class="label">Total Price</div>
+              <div class="total">${formatCurrency(order.total_price)}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p>TransSupply Order Management System</p>
+          <p>Generated on ${new Date().toLocaleString()}</p>
+        </div>
+      </body>
+      </html>
+    `
+    
+    // Open print dialog
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.write(printContent)
+      printWindow.document.close()
+      printWindow.focus()
+      setTimeout(() => {
+        printWindow.print()
+        printWindow.close()
+      }, 250)
+    }
+  }
 
   if (!order) {
     return (
@@ -90,12 +275,12 @@ export function OrderDetails() {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="secondary">
-              <Download className="h-4 w-4" />
+            <Button variant="secondary" onClick={handleExportPDF}>
+              <FileText className="h-4 w-4" />
               Export PDF
             </Button>
             {user?.role === 'admin' && (
-              <Button variant="secondary">
+              <Button variant="secondary" onClick={openEditModal}>
                 <Edit className="h-4 w-4" />
                 Edit
               </Button>
@@ -479,6 +664,84 @@ export function OrderDetails() {
           </Card>
         </motion.div>
       </div>
+      
+      {/* Edit Order Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="Edit Order"
+        description={`Editing order ${order.internal_ref}`}
+        size="lg"
+      >
+        <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Select
+              label="Status"
+              value={editForm.status}
+              onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as OrderStatus }))}
+              options={[
+                { value: 'pickup', label: 'Pending Pickup' },
+                { value: 'warehouse', label: 'In Warehouse' },
+                { value: 'delivered', label: 'Delivered' },
+              ]}
+            />
+            <Input
+              label="Collection Date"
+              type="date"
+              value={editForm.collection_date}
+              onChange={(e) => setEditForm(prev => ({ ...prev, collection_date: e.target.value }))}
+              icon={<Calendar className="h-4 w-4" />}
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Pickup City"
+              value={editForm.pickup_city}
+              onChange={(e) => setEditForm(prev => ({ ...prev, pickup_city: e.target.value }))}
+              icon={<MapPin className="h-4 w-4" />}
+            />
+            <Input
+              label="Pickup Country"
+              value={editForm.pickup_country}
+              onChange={(e) => setEditForm(prev => ({ ...prev, pickup_country: e.target.value }))}
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Receiver Name"
+              value={editForm.receiver_name}
+              onChange={(e) => setEditForm(prev => ({ ...prev, receiver_name: e.target.value }))}
+              icon={<User className="h-4 w-4" />}
+            />
+            <Input
+              label="Receiver Phone"
+              value={editForm.receiver_phone}
+              onChange={(e) => setEditForm(prev => ({ ...prev, receiver_phone: e.target.value }))}
+              icon={<Phone className="h-4 w-4" />}
+            />
+          </div>
+          
+          <Input
+            label="Total Price (€)"
+            type="number"
+            step="0.01"
+            value={editForm.total_price}
+            onChange={(e) => setEditForm(prev => ({ ...prev, total_price: e.target.value }))}
+          />
+          
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+            <Button type="button" variant="ghost" onClick={() => setIsEditModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit">
+              <Save className="h-4 w-4" />
+              Save Changes
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </Layout>
   )
 }

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { OrderProvider } from './context/OrderContext'
+import { CommandPalette } from './components/CommandPalette'
 import { Login } from './pages/Login'
 import { Dashboard } from './pages/Dashboard'
 import { Orders } from './pages/Orders'
@@ -92,6 +93,7 @@ function App() {
       <Router>
         <AuthProvider>
           <OrderProvider>
+            <CommandPalette />
             <AppRoutes />
           </OrderProvider>
         </AuthProvider>

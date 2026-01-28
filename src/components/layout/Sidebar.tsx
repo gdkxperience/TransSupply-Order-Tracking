@@ -13,8 +13,6 @@ import {
   ChevronRight,
   Truck,
   MapPin,
-  Search,
-  Command,
 } from 'lucide-react'
 
 const adminNavItems = [
@@ -77,49 +75,6 @@ export function Sidebar() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Search Button */}
-      <div className="px-4 pt-4">
-        <motion.button
-          className={cn(
-            'w-full flex items-center gap-3 px-4 py-2.5 rounded-xl',
-            'bg-white/5 border border-white/10 text-muted-foreground',
-            'hover:bg-white/10 hover:text-foreground transition-all'
-          )}
-          onClick={() => {
-            // Trigger Cmd+K
-            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, ctrlKey: true }))
-          }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <Search className="h-4 w-4" />
-          <AnimatePresence>
-            {!isCollapsed && (
-              <motion.span
-                className="flex-1 text-left text-sm"
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: 'auto' }}
-                exit={{ opacity: 0, width: 0 }}
-              >
-                Search...
-              </motion.span>
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
-            {!isCollapsed && (
-              <motion.kbd
-                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/10 text-xs"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <Command className="h-3 w-3" />K
-              </motion.kbd>
-            )}
-          </AnimatePresence>
-        </motion.button>
       </div>
 
       {/* Navigation */}

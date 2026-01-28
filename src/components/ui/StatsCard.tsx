@@ -32,16 +32,16 @@ export function StatsCard({
 
   return (
     <motion.div
-      className="rounded-xl md:rounded-2xl bg-white/[0.04] border border-white/[0.08] p-3 md:p-6"
+      className="rounded-xl md:rounded-2xl bg-white/[0.04] border border-white/[0.08] p-3 md:p-6 lg:p-7 xl:p-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
     >
-      <div className="flex items-start gap-3 md:gap-4">
+      <div className="flex items-start gap-3 md:gap-4 lg:gap-5">
         {/* Icon */}
         <div
           className={cn(
-            'flex-shrink-0 flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl',
+            'flex-shrink-0 flex items-center justify-center w-8 h-8 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-lg md:rounded-xl lg:rounded-[18px]',
             colorClasses[color]
           )}
         >
@@ -51,12 +51,12 @@ export function StatsCard({
         {/* Content */}
         <div className="min-w-0 flex-1">
           <p className="text-xs md:text-sm text-slate-400 truncate">{title}</p>
-          <p className="text-lg md:text-2xl font-semibold mt-0.5 md:mt-1 truncate">{value}</p>
+          <p className="text-lg md:text-2xl lg:text-3xl font-semibold mt-0.5 md:mt-1 lg:mt-2 truncate">{value}</p>
           
           {change && (
             <p
               className={cn(
-                'text-xs mt-1 md:mt-2 hidden md:block',
+                'text-xs mt-1 md:mt-2 hidden md:block lg:text-sm lg:mt-3',
                 changeType === 'increase' && 'text-emerald-400',
                 changeType === 'decrease' && 'text-red-400',
                 changeType === 'neutral' && 'text-slate-500'

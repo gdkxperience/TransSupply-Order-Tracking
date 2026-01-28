@@ -54,7 +54,7 @@ export function Dashboard() {
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5 mb-6 md:mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-5 lg:gap-6 mb-6 md:mb-8">
         <StatsCard
           title="Total Orders"
           value={stats.totalOrders}

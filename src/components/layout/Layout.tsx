@@ -26,6 +26,7 @@ export function Layout({ children }: LayoutProps) {
         
         <div className="p-4 md:p-6">
           <motion.div
+            className="w-full max-w-[1400px] mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}

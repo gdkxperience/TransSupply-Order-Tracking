@@ -224,13 +224,58 @@ export function OrderDetails() {
               </div>
             </div>
 
-            {/* Map placeholder */}
-            <div className="mt-6 h-64 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="h-12 w-12 text-muted-foreground/50 mx-auto mb-2" />
-                <p className="text-muted-foreground text-sm">Map integration ready</p>
-                <p className="text-xs text-muted-foreground/70">Google Maps API will display route here</p>
-              </div>
+            {/* Route Map */}
+            <div className="mt-6">
+              {(() => {
+                const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+                const origin = encodeURIComponent(`${order.pickup_address.city}, ${order.pickup_address.country}`)
+                const destination = encodeURIComponent(`Baku, Azerbaijan`)
+                
+                if (apiKey && apiKey !== 'your-google-maps-api-key') {
+                  // Use Directions embed for route visualization
+                  const directionsUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${origin}&destination=${destination}&mode=driving`
+                  
+                  return (
+                    <div className="relative">
+                      <iframe
+                        src={directionsUrl}
+                        className="w-full h-72 rounded-xl border border-white/10"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="Route Map"
+                      />
+                      <a
+                        href={`https://www.google.com/maps/dir/${origin}/${destination}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-white/90 text-gray-800 text-sm font-medium hover:bg-white transition-colors flex items-center gap-1.5"
+                      >
+                        <Navigation className="h-3.5 w-3.5" />
+                        Open in Maps
+                      </a>
+                    </div>
+                  )
+                }
+                
+                // Fallback when no API key - show static map link
+                return (
+                  <div className="h-72 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center">
+                    <MapPin className="h-12 w-12 text-muted-foreground/50 mb-3" />
+                    <p className="text-muted-foreground text-sm mb-3">Add Google Maps API key to view route</p>
+                    <a
+                      href={`https://www.google.com/maps/dir/${origin}/${destination}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2"
+                    >
+                      <Navigation className="h-4 w-4" />
+                      View Route in Google Maps
+                    </a>
+                  </div>
+                )
+              })()}
             </div>
           </Card>
 

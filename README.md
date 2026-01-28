@@ -5,8 +5,10 @@ A modern logistics and order tracking application for managing shipments, client
 ## Quick Start
 
 ### Demo Login
-- **Admin**: `admin@transsupply.com` / `admin123`
-- **Client**: `client@example.com` / `client123`
+- **Admin**: `admin@transsupply.eu` / `admin123`
+- **Client (AIOC)**: `ops@aioc.az` / `client123`
+- **Client (BPSD)**: `logistics@bpsd.az` / `client123`
+- **Client (BTC)**: `shipping@btc.az` / `client123`
 
 ### Running Locally
 ```bash

@@ -1,20 +1,20 @@
 import type { Order, ClientRecord } from './supabase'
 
-// Imported clients from CSV data
+// Imported clients from CSV data - IDs match Supabase seed.sql
 export const importedClients: ClientRecord[] = [
-  { id: 'client-aioc', email: 'ops@aioc.az', name: 'AIOC', created_at: '2025-01-01' },
-  { id: 'client-bpsd', email: 'logistics@bpsd.az', name: 'BPSD', created_at: '2025-01-01' },
-  { id: 'client-btc', email: 'shipping@btc.az', name: 'BTC', created_at: '2025-01-01' },
-  { id: 'client-bpcs', email: 'ops@bpcs.az', name: 'BPCS', created_at: '2025-01-01' },
-  { id: 'client-scpc', email: 'logistics@scpc.az', name: 'SCPC', created_at: '2025-01-01' },
-  { id: 'client-gpc', email: 'shipping@gpc.ge', name: 'GPC', created_at: '2025-01-01' },
+  { id: '11111111-1111-1111-1111-111111111111', email: 'ops@aioc.az', name: 'AIOC', created_at: '2025-01-01' },
+  { id: '22222222-2222-2222-2222-222222222222', email: 'logistics@bpsd.az', name: 'BPSD', created_at: '2025-01-01' },
+  { id: '33333333-3333-3333-3333-333333333333', email: 'shipping@btc.az', name: 'BTC', created_at: '2025-01-01' },
+  { id: '44444444-4444-4444-4444-444444444444', email: 'ops@bpcs.az', name: 'BPCS', created_at: '2025-01-01' },
+  { id: '55555555-5555-5555-5555-555555555555', email: 'logistics@scpc.az', name: 'SCPC', created_at: '2025-01-01' },
+  { id: '66666666-6666-6666-6666-666666666666', email: 'shipping@gpc.ge', name: 'GPC', created_at: '2025-01-01' },
 ]
 
 // Imported orders from CSV data - parsed and structured
 export const importedOrders: Order[] = [
   {
     id: 'ord-2025-04-0090',
-    client_id: 'client-bpsd',
+    client_id: '22222222-2222-2222-2222-222222222222',
     internal_ref: '2025-04-0090',
     status: 'delivered',
     pickup_address: { city: 'Eibergen', country: 'Netherlands' },
@@ -33,7 +33,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2025-04-0091',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2025-04-0091',
     status: 'delivered',
     pickup_address: { city: 'Vienna', country: 'Austria' },
@@ -60,7 +60,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2025-04-0092',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2025-04-0092',
     status: 'delivered',
     pickup_address: { city: 'Norderstedt', country: 'Germany' },
@@ -79,7 +79,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2025-04-0094',
-    client_id: 'client-btc',
+    client_id: '33333333-3333-3333-3333-333333333333',
     internal_ref: '2025-04-0094',
     status: 'delivered',
     pickup_address: { city: 'Pavlov', country: 'Czech Republic' },
@@ -100,7 +100,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2025-04-0096',
-    client_id: 'client-bpsd',
+    client_id: '22222222-2222-2222-2222-222222222222',
     internal_ref: '2025-04-0096',
     status: 'delivered',
     pickup_address: { city: 'Agotnes', country: 'Norway' },
@@ -119,7 +119,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0001',
-    client_id: 'client-scpc',
+    client_id: '55555555-5555-5555-5555-555555555555',
     internal_ref: '2026-01-0001',
     status: 'warehouse',
     pickup_address: { city: 'Vienna', country: 'Austria' },
@@ -146,7 +146,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0002',
-    client_id: 'client-btc',
+    client_id: '33333333-3333-3333-3333-333333333333',
     internal_ref: '2026-01-0002',
     status: 'warehouse',
     pickup_address: { city: 'Oskarshamn', country: 'Sweden' },
@@ -170,7 +170,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0003',
-    client_id: 'client-btc',
+    client_id: '33333333-3333-3333-3333-333333333333',
     internal_ref: '2026-01-0003',
     status: 'delivered',
     pickup_address: { city: 'Llanera', country: 'Spain' },
@@ -191,7 +191,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0011',
-    client_id: 'client-bpsd',
+    client_id: '22222222-2222-2222-2222-222222222222',
     internal_ref: '2026-01-0011',
     status: 'warehouse',
     pickup_address: { city: 'Norderstedt', country: 'Germany' },
@@ -210,7 +210,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0012',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2026-01-0012',
     status: 'warehouse',
     pickup_address: { city: 'Campina', country: 'Romania' },
@@ -229,7 +229,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0021',
-    client_id: 'client-bpsd',
+    client_id: '22222222-2222-2222-2222-222222222222',
     internal_ref: '2026-01-0021',
     status: 'pickup',
     pickup_address: { city: 'Arras', country: 'France' },
@@ -254,7 +254,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0022',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2026-01-0022',
     status: 'pickup',
     pickup_address: { city: 'Zurich', country: 'Switzerland' },
@@ -273,7 +273,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0035',
-    client_id: 'client-btc',
+    client_id: '33333333-3333-3333-3333-333333333333',
     internal_ref: '2026-01-0035',
     status: 'pickup',
     pickup_address: { city: 'Arras', country: 'France' },
@@ -294,7 +294,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0036',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2026-01-0036',
     status: 'warehouse',
     pickup_address: { city: 'Vienna', country: 'Austria' },
@@ -323,7 +323,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0039',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2026-01-0039',
     status: 'pickup',
     pickup_address: { city: 'Pavlov', country: 'Czech Republic' },
@@ -345,7 +345,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0040',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2026-01-0040',
     status: 'delivered',
     pickup_address: { city: 'Milan', country: 'Italy' },
@@ -364,7 +364,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0043',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2026-01-0043',
     status: 'warehouse',
     pickup_address: { city: 'Vienna', country: 'Austria' },
@@ -385,7 +385,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0044',
-    client_id: 'client-bpsd',
+    client_id: '22222222-2222-2222-2222-222222222222',
     internal_ref: '2026-01-0044',
     status: 'pickup',
     pickup_address: { city: 'Zurich', country: 'Switzerland' },
@@ -406,7 +406,7 @@ export const importedOrders: Order[] = [
   },
   {
     id: 'ord-2026-01-0048',
-    client_id: 'client-aioc',
+    client_id: '11111111-1111-1111-1111-111111111111',
     internal_ref: '2026-01-0048',
     status: 'pickup',
     pickup_address: { city: 'Cologne', country: 'Germany' },

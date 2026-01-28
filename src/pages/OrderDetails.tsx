@@ -24,13 +24,17 @@ import {
   Clock,
   Save,
   FileText,
+  Plus,
+  Hash,
+  Ruler,
+  Scale,
 } from 'lucide-react'
 
 export function OrderDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { getOrderById, updateOrder } = useOrders()
+  const { getOrderById, updateOrder, addPackageToOrder } = useOrders()
 
   const order = getOrderById(id || '')
   
@@ -45,6 +49,16 @@ export function OrderDetails() {
     collection_date: '',
     total_price: '',
   })
+  
+  // Add package modal state
+  const [isAddPackageOpen, setIsAddPackageOpen] = useState(false)
+  const [packageForm, setPackageForm] = useState({
+    client_ref: '',
+    dimensions: '',
+    weight_kg: '',
+    colli: '1',
+  })
+  const [isAddingPackage, setIsAddingPackage] = useState(false)
   
   // Initialize edit form when opening modal
   const openEditModal = () => {
@@ -75,6 +89,32 @@ export function OrderDetails() {
       total_price: parseFloat(editForm.total_price),
     })
     setIsEditModalOpen(false)
+  }
+  
+  // Add package function
+  const handleAddPackage = async () => {
+    if (!order) return
+    
+    setIsAddingPackage(true)
+    try {
+      await addPackageToOrder(order.id, {
+        client_ref: packageForm.client_ref,
+        dimensions: packageForm.dimensions,
+        weight_kg: parseFloat(packageForm.weight_kg),
+        colli: parseInt(packageForm.colli),
+      })
+      
+      // Also update total weight
+      const newTotalWeight = order.total_weight_kg + parseFloat(packageForm.weight_kg)
+      await updateOrder(order.id, { total_weight_kg: newTotalWeight })
+      
+      setIsAddPackageOpen(false)
+      setPackageForm({ client_ref: '', dimensions: '', weight_kg: '', colli: '1' })
+    } catch (error) {
+      console.error('Error adding package:', error)
+    } finally {
+      setIsAddingPackage(false)
+    }
   }
   
   // PDF Export function
@@ -466,10 +506,22 @@ export function OrderDetails() {
 
           {/* Order Packages */}
           <Card variant="glass">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Package className="h-5 w-5 text-blue-400" />
-              Order Packages ({order.order_packages?.length || 0})
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Package className="h-5 w-5 text-blue-400" />
+                Order Packages ({order.order_packages?.length || 0})
+              </h2>
+              {user?.role === 'admin' && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setIsAddPackageOpen(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Package
+                </Button>
+              )}
+            </div>
 
             <div className="space-y-3">
               {order.order_packages?.map((pkg, index) => (
@@ -501,6 +553,17 @@ export function OrderDetails() {
                 <div className="text-center py-8 text-muted-foreground">
                   <Package className="h-10 w-10 mx-auto mb-2 opacity-50" />
                   <p>No packages added yet</p>
+                  {user?.role === 'admin' && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="mt-3"
+                      onClick={() => setIsAddPackageOpen(true)}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add First Package
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
@@ -738,6 +801,73 @@ export function OrderDetails() {
             <Button type="submit">
               <Save className="h-4 w-4" />
               Save Changes
+            </Button>
+          </div>
+        </form>
+      </Modal>
+      
+      {/* Add Package Modal */}
+      <Modal
+        isOpen={isAddPackageOpen}
+        onClose={() => setIsAddPackageOpen(false)}
+        title="Add Package"
+        description={`Add a new package to order ${order.internal_ref}`}
+        size="md"
+      >
+        <form onSubmit={(e) => { e.preventDefault(); handleAddPackage(); }} className="space-y-4">
+          <Input
+            label="Client Reference"
+            placeholder="e.g., N3180425"
+            value={packageForm.client_ref}
+            onChange={(e) => setPackageForm(prev => ({ ...prev, client_ref: e.target.value }))}
+            icon={<Hash className="h-4 w-4" />}
+          />
+          
+          <Input
+            label="Dimensions"
+            placeholder="e.g., 120x80x100 cm"
+            value={packageForm.dimensions}
+            onChange={(e) => setPackageForm(prev => ({ ...prev, dimensions: e.target.value }))}
+            icon={<Ruler className="h-4 w-4" />}
+          />
+          
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Weight (kg)"
+              type="number"
+              step="0.1"
+              placeholder="e.g., 45.5"
+              value={packageForm.weight_kg}
+              onChange={(e) => setPackageForm(prev => ({ ...prev, weight_kg: e.target.value }))}
+              icon={<Scale className="h-4 w-4" />}
+            />
+            <Input
+              label="Number of Colli"
+              type="number"
+              min="1"
+              placeholder="1"
+              value={packageForm.colli}
+              onChange={(e) => setPackageForm(prev => ({ ...prev, colli: e.target.value }))}
+              icon={<Package className="h-4 w-4" />}
+            />
+          </div>
+          
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+            <Button type="button" variant="ghost" onClick={() => setIsAddPackageOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={!packageForm.client_ref || !packageForm.dimensions || !packageForm.weight_kg || isAddingPackage}
+            >
+              {isAddingPackage ? (
+                <>Adding...</>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4" />
+                  Add Package
+                </>
+              )}
             </Button>
           </div>
         </form>

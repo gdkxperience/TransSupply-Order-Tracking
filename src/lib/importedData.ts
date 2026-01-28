@@ -28,7 +28,7 @@ export const importedOrders: Order[] = [
     created_at: '2025-04-14',
     updated_at: '2025-04-20',
     order_packages: [
-      { id: 'box-090-1', order_id: 'ord-2025-04-0090', client_ref: 'N3178987', weight_kg: 120, dimensions: '120x85x69', colli: 1 }
+      { id: 'pkg-090-1', order_id: 'ord-2025-04-0090', client_ref: 'N3178987', weight_kg: 120, dimensions: '120x85x69', colli: 1 }
     ]
   },
   {
@@ -47,12 +47,15 @@ export const importedOrders: Order[] = [
     created_at: '2025-04-15',
     updated_at: '2025-04-22',
     order_packages: [
-      { id: 'box-091-1', order_id: 'ord-2025-04-0091', client_ref: 'N3180282', weight_kg: 9.94, dimensions: '32x32x32', colli: 2 },
-      { id: 'box-091-2', order_id: 'ord-2025-04-0091', client_ref: 'N3180297', weight_kg: 0.75, dimensions: '32x32x12', colli: 1 },
-      { id: 'box-091-3', order_id: 'ord-2025-04-0091', client_ref: 'N3180411', weight_kg: 10.04, dimensions: '36x30x15', colli: 3 },
-      { id: 'box-091-4', order_id: 'ord-2025-04-0091', client_ref: 'N3180463', weight_kg: 2.6, dimensions: '60x16x15', colli: 1 },
-      { id: 'box-091-5', order_id: 'ord-2025-04-0091', client_ref: 'N3180526', weight_kg: 4.1, dimensions: '30x30x24', colli: 1 },
-      { id: 'box-091-6', order_id: 'ord-2025-04-0091', client_ref: 'N3180545', weight_kg: 10, dimensions: '28x26x20', colli: 1 },
+      { id: 'pkg-091-1', order_id: 'ord-2025-04-0091', client_ref: 'N3180282-1', weight_kg: 4.97, dimensions: '32x32x32', colli: 1 },
+      { id: 'pkg-091-2', order_id: 'ord-2025-04-0091', client_ref: 'N3180282-2', weight_kg: 4.97, dimensions: '32x32x32', colli: 1 },
+      { id: 'pkg-091-3', order_id: 'ord-2025-04-0091', client_ref: 'N3180297', weight_kg: 0.75, dimensions: '32x32x12', colli: 1 },
+      { id: 'pkg-091-4', order_id: 'ord-2025-04-0091', client_ref: 'N3180411-1', weight_kg: 3.35, dimensions: '36x30x15', colli: 1 },
+      { id: 'pkg-091-5', order_id: 'ord-2025-04-0091', client_ref: 'N3180411-2', weight_kg: 3.35, dimensions: '36x30x15', colli: 1 },
+      { id: 'pkg-091-6', order_id: 'ord-2025-04-0091', client_ref: 'N3180411-3', weight_kg: 3.34, dimensions: '36x30x15', colli: 1 },
+      { id: 'pkg-091-7', order_id: 'ord-2025-04-0091', client_ref: 'N3180463', weight_kg: 2.6, dimensions: '60x16x15', colli: 1 },
+      { id: 'pkg-091-8', order_id: 'ord-2025-04-0091', client_ref: 'N3180526', weight_kg: 4.1, dimensions: '30x30x24', colli: 1 },
+      { id: 'pkg-091-9', order_id: 'ord-2025-04-0091', client_ref: 'N3180545', weight_kg: 10, dimensions: '28x26x20', colli: 1 },
     ]
   },
   {
@@ -71,7 +74,7 @@ export const importedOrders: Order[] = [
     created_at: '2025-04-17',
     updated_at: '2025-04-24',
     order_packages: [
-      { id: 'box-092-1', order_id: 'ord-2025-04-0092', client_ref: 'N3183169', weight_kg: 29, dimensions: '60x40x58', colli: 1 }
+      { id: 'pkg-092-1', order_id: 'ord-2025-04-0092', client_ref: 'N3183169', weight_kg: 29, dimensions: '60x40x58', colli: 1 }
     ]
   },
   {
@@ -90,9 +93,9 @@ export const importedOrders: Order[] = [
     created_at: '2025-04-19',
     updated_at: '2025-04-26',
     order_packages: [
-      { id: 'box-094-1', order_id: 'ord-2025-04-0094', client_ref: 'N3162150', weight_kg: 150, dimensions: '74x108x99', colli: 1 },
-      { id: 'box-094-2', order_id: 'ord-2025-04-0094', client_ref: 'N3162150-2', weight_kg: 15.97, dimensions: '66x44x37', colli: 1 },
-      { id: 'box-094-3', order_id: 'ord-2025-04-0094', client_ref: 'N3162150-3', weight_kg: 150, dimensions: '74x108x99', colli: 1 },
+      { id: 'pkg-094-1', order_id: 'ord-2025-04-0094', client_ref: 'N3162150', weight_kg: 150, dimensions: '74x108x99', colli: 1 },
+      { id: 'pkg-094-2', order_id: 'ord-2025-04-0094', client_ref: 'N3162150-2', weight_kg: 15.97, dimensions: '66x44x37', colli: 1 },
+      { id: 'pkg-094-3', order_id: 'ord-2025-04-0094', client_ref: 'N3162150-3', weight_kg: 150, dimensions: '74x108x99', colli: 1 },
     ]
   },
   {
@@ -111,7 +114,7 @@ export const importedOrders: Order[] = [
     created_at: '2025-04-21',
     updated_at: '2025-04-28',
     order_packages: [
-      { id: 'box-096-1', order_id: 'ord-2025-04-0096', client_ref: 'N3185880', weight_kg: 102, dimensions: '120x80x55', colli: 1 }
+      { id: 'pkg-096-1', order_id: 'ord-2025-04-0096', client_ref: 'N3185880', weight_kg: 102, dimensions: '120x80x55', colli: 1 }
     ]
   },
   {
@@ -130,13 +133,15 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-09',
     updated_at: '2026-01-15',
     order_packages: [
-      { id: 'box-01-1', order_id: 'ord-2026-01-0001', client_ref: 'N3255445', weight_kg: 1, dimensions: '51x30x23', colli: 1 },
-      { id: 'box-01-2', order_id: 'ord-2026-01-0001', client_ref: 'N3255460', weight_kg: 7.84, dimensions: '36x30x25', colli: 1 },
-      { id: 'box-01-3', order_id: 'ord-2026-01-0001', client_ref: 'N3255504', weight_kg: 0.4, dimensions: '29x13x24', colli: 1 },
-      { id: 'box-01-4', order_id: 'ord-2026-01-0001', client_ref: 'N3255513', weight_kg: 20.7, dimensions: '28x26x20', colli: 3 },
-      { id: 'box-01-5', order_id: 'ord-2026-01-0001', client_ref: 'N3255546', weight_kg: 9.82, dimensions: '36x30x25', colli: 1 },
-      { id: 'box-01-6', order_id: 'ord-2026-01-0001', client_ref: 'N3255553', weight_kg: 11, dimensions: '47x42x38', colli: 1 },
-      { id: 'box-01-7', order_id: 'ord-2026-01-0001', client_ref: 'N3255435', weight_kg: 2.41, dimensions: '51x30x23', colli: 1 },
+      { id: 'pkg-01-1', order_id: 'ord-2026-01-0001', client_ref: 'N3255445', weight_kg: 1, dimensions: '51x30x23', colli: 1 },
+      { id: 'pkg-01-2', order_id: 'ord-2026-01-0001', client_ref: 'N3255460', weight_kg: 7.84, dimensions: '36x30x25', colli: 1 },
+      { id: 'pkg-01-3', order_id: 'ord-2026-01-0001', client_ref: 'N3255504', weight_kg: 0.4, dimensions: '29x13x24', colli: 1 },
+      { id: 'pkg-01-4', order_id: 'ord-2026-01-0001', client_ref: 'N3255513-1', weight_kg: 6.9, dimensions: '28x26x20', colli: 1 },
+      { id: 'pkg-01-5', order_id: 'ord-2026-01-0001', client_ref: 'N3255513-2', weight_kg: 6.9, dimensions: '28x26x20', colli: 1 },
+      { id: 'pkg-01-6', order_id: 'ord-2026-01-0001', client_ref: 'N3255513-3', weight_kg: 6.9, dimensions: '28x26x20', colli: 1 },
+      { id: 'pkg-01-7', order_id: 'ord-2026-01-0001', client_ref: 'N3255546', weight_kg: 9.82, dimensions: '36x30x25', colli: 1 },
+      { id: 'pkg-01-8', order_id: 'ord-2026-01-0001', client_ref: 'N3255553', weight_kg: 11, dimensions: '47x42x38', colli: 1 },
+      { id: 'pkg-01-9', order_id: 'ord-2026-01-0001', client_ref: 'N3255435', weight_kg: 2.41, dimensions: '51x30x23', colli: 1 },
     ]
   },
   {
@@ -155,12 +160,12 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-11',
     updated_at: '2026-01-18',
     order_packages: [
-      { id: 'box-02-1', order_id: 'ord-2026-01-0002', client_ref: 'N3255131-1', weight_kg: 355, dimensions: '120x80x65', colli: 1 },
-      { id: 'box-02-2', order_id: 'ord-2026-01-0002', client_ref: 'N3255131-2', weight_kg: 357, dimensions: '120x80x65', colli: 1 },
-      { id: 'box-02-3', order_id: 'ord-2026-01-0002', client_ref: 'N3255131-3', weight_kg: 214, dimensions: '120x80x65', colli: 1 },
-      { id: 'box-02-4', order_id: 'ord-2026-01-0002', client_ref: 'N3255211-1', weight_kg: 358, dimensions: '120x80x65', colli: 1 },
-      { id: 'box-02-5', order_id: 'ord-2026-01-0002', client_ref: 'N3255211-2', weight_kg: 359, dimensions: '120x80x65', colli: 1 },
-      { id: 'box-02-6', order_id: 'ord-2026-01-0002', client_ref: 'N3255211-3', weight_kg: 218, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-02-1', order_id: 'ord-2026-01-0002', client_ref: 'N3255131-1', weight_kg: 355, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-02-2', order_id: 'ord-2026-01-0002', client_ref: 'N3255131-2', weight_kg: 357, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-02-3', order_id: 'ord-2026-01-0002', client_ref: 'N3255131-3', weight_kg: 214, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-02-4', order_id: 'ord-2026-01-0002', client_ref: 'N3255211-1', weight_kg: 358, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-02-5', order_id: 'ord-2026-01-0002', client_ref: 'N3255211-2', weight_kg: 359, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-02-6', order_id: 'ord-2026-01-0002', client_ref: 'N3255211-3', weight_kg: 218, dimensions: '120x80x65', colli: 1 },
     ]
   },
   {
@@ -179,9 +184,9 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-13',
     updated_at: '2026-01-20',
     order_packages: [
-      { id: 'box-03-1', order_id: 'ord-2026-01-0003', client_ref: 'N3254720-1', weight_kg: 358, dimensions: '120x80x65', colli: 1 },
-      { id: 'box-03-2', order_id: 'ord-2026-01-0003', client_ref: 'N3254720-2', weight_kg: 358, dimensions: '120x80x65', colli: 1 },
-      { id: 'box-03-3', order_id: 'ord-2026-01-0003', client_ref: 'N3254720-3', weight_kg: 217, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-03-1', order_id: 'ord-2026-01-0003', client_ref: 'N3254720-1', weight_kg: 358, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-03-2', order_id: 'ord-2026-01-0003', client_ref: 'N3254720-2', weight_kg: 358, dimensions: '120x80x65', colli: 1 },
+      { id: 'pkg-03-3', order_id: 'ord-2026-01-0003', client_ref: 'N3254720-3', weight_kg: 217, dimensions: '120x80x65', colli: 1 },
     ]
   },
   {
@@ -200,7 +205,7 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-15',
     updated_at: '2026-01-22',
     order_packages: [
-      { id: 'box-11-1', order_id: 'ord-2026-01-0011', client_ref: 'N3254748', weight_kg: 67, dimensions: '80x60x90', colli: 1 }
+      { id: 'pkg-11-1', order_id: 'ord-2026-01-0011', client_ref: 'N3254748', weight_kg: 67, dimensions: '80x60x90', colli: 1 }
     ]
   },
   {
@@ -219,7 +224,7 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-16',
     updated_at: '2026-01-23',
     order_packages: [
-      { id: 'box-12-1', order_id: 'ord-2026-01-0012', client_ref: 'N3271437', weight_kg: 50, dimensions: '55x55x50', colli: 1 }
+      { id: 'pkg-12-1', order_id: 'ord-2026-01-0012', client_ref: 'N3271437', weight_kg: 50, dimensions: '55x55x50', colli: 1 }
     ]
   },
   {
@@ -238,13 +243,13 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-25',
     updated_at: '2026-01-25',
     order_packages: [
-      { id: 'box-21-1', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-1', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
-      { id: 'box-21-2', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-2', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
-      { id: 'box-21-3', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-3', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
-      { id: 'box-21-4', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-4', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
-      { id: 'box-21-5', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-5', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
-      { id: 'box-21-6', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-6', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
-      { id: 'box-21-7', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-7', weight_kg: 853.87, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-21-1', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-1', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-21-2', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-2', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-21-3', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-3', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-21-4', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-4', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-21-5', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-5', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-21-6', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-6', weight_kg: 814.6, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-21-7', order_id: 'ord-2026-01-0021', client_ref: 'N3287785-7', weight_kg: 853.87, dimensions: '120x80x100', colli: 1 },
     ]
   },
   {
@@ -263,7 +268,7 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-26',
     updated_at: '2026-01-26',
     order_packages: [
-      { id: 'box-22-1', order_id: 'ord-2026-01-0022', client_ref: 'N3287161', weight_kg: 850, dimensions: '148x98x102', colli: 1 }
+      { id: 'pkg-22-1', order_id: 'ord-2026-01-0022', client_ref: 'N3287161', weight_kg: 850, dimensions: '148x98x102', colli: 1 }
     ]
   },
   {
@@ -282,9 +287,9 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-27',
     updated_at: '2026-01-27',
     order_packages: [
-      { id: 'box-35-1', order_id: 'ord-2026-01-0035', client_ref: 'N3293133-1', weight_kg: 477.24, dimensions: '60x80x80', colli: 1 },
-      { id: 'box-35-2', order_id: 'ord-2026-01-0035', client_ref: 'N3293133-2', weight_kg: 993, dimensions: '120x80x100', colli: 1 },
-      { id: 'box-35-3', order_id: 'ord-2026-01-0035', client_ref: 'N3293133-3', weight_kg: 993, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-35-1', order_id: 'ord-2026-01-0035', client_ref: 'N3293133-1', weight_kg: 477.24, dimensions: '60x80x80', colli: 1 },
+      { id: 'pkg-35-2', order_id: 'ord-2026-01-0035', client_ref: 'N3293133-2', weight_kg: 993, dimensions: '120x80x100', colli: 1 },
+      { id: 'pkg-35-3', order_id: 'ord-2026-01-0035', client_ref: 'N3293133-3', weight_kg: 993, dimensions: '120x80x100', colli: 1 },
     ]
   },
   {
@@ -303,12 +308,17 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-23',
     updated_at: '2026-01-26',
     order_packages: [
-      { id: 'box-36-1', order_id: 'ord-2026-01-0036', client_ref: 'N3296451', weight_kg: 4.38, dimensions: '30x30x24', colli: 3 },
-      { id: 'box-36-2', order_id: 'ord-2026-01-0036', client_ref: 'N3296463', weight_kg: 5.11, dimensions: '33x23x12', colli: 3 },
-      { id: 'box-36-3', order_id: 'ord-2026-01-0036', client_ref: 'N3296423', weight_kg: 10.1, dimensions: '28x26x20', colli: 1 },
-      { id: 'box-36-4', order_id: 'ord-2026-01-0036', client_ref: 'N3296491', weight_kg: 22.29, dimensions: '120x80x40', colli: 2 },
-      { id: 'box-36-5', order_id: 'ord-2026-01-0036', client_ref: 'N3296515', weight_kg: 6, dimensions: '44x33x31', colli: 1 },
-      { id: 'box-36-6', order_id: 'ord-2026-01-0036', client_ref: 'N3296395', weight_kg: 1.1, dimensions: '23x22x23', colli: 1 },
+      { id: 'pkg-36-1', order_id: 'ord-2026-01-0036', client_ref: 'N3296451-1', weight_kg: 1.46, dimensions: '30x30x24', colli: 1 },
+      { id: 'pkg-36-2', order_id: 'ord-2026-01-0036', client_ref: 'N3296451-2', weight_kg: 1.46, dimensions: '30x30x24', colli: 1 },
+      { id: 'pkg-36-3', order_id: 'ord-2026-01-0036', client_ref: 'N3296451-3', weight_kg: 1.46, dimensions: '30x30x24', colli: 1 },
+      { id: 'pkg-36-4', order_id: 'ord-2026-01-0036', client_ref: 'N3296463-1', weight_kg: 1.7, dimensions: '33x23x12', colli: 1 },
+      { id: 'pkg-36-5', order_id: 'ord-2026-01-0036', client_ref: 'N3296463-2', weight_kg: 1.7, dimensions: '33x23x12', colli: 1 },
+      { id: 'pkg-36-6', order_id: 'ord-2026-01-0036', client_ref: 'N3296463-3', weight_kg: 1.71, dimensions: '33x23x12', colli: 1 },
+      { id: 'pkg-36-7', order_id: 'ord-2026-01-0036', client_ref: 'N3296423', weight_kg: 10.1, dimensions: '28x26x20', colli: 1 },
+      { id: 'pkg-36-8', order_id: 'ord-2026-01-0036', client_ref: 'N3296491-1', weight_kg: 11.15, dimensions: '120x80x40', colli: 1 },
+      { id: 'pkg-36-9', order_id: 'ord-2026-01-0036', client_ref: 'N3296491-2', weight_kg: 11.14, dimensions: '120x80x40', colli: 1 },
+      { id: 'pkg-36-10', order_id: 'ord-2026-01-0036', client_ref: 'N3296515', weight_kg: 6, dimensions: '44x33x31', colli: 1 },
+      { id: 'pkg-36-11', order_id: 'ord-2026-01-0036', client_ref: 'N3296395', weight_kg: 1.1, dimensions: '23x22x23', colli: 1 },
     ]
   },
   {
@@ -327,10 +337,10 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-28',
     updated_at: '2026-01-28',
     order_packages: [
-      { id: 'box-39-1', order_id: 'ord-2026-01-0039', client_ref: 'N3305056-1', weight_kg: 125, dimensions: '62x131x199', colli: 1 },
-      { id: 'box-39-2', order_id: 'ord-2026-01-0039', client_ref: 'N3305056-2', weight_kg: 89.6, dimensions: '120x80x142', colli: 1 },
-      { id: 'box-39-3', order_id: 'ord-2026-01-0039', client_ref: 'N3305056-3', weight_kg: 96, dimensions: '120x80x140', colli: 1 },
-      { id: 'box-39-4', order_id: 'ord-2026-01-0039', client_ref: 'N3305056-4', weight_kg: 91.8, dimensions: '120x80x142', colli: 1 },
+      { id: 'pkg-39-1', order_id: 'ord-2026-01-0039', client_ref: 'N3305056-1', weight_kg: 125, dimensions: '62x131x199', colli: 1 },
+      { id: 'pkg-39-2', order_id: 'ord-2026-01-0039', client_ref: 'N3305056-2', weight_kg: 89.6, dimensions: '120x80x142', colli: 1 },
+      { id: 'pkg-39-3', order_id: 'ord-2026-01-0039', client_ref: 'N3305056-3', weight_kg: 96, dimensions: '120x80x140', colli: 1 },
+      { id: 'pkg-39-4', order_id: 'ord-2026-01-0039', client_ref: 'N3305056-4', weight_kg: 91.8, dimensions: '120x80x142', colli: 1 },
     ]
   },
   {
@@ -349,7 +359,7 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-19',
     updated_at: '2026-01-25',
     order_packages: [
-      { id: 'box-40-1', order_id: 'ord-2026-01-0040', client_ref: 'N3264009', weight_kg: 530, dimensions: '115x115x145', colli: 1 }
+      { id: 'pkg-40-1', order_id: 'ord-2026-01-0040', client_ref: 'N3264009', weight_kg: 530, dimensions: '115x115x145', colli: 1 }
     ]
   },
   {
@@ -368,9 +378,9 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-25',
     updated_at: '2026-01-27',
     order_packages: [
-      { id: 'box-43-1', order_id: 'ord-2026-01-0043', client_ref: 'N3315761', weight_kg: 2.6, dimensions: '80x16x15', colli: 1 },
-      { id: 'box-43-2', order_id: 'ord-2026-01-0043', client_ref: 'N3315782', weight_kg: 8.4, dimensions: '36x30x25', colli: 1 },
-      { id: 'box-43-3', order_id: 'ord-2026-01-0043', client_ref: 'N3315821', weight_kg: 1, dimensions: '35x25x15', colli: 1 },
+      { id: 'pkg-43-1', order_id: 'ord-2026-01-0043', client_ref: 'N3315761', weight_kg: 2.6, dimensions: '80x16x15', colli: 1 },
+      { id: 'pkg-43-2', order_id: 'ord-2026-01-0043', client_ref: 'N3315782', weight_kg: 8.4, dimensions: '36x30x25', colli: 1 },
+      { id: 'pkg-43-3', order_id: 'ord-2026-01-0043', client_ref: 'N3315821', weight_kg: 1, dimensions: '35x25x15', colli: 1 },
     ]
   },
   {
@@ -389,9 +399,9 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-27',
     updated_at: '2026-01-27',
     order_packages: [
-      { id: 'box-44-1', order_id: 'ord-2026-01-0044', client_ref: 'N3317533', weight_kg: 115, dimensions: '80x60x50', colli: 1 },
-      { id: 'box-44-2', order_id: 'ord-2026-01-0044', client_ref: 'N3316023', weight_kg: 5.7, dimensions: '40x40x20', colli: 1 },
-      { id: 'box-44-3', order_id: 'ord-2026-01-0044', client_ref: 'N3308983', weight_kg: 33, dimensions: '63x44x46', colli: 1 },
+      { id: 'pkg-44-1', order_id: 'ord-2026-01-0044', client_ref: 'N3317533', weight_kg: 115, dimensions: '80x60x50', colli: 1 },
+      { id: 'pkg-44-2', order_id: 'ord-2026-01-0044', client_ref: 'N3316023', weight_kg: 5.7, dimensions: '40x40x20', colli: 1 },
+      { id: 'pkg-44-3', order_id: 'ord-2026-01-0044', client_ref: 'N3308983', weight_kg: 33, dimensions: '63x44x46', colli: 1 },
     ]
   },
   {
@@ -410,7 +420,7 @@ export const importedOrders: Order[] = [
     created_at: '2026-01-28',
     updated_at: '2026-01-28',
     order_packages: [
-      { id: 'box-48-1', order_id: 'ord-2026-01-0048', client_ref: 'N3321036', weight_kg: 10, dimensions: '80x54x39', colli: 1 }
+      { id: 'pkg-48-1', order_id: 'ord-2026-01-0048', client_ref: 'N3321036', weight_kg: 10, dimensions: '80x54x39', colli: 1 }
     ]
   },
 ]

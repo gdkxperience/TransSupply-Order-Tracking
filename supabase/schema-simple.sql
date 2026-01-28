@@ -142,12 +142,16 @@ INSERT INTO orders (id, client_id, internal_ref, status, pickup_city, pickup_cou
   ('ffffffff-ffff-ffff-ffff-ffffffffffff', '22222222-2222-2222-2222-222222222222', '2026-01-0021', 'pickup', 'Arras', 'France', '2026-01-28', 'BPSD France Ops', '+994 12 345 6785', 'Baku', 'Azerbaijan', 5741.47, 650),
   ('11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', '2026-01-0022', 'pickup', 'Zurich', 'Switzerland', '2026-01-29', 'AIOC Zurich', '+994 12 345 6786', 'Baku', 'Azerbaijan', 850, 320);
 
--- Insert order packages (formerly order_boxes)
+-- Insert order packages (each package is a separate entry, colli=1 unless explicitly grouped)
 INSERT INTO order_packages (order_id, client_ref, weight_kg, dimensions, colli) VALUES
   ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'N3178987', 120, '120x85x69', 1),
-  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180282', 9.94, '32x32x32', 2),
+  -- Order bbbbbbbb: N3180282 split into 2 packages, N3180411 split into 3 packages
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180282-1', 4.97, '32x32x32', 1),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180282-2', 4.97, '32x32x32', 1),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180297', 0.75, '32x32x12', 1),
-  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180411', 10.04, '36x30x15', 3),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180411-1', 3.35, '36x30x15', 1),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180411-2', 3.35, '36x30x15', 1),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180411-3', 3.34, '36x30x15', 1),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180463', 2.6, '60x16x15', 1),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180526', 4.1, '30x30x24', 1),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180545', 10, '28x26x20', 1),

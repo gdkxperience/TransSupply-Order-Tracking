@@ -11,9 +11,9 @@ interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onDrag' | 'onD
 const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'glass', hover = false, glow = false, children, ...props }, ref) => {
     const variants = {
-      glass: 'bg-white/3 border border-white/8',
+      glass: 'bg-white/[0.04] border border-white/[0.08]',
       solid: 'bg-card border border-border',
-      outline: 'border border-white/8 bg-transparent',
+      outline: 'border border-white/10 bg-transparent',
       gradient: 'bg-blue-500/10 border border-blue-500/20',
     }
 

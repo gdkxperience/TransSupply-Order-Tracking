@@ -10,13 +10,13 @@ interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'onDrag' | 'o
 const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = 'default', pulse = false, children, ...props }, ref) => {
     const variants = {
-      default: 'bg-white/8 text-neutral-300 border-white/10',
-      pickup: 'bg-white/8 text-neutral-300 border-white/10',
+      default: 'bg-slate-500/15 text-slate-300 border-slate-500/25',
+      pickup: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
       warehouse: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-      delivered: 'bg-white/8 text-neutral-400 border-white/10',
-      success: 'bg-white/8 text-neutral-400 border-white/10',
-      warning: 'bg-white/8 text-neutral-300 border-white/10',
-      danger: 'bg-white/8 text-neutral-400 border-white/10',
+      delivered: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
+      success: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
+      warning: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
+      danger: 'bg-red-500/15 text-red-400 border-red-500/25',
     }
 
     return (
@@ -35,11 +35,17 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
           <span className="relative flex h-2 w-2">
             <span className={cn(
               'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
-              variant === 'warehouse' ? 'bg-blue-400' : 'bg-neutral-400',
+              variant === 'pickup' && 'bg-amber-400',
+              variant === 'warehouse' && 'bg-blue-400',
+              variant === 'delivered' && 'bg-emerald-400',
+              !['pickup', 'warehouse', 'delivered'].includes(variant) && 'bg-slate-400',
             )} />
             <span className={cn(
               'relative inline-flex rounded-full h-2 w-2',
-              variant === 'warehouse' ? 'bg-blue-400' : 'bg-neutral-400',
+              variant === 'pickup' && 'bg-amber-400',
+              variant === 'warehouse' && 'bg-blue-400',
+              variant === 'delivered' && 'bg-emerald-400',
+              !['pickup', 'warehouse', 'delivered'].includes(variant) && 'bg-slate-400',
             )} />
           </span>
         )}

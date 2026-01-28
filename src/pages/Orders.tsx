@@ -354,7 +354,9 @@ export function Orders() {
                             <div className="flex items-center gap-2">
                               <div className={cn(
                                 'w-8 h-8 rounded-lg flex items-center justify-center',
-                                order.status === 'warehouse' ? 'bg-blue-500/20' : 'bg-white/8',
+                                order.status === 'pickup' && 'bg-amber-500/20 text-amber-400',
+                                order.status === 'warehouse' && 'bg-blue-500/20 text-blue-400',
+                                order.status === 'delivered' && 'bg-emerald-500/20 text-emerald-400',
                               )}>
                                 {getStatusIcon(order.status)}
                               </div>

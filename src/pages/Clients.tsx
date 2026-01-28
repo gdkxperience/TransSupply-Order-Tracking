@@ -81,14 +81,14 @@ export function Clients() {
         transition={{ delay: 0.1 }}
       >
         {[
-          { label: 'Total Clients', value: clients.length, icon: Users, accent: true },
-          { label: 'Active This Month', value: clients.length, icon: UserPlus, accent: false },
-          { label: 'Total Orders', value: orders.length, icon: Package, accent: false },
-          { label: 'Avg. Orders/Client', value: (orders.length / Math.max(clients.length, 1)).toFixed(1), icon: Building2, accent: false },
+          { label: 'Total Clients', value: clients.length, icon: Users, color: 'bg-blue-500' },
+          { label: 'Active This Month', value: clients.length, icon: UserPlus, color: 'bg-emerald-500' },
+          { label: 'Total Orders', value: orders.length, icon: Package, color: 'bg-violet-500' },
+          { label: 'Avg. Orders/Client', value: (orders.length / Math.max(clients.length, 1)).toFixed(1), icon: Building2, color: 'bg-amber-500' },
         ].map((stat, index) => (
           <motion.div
             key={stat.label}
-            className="relative overflow-hidden rounded-xl bg-white/3 border border-white/8 p-4"
+            className="relative overflow-hidden rounded-xl bg-white/[0.04] border border-white/[0.08] p-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + index * 0.05 }}
@@ -96,13 +96,13 @@ export function Clients() {
             <div className="flex items-center gap-3">
               <div className={cn(
                 'w-10 h-10 rounded-lg flex items-center justify-center',
-                stat.accent ? 'bg-blue-500' : 'bg-neutral-700'
+                stat.color
               )}>
                 <stat.icon className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{stat.value}</p>
-                <p className="text-xs text-neutral-400">{stat.label}</p>
+                <p className="text-xs text-slate-400">{stat.label}</p>
               </div>
             </div>
           </motion.div>
@@ -151,12 +151,12 @@ export function Clients() {
                     className="relative flex-shrink-0"
                     whileHover={{ scale: 1.1 }}
                   >
-                    <div className="w-14 h-14 rounded-xl bg-neutral-700 flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-xl bg-slate-700 flex items-center justify-center">
                       <span className="text-xl font-bold text-white">
                         {client.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
-                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 border-2 border-card rounded-full" />
+                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-card rounded-full" />
                   </motion.div>
 
                   {/* Info */}

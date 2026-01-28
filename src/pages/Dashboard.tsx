@@ -60,7 +60,7 @@ export function Dashboard() {
           title="Total Orders"
           value={stats.totalOrders}
           icon={Package}
-          accent
+          color="blue"
           change="+12% from last month"
           changeType="increase"
           delay={0}
@@ -69,31 +69,35 @@ export function Dashboard() {
           title="Pending Pickups"
           value={stats.pendingPickups}
           icon={Truck}
+          color="amber"
           delay={0.05}
         />
         <StatsCard
           title="In Warehouse"
           value={stats.inWarehouse}
           icon={Warehouse}
+          color="blue"
           delay={0.1}
         />
         <StatsCard
           title="Delivered"
           value={stats.delivered}
           icon={CheckCircle2}
+          color="emerald"
           delay={0.15}
         />
         <StatsCard
           title="Total Weight"
           value={`${stats.totalWeight.toLocaleString()} kg`}
           icon={Weight}
+          color="violet"
           delay={0.2}
         />
         <StatsCard
           title="Revenue"
           value={formatCurrency(stats.totalRevenue)}
           icon={Euro}
-          accent
+          color="rose"
           change="+8% growth"
           changeType="increase"
           delay={0.25}
@@ -138,7 +142,9 @@ export function Dashboard() {
                 >
                   <div className="flex-shrink-0">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      order.status === 'warehouse' ? 'bg-blue-500' : 'bg-neutral-700'
+                      order.status === 'pickup' ? 'bg-amber-500' :
+                      order.status === 'warehouse' ? 'bg-blue-500' :
+                      'bg-emerald-500'
                     }`}>
                       {order.status === 'pickup' && <Truck className="h-5 w-5 text-white" />}
                       {order.status === 'warehouse' && <Warehouse className="h-5 w-5 text-white" />}
@@ -196,9 +202,9 @@ export function Dashboard() {
               {/* Status bars */}
               <div className="space-y-4">
                 {[
-                  { label: 'Pending Pickup', value: stats.pendingPickups, total: stats.totalOrders, color: 'bg-neutral-500' },
+                  { label: 'Pending Pickup', value: stats.pendingPickups, total: stats.totalOrders, color: 'bg-amber-500' },
                   { label: 'In Warehouse', value: stats.inWarehouse, total: stats.totalOrders, color: 'bg-blue-500' },
-                  { label: 'Delivered', value: stats.delivered, total: stats.totalOrders, color: 'bg-neutral-600' },
+                  { label: 'Delivered', value: stats.delivered, total: stats.totalOrders, color: 'bg-emerald-500' },
                 ].map((item, index) => (
                   <motion.div
                     key={item.label}
@@ -224,18 +230,18 @@ export function Dashboard() {
 
               {/* Quick action */}
               <motion.div
-                className="mt-8 p-4 rounded-xl bg-white/5 border border-white/8"
+                className="mt-8 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-500">
+                  <div className="p-2 rounded-lg bg-emerald-500">
                     <TrendingUp className="h-5 w-5 text-white" />
                   </div>
                   <div>
                     <p className="text-sm font-medium">Great progress!</p>
-                    <p className="text-xs text-neutral-400">
+                    <p className="text-xs text-slate-400">
                       {stats.delivered} orders delivered this quarter
                     </p>
                   </div>

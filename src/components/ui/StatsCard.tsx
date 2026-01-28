@@ -8,8 +8,7 @@ interface StatsCardProps {
   change?: string
   changeType?: 'increase' | 'decrease' | 'neutral'
   icon: ElementType
-  color?: string
-  accent?: boolean
+  color?: 'blue' | 'amber' | 'emerald' | 'violet' | 'rose' | 'slate'
   delay?: number
 }
 
@@ -19,12 +18,21 @@ export function StatsCard({
   change,
   changeType = 'neutral',
   icon: Icon,
-  accent = false,
+  color = 'slate',
   delay = 0
 }: StatsCardProps) {
+  const colorClasses = {
+    blue: 'bg-blue-500',
+    amber: 'bg-amber-500',
+    emerald: 'bg-emerald-500',
+    violet: 'bg-violet-500',
+    rose: 'bg-rose-500',
+    slate: 'bg-slate-600',
+  }
+
   return (
     <motion.div
-      className="rounded-2xl bg-white/3 border border-white/8 p-6"
+      className="rounded-2xl bg-white/[0.04] border border-white/[0.08] p-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
@@ -33,7 +41,7 @@ export function StatsCard({
       <div
         className={cn(
           'inline-flex items-center justify-center w-10 h-10 rounded-lg mb-4',
-          accent ? 'bg-blue-500' : 'bg-neutral-700'
+          colorClasses[color]
         )}
       >
         <Icon className="h-5 w-5 text-white" />
@@ -41,16 +49,16 @@ export function StatsCard({
 
       {/* Content */}
       <div>
-        <p className="text-sm text-neutral-400">{title}</p>
+        <p className="text-sm text-slate-400">{title}</p>
         <p className="text-2xl font-semibold mt-1">{value}</p>
         
         {change && (
           <p
             className={cn(
               'text-sm mt-2',
-              changeType === 'increase' && 'text-blue-400',
-              changeType === 'decrease' && 'text-neutral-500',
-              changeType === 'neutral' && 'text-neutral-500'
+              changeType === 'increase' && 'text-emerald-400',
+              changeType === 'decrease' && 'text-red-400',
+              changeType === 'neutral' && 'text-slate-500'
             )}
           >
             {change}

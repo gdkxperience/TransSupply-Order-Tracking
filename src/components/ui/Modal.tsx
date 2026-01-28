@@ -27,7 +27,7 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
         <Fragment>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-md z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -44,8 +44,8 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
             <motion.div
               className={cn(
                 'relative w-full rounded-2xl',
-                'backdrop-blur-2xl bg-card/95 border border-white/10',
-                'shadow-2xl shadow-black/20',
+                'bg-[#1a1d24] border border-white/15',
+                'shadow-2xl shadow-black/50',
                 sizes[size]
               )}
               initial={{ scale: 0.95, opacity: 0, y: 20 }}

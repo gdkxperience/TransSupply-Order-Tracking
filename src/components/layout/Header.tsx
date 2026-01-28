@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, Search, Moon, Sun, Command } from 'lucide-react'
+import { Bell, Search, Moon, Sun, Command, Truck } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
 export function Header() {
@@ -9,9 +9,17 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/80 border-b border-white/10">
-      <div className="flex items-center justify-between h-16 px-6">
+      <div className="flex items-center justify-between h-14 md:h-16 px-4 md:px-6">
+        {/* Mobile Logo */}
+        <div className="flex md:hidden items-center gap-2">
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+            <Truck className="h-4 w-4 text-white" />
+          </div>
+          <span className="font-bold text-sm">TransSupply</span>
+        </div>
+        
         {/* Search - triggers command palette */}
-        <div className="flex-1 max-w-xl">
+        <div className="hidden md:block flex-1 max-w-xl">
           <motion.button
             className={cn(
               'relative w-full flex items-center gap-3 pl-4 pr-3 py-2.5 rounded-xl',
@@ -38,10 +46,21 @@ export function Header() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 ml-6">
-          {/* Theme toggle */}
+        <div className="flex items-center gap-2 md:ml-6">
+          {/* Mobile Search Button */}
           <motion.button
-            className="relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all"
+            className="md:hidden relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all"
+            onClick={() => {
+              window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, ctrlKey: true }))
+            }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Search className="h-4 w-4" />
+          </motion.button>
+          
+          {/* Theme toggle - hidden on mobile */}
+          <motion.button
+            className="hidden md:flex relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all"
             onClick={() => setIsDark(!isDark)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

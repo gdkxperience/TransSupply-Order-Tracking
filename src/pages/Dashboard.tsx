@@ -42,20 +42,20 @@ export function Dashboard() {
     <Layout>
       {/* Welcome section */}
       <motion.div
-        className="mb-8"
+        className="mb-6 md:mb-8"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-2xl md:text-3xl font-bold">
           Welcome back, <span className="text-blue-400">{user?.name.split(' ')[0]}</span>
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-1 text-sm md:text-base">
           Here's what's happening with your logistics today.
         </p>
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6 md:mb-8">
         <StatsCard
           title="Total Orders"
           value={stats.totalOrders}
@@ -105,7 +105,7 @@ export function Dashboard() {
       </div>
 
       {/* Main content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Recent Orders */}
         <motion.div
           className="lg:col-span-2"
@@ -114,13 +114,13 @@ export function Dashboard() {
           transition={{ delay: 0.3 }}
         >
           <Card variant="glass">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
               <div>
-                <h2 className="text-lg font-semibold">Recent Orders</h2>
-                <p className="text-sm text-muted-foreground">Track your latest shipments</p>
+                <h2 className="text-base md:text-lg font-semibold">Recent Orders</h2>
+                <p className="text-xs md:text-sm text-muted-foreground hidden md:block">Track your latest shipments</p>
               </div>
               <motion.button
-                className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                className="flex items-center gap-1 md:gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
                 onClick={() => navigate('/orders')}
                 whileHover={{ x: 4 }}
               >
@@ -129,11 +129,11 @@ export function Dashboard() {
               </motion.button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {recentOrders.map((order, index) => (
                 <motion.div
                   key={order.id}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 cursor-pointer transition-all"
+                  className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 cursor-pointer transition-all active:bg-white/15"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 + index * 0.05 }}
@@ -141,20 +141,20 @@ export function Dashboard() {
                   onClick={() => navigate(`/orders/${order.id}`)}
                 >
                   <div className="flex-shrink-0">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center ${
                       order.status === 'pickup' ? 'bg-amber-500' :
                       order.status === 'warehouse' ? 'bg-blue-500' :
                       'bg-emerald-500'
                     }`}>
-                      {order.status === 'pickup' && <Truck className="h-5 w-5 text-white" />}
-                      {order.status === 'warehouse' && <Warehouse className="h-5 w-5 text-white" />}
-                      {order.status === 'delivered' && <CheckCircle2 className="h-5 w-5 text-white" />}
+                      {order.status === 'pickup' && <Truck className="h-4 w-4 md:h-5 md:w-5 text-white" />}
+                      {order.status === 'warehouse' && <Warehouse className="h-4 w-4 md:h-5 md:w-5 text-white" />}
+                      {order.status === 'delivered' && <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-white" />}
                     </div>
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium">{order.internal_ref}</p>
+                      <p className="font-medium text-sm md:text-base">{order.internal_ref}</p>
                       <Badge variant={order.status} pulse={order.status !== 'delivered'}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </Badge>

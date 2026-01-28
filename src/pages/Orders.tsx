@@ -17,7 +17,10 @@ import {
   TableRow,
   TableHead,
   TableCell,
+  BottomSheet,
+  BottomSheetAction,
 } from '../components/ui'
+import type { Order } from '../lib/supabase'
 import { formatDate, formatCurrency, cn } from '../lib/utils'
 import type { OrderStatus } from '../lib/supabase'
 import {
@@ -55,11 +58,23 @@ export function Orders() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set())
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [isActionSheetOpen, setIsActionSheetOpen] = useState(false)
   
   const copyToClipboard = (text: string, orderId: string) => {
     navigator.clipboard.writeText(text)
     setCopiedId(orderId)
     setTimeout(() => setCopiedId(null), 2000)
+  }
+  
+  const openActionSheet = (order: Order) => {
+    setSelectedOrder(order)
+    setIsActionSheetOpen(true)
+  }
+  
+  const closeActionSheet = () => {
+    setIsActionSheetOpen(false)
+    setTimeout(() => setSelectedOrder(null), 300)
   }
 
   const toggleExpanded = (orderId: string) => {
@@ -469,20 +484,20 @@ export function Orders() {
     <Layout>
       {/* Header */}
       <motion.div
-        className="flex items-center justify-between mb-6"
+        className="flex items-center justify-between mb-4 md:mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         <div>
-          <h1 className="text-2xl font-bold">Orders</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl md:text-2xl font-bold">Orders</h1>
+          <p className="text-muted-foreground text-sm hidden md:block">
             Manage and track all your shipments
           </p>
         </div>
         
         <div className="flex items-center gap-2">
           {/* Export Dropdown */}
-          <div className="relative group">
+          <div className="relative group hidden md:block">
             <Button variant="secondary">
               <Download className="h-4 w-4" />
               Export
@@ -517,12 +532,15 @@ export function Orders() {
           </div>
           
           {user?.role === 'admin' && (
-            <Button onClick={() => {
-              setFormData(prev => ({ ...prev, internal_ref: generateDefaultRef() }))
-              setIsCreateModalOpen(true)
-            }}>
+            <Button 
+              onClick={() => {
+                setFormData(prev => ({ ...prev, internal_ref: generateDefaultRef() }))
+                setIsCreateModalOpen(true)
+              }}
+              className="px-3 md:px-4"
+            >
               <Plus className="h-4 w-4" />
-              New Order
+              <span className="hidden md:inline">New Order</span>
             </Button>
           )}
         </div>
@@ -530,17 +548,17 @@ export function Orders() {
 
       {/* Filters */}
       <motion.div
-        className="flex flex-wrap gap-4 mb-6"
+        className="flex flex-col md:flex-row gap-3 md:gap-4 mb-4 md:mb-6"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <div className="flex-1 min-w-[300px]">
+        <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search by reference, receiver, or location..."
+              placeholder="Search orders..."
               className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/8 text-sm focus:outline-none focus:border-blue-500/50 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -548,12 +566,12 @@ export function Orders() {
           </div>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible scrollbar-hide">
           {['all', 'pickup', 'warehouse', 'delivered'].map((status) => (
             <motion.button
               key={status}
               className={cn(
-                'px-4 py-2 rounded-xl text-sm font-medium transition-all',
+                'px-3 md:px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap flex-shrink-0',
                 statusFilter === status
                   ? 'bg-blue-500/15 text-blue-400 border border-blue-500/25'
                   : 'bg-white/5 text-neutral-400 border border-white/8 hover:bg-white/8'
@@ -571,6 +589,7 @@ export function Orders() {
           variant="ghost" 
           onClick={toggleExpandAll}
           disabled={ordersWithPackages.length === 0}
+          className="hidden md:flex"
         >
           {allExpanded ? (
             <>
@@ -586,8 +605,77 @@ export function Orders() {
         </Button>
       </motion.div>
 
-      {/* Orders Table */}
+      {/* Mobile Order Cards */}
+      <div className="md:hidden space-y-3">
+        {filteredOrders.map((order, index) => (
+          <motion.div
+            key={order.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.03 }}
+            className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-4 active:bg-white/[0.08] transition-colors"
+            onClick={() => openActionSheet(order)}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  'w-10 h-10 rounded-xl flex items-center justify-center',
+                  order.status === 'pickup' && 'bg-amber-500/20 text-amber-400',
+                  order.status === 'warehouse' && 'bg-blue-500/20 text-blue-400',
+                  order.status === 'delivered' && 'bg-emerald-500/20 text-emerald-400',
+                )}>
+                  {getStatusIcon(order.status)}
+                </div>
+                <div>
+                  <button
+                    className="font-semibold text-blue-400"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      navigate(`/orders/${order.id}`)
+                    }}
+                  >
+                    {order.internal_ref}
+                  </button>
+                  <p className="text-xs text-muted-foreground">{formatDate(order.collection_date)}</p>
+                </div>
+              </div>
+              <Badge variant={order.status} pulse={order.status !== 'delivered'}>
+                {order.status}
+              </Badge>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-muted-foreground text-xs">Pickup</p>
+                <p className="font-medium truncate">{order.pickup_address.city}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground text-xs">Receiver</p>
+                <p className="font-medium truncate">{order.receiver_name}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-muted-foreground">{order.total_weight_kg} kg</span>
+                <span className="text-muted-foreground">{order.order_packages?.length || 0} pkg</span>
+              </div>
+              <span className="font-semibold text-blue-400">{formatCurrency(order.total_price)}</span>
+            </div>
+          </motion.div>
+        ))}
+        
+        {filteredOrders.length === 0 && (
+          <div className="text-center py-12">
+            <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+            <p className="text-muted-foreground">No orders found</p>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Orders Table */}
       <motion.div
+        className="hidden md:block"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -974,6 +1062,78 @@ export function Orders() {
           </div>
         </form>
       </Modal>
+      
+      {/* Mobile Action Sheet */}
+      <BottomSheet
+        isOpen={isActionSheetOpen}
+        onClose={closeActionSheet}
+        title={selectedOrder?.internal_ref}
+      >
+        {selectedOrder && (
+          <div className="space-y-2">
+            {/* Order Summary */}
+            <div className="flex items-center gap-3 p-4 bg-white/5 rounded-xl mb-4">
+              <div className={cn(
+                'w-12 h-12 rounded-xl flex items-center justify-center',
+                selectedOrder.status === 'pickup' && 'bg-amber-500/20 text-amber-400',
+                selectedOrder.status === 'warehouse' && 'bg-blue-500/20 text-blue-400',
+                selectedOrder.status === 'delivered' && 'bg-emerald-500/20 text-emerald-400',
+              )}>
+                {getStatusIcon(selectedOrder.status)}
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold">{selectedOrder.pickup_address.city} → Baku</p>
+                <p className="text-sm text-muted-foreground">{selectedOrder.receiver_name}</p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-blue-400">{formatCurrency(selectedOrder.total_price)}</p>
+                <p className="text-xs text-muted-foreground">{selectedOrder.total_weight_kg} kg</p>
+              </div>
+            </div>
+            
+            <BottomSheetAction
+              icon={<Eye className="h-5 w-5" />}
+              label="View Details"
+              onClick={() => {
+                closeActionSheet()
+                navigate(`/orders/${selectedOrder.id}`)
+              }}
+            />
+            
+            <BottomSheetAction
+              icon={<Copy className="h-5 w-5" />}
+              label="Copy Reference"
+              onClick={() => {
+                navigator.clipboard.writeText(selectedOrder.internal_ref)
+                closeActionSheet()
+              }}
+            />
+            
+            {user?.role === 'admin' && (
+              <>
+                <BottomSheetAction
+                  icon={<Edit className="h-5 w-5" />}
+                  label="Edit Order"
+                  onClick={() => {
+                    closeActionSheet()
+                    navigate(`/orders/${selectedOrder.id}`)
+                  }}
+                />
+                
+                <BottomSheetAction
+                  icon={<Trash2 className="h-5 w-5" />}
+                  label="Delete Order"
+                  variant="danger"
+                  onClick={() => {
+                    deleteOrder(selectedOrder.id)
+                    closeActionSheet()
+                  }}
+                />
+              </>
+            )}
+          </div>
+        )}
+      </BottomSheet>
     </Layout>
   )
 }

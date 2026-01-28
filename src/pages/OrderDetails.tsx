@@ -23,7 +23,6 @@ import {
   Navigation,
   Clock,
   Save,
-  FileText,
   Plus,
   Hash,
   Ruler,
@@ -188,145 +187,6 @@ export function OrderDetails() {
     
     setPreviewPhoto({ url: photos[newIndex], index: newIndex })
   }
-  
-  // PDF Export function
-  const handleExportPDF = () => {
-    if (!order) return
-    
-    // Create a printable content
-    const printContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Order ${order.internal_ref}</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
-          h1 { color: #1a1a2e; border-bottom: 2px solid #4f46e5; padding-bottom: 10px; }
-          .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
-          .section { margin-bottom: 25px; }
-          .section h2 { font-size: 16px; color: #666; margin-bottom: 10px; text-transform: uppercase; }
-          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-          .field { margin-bottom: 10px; }
-          .label { font-size: 12px; color: #888; }
-          .value { font-size: 14px; font-weight: 500; }
-          .packages { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
-          .packages th, .packages td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
-          .packages th { background: #f5f5f5; font-size: 12px; text-transform: uppercase; }
-          .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-          .status.pickup { background: #fef3c7; color: #d97706; }
-          .status.warehouse { background: #dbeafe; color: #2563eb; }
-          .status.delivered { background: #d1fae5; color: #059669; }
-          .total { font-size: 24px; font-weight: bold; color: #4f46e5; }
-          .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #888; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div>
-            <h1>Order ${order.internal_ref}</h1>
-            <p>Created: ${formatDate(order.created_at)}</p>
-          </div>
-          <div style="text-align: right;">
-            <span class="status ${order.status}">${order.status.toUpperCase()}</span>
-          </div>
-        </div>
-        
-        <div class="grid">
-          <div class="section">
-            <h2>Pickup Location</h2>
-            <div class="field">
-              <div class="label">City</div>
-              <div class="value">${order.pickup_address.city}, ${order.pickup_address.country}</div>
-            </div>
-            <div class="field">
-              <div class="label">Collection Date</div>
-              <div class="value">${formatDate(order.collection_date)}</div>
-            </div>
-          </div>
-          
-          <div class="section">
-            <h2>Receiver</h2>
-            <div class="field">
-              <div class="label">Name</div>
-              <div class="value">${order.receiver_name}</div>
-            </div>
-            <div class="field">
-              <div class="label">Phone</div>
-              <div class="value">${order.receiver_phone}</div>
-            </div>
-            <div class="field">
-              <div class="label">Destination</div>
-              <div class="value">${WAREHOUSE_ADDRESS}</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="section">
-          <h2>Packages (${order.order_packages?.length || 0})</h2>
-          <table class="packages" width="100%">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Client Ref</th>
-                <th>Dimensions</th>
-                <th>Weight</th>
-                <th>Colli</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.order_packages?.map((pkg, i) => `
-                <tr>
-                  <td>${i + 1}</td>
-                  <td>${pkg.client_ref}</td>
-                  <td>${pkg.dimensions}</td>
-                  <td>${pkg.weight_kg} kg</td>
-                  <td>${pkg.colli}</td>
-                </tr>
-              `).join('') || '<tr><td colspan="5">No packages</td></tr>'}
-            </tbody>
-          </table>
-        </div>
-        
-        <div class="section">
-          <h2>Summary</h2>
-          <div class="grid">
-            <div>
-              <div class="field">
-                <div class="label">Total Weight</div>
-                <div class="value">${order.total_weight_kg} kg</div>
-              </div>
-              <div class="field">
-                <div class="label">Total Packages</div>
-                <div class="value">${order.order_packages?.length || 0}</div>
-              </div>
-            </div>
-            <div style="text-align: right;">
-              <div class="label">Total Price</div>
-              <div class="total">${formatCurrency(order.total_price)}</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="footer">
-          <p>TransSupply Order Management System</p>
-          <p>Generated on ${new Date().toLocaleString()}</p>
-        </div>
-      </body>
-      </html>
-    `
-    
-    // Open print dialog
-    const printWindow = window.open('', '_blank')
-    if (printWindow) {
-      printWindow.document.write(printContent)
-      printWindow.document.close()
-      printWindow.focus()
-      setTimeout(() => {
-        printWindow.print()
-        printWindow.close()
-      }, 250)
-    }
-  }
 
   if (!order) {
     return (
@@ -386,18 +246,12 @@ export function OrderDetails() {
             </p>
           </div>
 
-          <div className="flex gap-2">
-            <Button variant="secondary" onClick={handleExportPDF}>
-              <FileText className="h-4 w-4" />
-              Export PDF
+          {user?.role === 'admin' && (
+            <Button variant="secondary" onClick={openEditModal}>
+              <Edit className="h-4 w-4" />
+              Edit
             </Button>
-            {user?.role === 'admin' && (
-              <Button variant="secondary" onClick={openEditModal}>
-                <Edit className="h-4 w-4" />
-                Edit
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </motion.div>
 

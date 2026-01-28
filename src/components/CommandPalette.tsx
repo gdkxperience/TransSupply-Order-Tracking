@@ -197,24 +197,25 @@ export function CommandPalette() {
 
           {/* Command Palette */}
           <motion.div
-            className="fixed top-[20%] left-1/2 w-full max-w-xl z-[100]"
-            initial={{ opacity: 0, y: -20, x: '-50%' }}
-            animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className="fixed top-[15%] md:top-[20%] left-0 right-0 md:left-1/2 md:right-auto w-full md:max-w-xl z-[100] px-3 md:px-0"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            style={{ transform: 'translateX(0)' }}
           >
-            <div className="bg-[#1a1d24] rounded-2xl border border-white/15 shadow-2xl shadow-black/50 overflow-hidden">
+            <div className="md:relative md:left-1/2 md:-translate-x-1/2 bg-[#1a1d24] rounded-2xl border border-white/15 shadow-2xl shadow-black/50 overflow-hidden">
               {/* Search Input */}
-              <div className="flex items-center gap-3 px-4 py-4 border-b border-white/10">
-                <Search className="h-5 w-5 text-muted-foreground" />
+              <div className="flex items-center gap-3 px-3 md:px-4 py-3 md:py-4 border-b border-white/10">
+                <Search className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                 <input
                   type="text"
-                  placeholder="Search orders, clients, or navigate..."
-                  className="flex-1 bg-transparent text-lg outline-none placeholder:text-muted-foreground"
+                  placeholder="Search..."
+                  className="flex-1 bg-transparent text-base md:text-lg outline-none placeholder:text-muted-foreground min-w-0"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   autoFocus
                 />
-                <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md bg-white/10 text-xs text-muted-foreground">
+                <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md bg-white/10 text-xs text-muted-foreground flex-shrink-0">
                   <Command className="h-3 w-3" />K
                 </kbd>
               </div>
@@ -267,8 +268,8 @@ export function CommandPalette() {
                 )}
               </div>
 
-              {/* Footer */}
-              <div className="px-4 py-3 border-t border-white/10 flex items-center justify-between text-xs text-muted-foreground">
+              {/* Footer - Hidden on mobile */}
+              <div className="hidden md:flex px-4 py-3 border-t border-white/10 items-center justify-between text-xs text-muted-foreground">
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1">
                     <kbd className="px-1.5 py-0.5 rounded bg-white/10">↑↓</kbd>

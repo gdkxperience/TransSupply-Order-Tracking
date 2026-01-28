@@ -40,6 +40,7 @@ import {
   ChevronDown,
   ChevronRight,
   Hash,
+  FileText,
 } from 'lucide-react'
 
 export function Orders() {
@@ -233,6 +234,137 @@ export function Orders() {
     document.body.removeChild(link)
   }
 
+  // Export orders to PDF
+  const handleExportPDF = () => {
+    const totalWeight = filteredOrders.reduce((sum, o) => sum + o.total_weight_kg, 0)
+    const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.total_price, 0)
+    const totalPackages = filteredOrders.reduce((sum, o) => sum + (o.order_packages?.length || 0), 0)
+    
+    const statusCounts = {
+      pickup: filteredOrders.filter(o => o.status === 'pickup').length,
+      warehouse: filteredOrders.filter(o => o.status === 'warehouse').length,
+      delivered: filteredOrders.filter(o => o.status === 'delivered').length,
+    }
+    
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Orders Report</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 40px; color: #333; font-size: 12px; }
+          h1 { color: #1a1a2e; border-bottom: 2px solid #4f46e5; padding-bottom: 10px; margin-bottom: 20px; }
+          .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+          .stats { display: flex; gap: 20px; margin-bottom: 20px; }
+          .stat { padding: 10px 15px; background: #f5f5f5; border-radius: 8px; }
+          .stat-value { font-size: 18px; font-weight: bold; color: #4f46e5; }
+          .stat-label { font-size: 10px; color: #666; text-transform: uppercase; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
+          th { background: #f5f5f5; font-size: 10px; text-transform: uppercase; color: #666; }
+          .status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+          .status.pickup { background: #fef3c7; color: #d97706; }
+          .status.warehouse { background: #dbeafe; color: #2563eb; }
+          .status.delivered { background: #d1fae5; color: #059669; }
+          .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 10px; color: #888; }
+          .text-right { text-align: right; }
+          .font-medium { font-weight: 500; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1>Orders Report</h1>
+            <p>Generated on ${new Date().toLocaleString()}</p>
+            ${statusFilter !== 'all' ? `<p>Filtered by: ${statusFilter}</p>` : ''}
+            ${searchQuery ? `<p>Search: "${searchQuery}"</p>` : ''}
+          </div>
+        </div>
+        
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-value">${filteredOrders.length}</div>
+            <div class="stat-label">Total Orders</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">${statusCounts.pickup}</div>
+            <div class="stat-label">Pending Pickup</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">${statusCounts.warehouse}</div>
+            <div class="stat-label">In Warehouse</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">${statusCounts.delivered}</div>
+            <div class="stat-label">Delivered</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">${totalWeight.toLocaleString()} kg</div>
+            <div class="stat-label">Total Weight</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">€${totalRevenue.toLocaleString()}</div>
+            <div class="stat-label">Total Revenue</div>
+          </div>
+        </div>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Status</th>
+              <th>Pickup</th>
+              <th>Collection</th>
+              <th>Receiver</th>
+              <th class="text-right">Packages</th>
+              <th class="text-right">Weight</th>
+              <th class="text-right">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filteredOrders.map(order => `
+              <tr>
+                <td class="font-medium">${order.internal_ref}</td>
+                <td><span class="status ${order.status}">${order.status}</span></td>
+                <td>${order.pickup_address.city}, ${order.pickup_address.country}</td>
+                <td>${formatDate(order.collection_date)}</td>
+                <td>${order.receiver_name}</td>
+                <td class="text-right">${order.order_packages?.length || 0}</td>
+                <td class="text-right">${order.total_weight_kg} kg</td>
+                <td class="text-right">€${order.total_price.toLocaleString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            <tr style="font-weight: bold; border-top: 2px solid #333;">
+              <td colspan="5">Total</td>
+              <td class="text-right">${totalPackages}</td>
+              <td class="text-right">${totalWeight.toLocaleString()} kg</td>
+              <td class="text-right">€${totalRevenue.toLocaleString()}</td>
+            </tr>
+          </tfoot>
+        </table>
+        
+        <div class="footer">
+          <p>TransSupply Order Management System</p>
+          <p>${filteredOrders.length} orders • ${totalPackages} packages • ${totalWeight.toLocaleString()} kg total weight</p>
+        </div>
+      </body>
+      </html>
+    `
+    
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.write(printContent)
+      printWindow.document.close()
+      printWindow.focus()
+      setTimeout(() => {
+        printWindow.print()
+        printWindow.close()
+      }, 250)
+    }
+  }
+
   const handleCreateOrder = async () => {
     const totalWeight = formData.packages.reduce((sum, pkg) => sum + Number(pkg.weight_kg), 0)
     
@@ -362,6 +494,14 @@ export function Orders() {
                 >
                   <Package className="h-4 w-4" />
                   Export with Packages (CSV)
+                </button>
+                <div className="border-t border-white/10 my-1" />
+                <button
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left rounded-lg hover:bg-white/10 transition-colors"
+                  onClick={handleExportPDF}
+                >
+                  <FileText className="h-4 w-4" />
+                  Export Report (PDF)
                 </button>
               </div>
             </div>

@@ -14,7 +14,7 @@ interface OrderContextType {
   getOrderById: (id: string) => Order | undefined
   getOrdersByClient: (clientId: string) => Order[]
   getOrdersByStatus: (status: OrderStatus) => Order[]
-  createOrder: (order: Omit<Order, 'id' | 'internal_ref' | 'created_at' | 'updated_at'>) => Promise<Order>
+  createOrder: (order: Omit<Order, 'id' | 'created_at' | 'updated_at'> & { internal_ref?: string }) => Promise<Order>
   updateOrder: (id: string, updates: Partial<Order>) => Promise<void>
   deleteOrder: (id: string) => Promise<void>
   addBoxToOrder: (orderId: string, box: Omit<OrderBox, 'id' | 'order_id'>) => Promise<void>
@@ -144,13 +144,15 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const generateInternalRef = () => {
     const now = new Date()
     const year = now.getFullYear()
-    const quarter = Math.ceil((now.getMonth() + 1) / 3)
-    const sequence = orders.filter(o => o.internal_ref.startsWith(`${year}Q${quarter}`)).length + 1
-    return `${year}Q${quarter}-${sequence.toString().padStart(3, '0')}`
+    const month = (now.getMonth() + 1).toString().padStart(2, '0')
+    const prefix = `${year}-${month}-`
+    const existingRefs = orders.filter(o => o.internal_ref.startsWith(prefix))
+    const sequence = existingRefs.length + 1
+    return `${prefix}${sequence.toString().padStart(4, '0')}`
   }
 
-  const createOrder = async (orderData: Omit<Order, 'id' | 'internal_ref' | 'created_at' | 'updated_at'>): Promise<Order> => {
-    const internal_ref = generateInternalRef()
+  const createOrder = async (orderData: Omit<Order, 'id' | 'created_at' | 'updated_at'> & { internal_ref?: string }): Promise<Order> => {
+    const internal_ref = orderData.internal_ref || generateInternalRef()
 
     if (!USE_SUPABASE) {
       const newOrder: Order = {

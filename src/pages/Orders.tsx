@@ -40,6 +40,7 @@ import {
   Box,
   ChevronDown,
   ChevronRight,
+  Hash,
 } from 'lucide-react'
 
 export function Orders() {
@@ -64,8 +65,20 @@ export function Orders() {
     })
   }
   
+  // Generate default internal ref
+  const generateDefaultRef = () => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = (now.getMonth() + 1).toString().padStart(2, '0')
+    const prefix = `${year}-${month}-`
+    const existingRefs = orders.filter(o => o.internal_ref.startsWith(prefix))
+    const sequence = existingRefs.length + 1
+    return `${prefix}${sequence.toString().padStart(4, '0')}`
+  }
+
   // Form state
   const [formData, setFormData] = useState({
+    internal_ref: '',
     client_id: '',
     pickup_city: '',
     pickup_country: '',
@@ -104,6 +117,7 @@ export function Orders() {
     const totalWeight = formData.boxes.reduce((sum, box) => sum + Number(box.weight_kg), 0)
     
     await createOrder({
+      internal_ref: formData.internal_ref,
       client_id: formData.client_id || user?.clientId || '',
       status: formData.status,
       pickup_address: {
@@ -134,6 +148,7 @@ export function Orders() {
 
   const resetForm = () => {
     setFormData({
+      internal_ref: generateDefaultRef(),
       client_id: '',
       pickup_city: '',
       pickup_country: '',
@@ -205,7 +220,10 @@ export function Orders() {
         </div>
         
         {user?.role === 'admin' && (
-          <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Button onClick={() => {
+            setFormData(prev => ({ ...prev, internal_ref: generateDefaultRef() }))
+            setIsCreateModalOpen(true)
+          }}>
             <Plus className="h-4 w-4" />
             New Order
           </Button>
@@ -487,6 +505,15 @@ export function Orders() {
         size="xl"
       >
         <form onSubmit={(e) => { e.preventDefault(); handleCreateOrder(); }} className="space-y-6">
+          {/* Internal Reference */}
+          <Input
+            label="Internal Reference"
+            placeholder="2026-01-0001"
+            value={formData.internal_ref}
+            onChange={(e) => setFormData(prev => ({ ...prev, internal_ref: e.target.value }))}
+            icon={<Hash className="h-4 w-4" />}
+          />
+
           <div className="grid grid-cols-2 gap-4">
             <Select
               label="Client"

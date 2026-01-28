@@ -895,26 +895,28 @@ export function Orders() {
             icon={<Hash className="h-4 w-4" />}
           />
 
-          <div className="grid grid-cols-2 gap-4">
-            <Select
-              label="Client"
-              options={[
-                { value: '', label: 'Select client...' },
-                ...clients.map(c => ({ value: c.id, label: c.name }))
-              ]}
-              value={formData.client_id}
-              onChange={(e) => setFormData(prev => ({ ...prev, client_id: e.target.value }))}
-            />
-            <Select
-              label="Status"
-              options={[
-                { value: 'pickup', label: 'Pending Pickup' },
-                { value: 'warehouse', label: 'In Warehouse' },
-                { value: 'delivered', label: 'Delivered' },
-              ]}
-              value={formData.status}
-              onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as OrderStatus }))}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="relative">
+              <Select
+                label="Client"
+                placeholder="Select client..."
+                options={clients.map(c => ({ value: c.id, label: c.name }))}
+                value={formData.client_id}
+                onChange={(value) => setFormData(prev => ({ ...prev, client_id: value }))}
+              />
+            </div>
+            <div className="relative">
+              <Select
+                label="Status"
+                options={[
+                  { value: 'pickup', label: 'Pending Pickup' },
+                  { value: 'warehouse', label: 'In Warehouse' },
+                  { value: 'delivered', label: 'Delivered' },
+                ]}
+                value={formData.status}
+                onChange={(value) => setFormData(prev => ({ ...prev, status: value as OrderStatus }))}
+              />
+            </div>
           </div>
 
           {/* Pickup Address */}

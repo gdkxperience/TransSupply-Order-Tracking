@@ -229,69 +229,210 @@ export function Locations() {
 
   return (
     <Layout>
-      {/* Header */}
-      <motion.div
-        className="flex items-center justify-between mb-4 md:mb-6"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold">Locations</h1>
-          <p className="text-muted-foreground text-sm hidden md:block">
-            Manage frequent pickup locations across Europe
-          </p>
+      {/* Mobile Layout */}
+      <div className="md:hidden flex flex-col h-[calc(100vh-8rem)]">
+        {/* Mobile Header */}
+        <div className="flex items-center justify-between mb-3 flex-shrink-0">
+          <h1 className="text-xl font-bold">Locations</h1>
+          <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="px-3">
+            <Plus className="h-4 w-4" />
+          </Button>
         </div>
-        
-        <Button onClick={() => setIsCreateModalOpen(true)} className="px-3 md:px-4">
-          <Plus className="h-4 w-4" />
-          <span className="hidden md:inline">Add Location</span>
-        </Button>
-      </motion.div>
 
-      {/* Map & Warehouse Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6">
-        {/* Map */}
-        <motion.div
-          className="lg:col-span-2"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card variant="glass" className="h-48 md:h-80 overflow-hidden p-0 relative">
-            {/* Location indicator overlay */}
-            <div className="absolute top-3 left-3 z-10 flex items-center gap-2 px-3 py-2 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10">
-              {selectedLocation.isWarehouse ? (
-                <Warehouse className="h-4 w-4 text-blue-400" />
-              ) : (
-                <MapPin className="h-4 w-4 text-amber-400" />
-              )}
-              <span className="text-sm font-medium">{selectedLocation.name}</span>
-            </div>
-            
-            {mapEmbedUrl ? (
-              <iframe
-                src={mapEmbedUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Locations Map"
-              />
+        {/* Mobile Map - Compact */}
+        <div className="rounded-xl overflow-hidden mb-3 flex-shrink-0 relative h-32">
+          <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 text-xs">
+            {selectedLocation.isWarehouse ? (
+              <Warehouse className="h-3 w-3 text-blue-400" />
             ) : (
-              <iframe
-                src={staticMapUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                title="Location Map"
-              />
+              <MapPin className="h-3 w-3 text-amber-400" />
             )}
-          </Card>
+            <span className="font-medium truncate max-w-24">{selectedLocation.name}</span>
+          </div>
+          {mapEmbedUrl ? (
+            <iframe
+              src={mapEmbedUrl}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Locations Map"
+            />
+          ) : (
+            <iframe
+              src={staticMapUrl}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              title="Location Map"
+            />
+          )}
+        </div>
+
+        {/* Mobile Warehouse Card */}
+        <motion.div
+          className={cn(
+            "flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all mb-3 flex-shrink-0",
+            "bg-white/[0.02] border",
+            selectedLocationId === null 
+              ? "border-blue-500/50 bg-blue-500/5" 
+              : "border-white/[0.08]"
+          )}
+          onClick={() => setSelectedLocationId(null)}
+          whileTap={{ scale: 0.98 }}
+        >
+          <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+            <Warehouse className="h-4 w-4 text-blue-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-sm">Main Warehouse</p>
+            <p className="text-xs text-muted-foreground truncate">{warehouse.address}</p>
+          </div>
+          <button
+            className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground"
+            onClick={(e) => {
+              e.stopPropagation()
+              openEditWarehouse()
+            }}
+          >
+            <Edit className="h-3.5 w-3.5" />
+          </button>
         </motion.div>
+
+        {/* Mobile Search */}
+        <div className="relative mb-3 flex-shrink-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search locations..."
+            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/8 text-sm focus:outline-none focus:border-blue-500/50"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        {/* Mobile Locations List - Scrollable */}
+        <div className="flex-1 overflow-y-auto space-y-1 -mx-1 px-1">
+          {filteredLocations.map((location, index) => (
+            <motion.div
+              key={location.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.02 }}
+              className={cn(
+                "flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all",
+                "bg-white/[0.02]",
+                selectedLocationId === location.id 
+                  ? "border border-amber-500/50 bg-amber-500/5" 
+                  : "active:bg-white/[0.08]"
+              )}
+              onClick={() => setSelectedLocationId(location.id)}
+            >
+              <div className={cn(
+                "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
+                selectedLocationId === location.id ? "bg-amber-500/20" : "bg-white/10"
+              )}>
+                <MapPin className={cn(
+                  "h-4 w-4",
+                  selectedLocationId === location.id ? "text-amber-400" : "text-muted-foreground"
+                )} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm">{location.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {Math.round(calculateDistance(location.coords.lat, location.coords.lng, warehouse.lat, warehouse.lng))} km
+                </p>
+              </div>
+              <button
+                className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setLocations(prev => prev.filter(l => l.id !== location.id))
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </motion.div>
+          ))}
+          
+          {filteredLocations.length === 0 && (
+            <div className="text-center py-8">
+              <MapPin className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
+              <p className="text-sm text-muted-foreground">No locations found</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden md:block">
+        {/* Desktop Header */}
+        <motion.div
+          className="flex items-center justify-between mb-6"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div>
+            <h1 className="text-2xl font-bold">Locations</h1>
+            <p className="text-muted-foreground text-sm">
+              Manage frequent pickup locations across Europe
+            </p>
+          </div>
+          
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Plus className="h-4 w-4" />
+            Add Location
+          </Button>
+        </motion.div>
+
+        {/* Map & Warehouse Info */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* Map */}
+          <motion.div
+            className="lg:col-span-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card variant="glass" className="h-80 overflow-hidden p-0 relative">
+              {/* Location indicator overlay */}
+              <div className="absolute top-3 left-3 z-10 flex items-center gap-2 px-3 py-2 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10">
+                {selectedLocation.isWarehouse ? (
+                  <Warehouse className="h-4 w-4 text-blue-400" />
+                ) : (
+                  <MapPin className="h-4 w-4 text-amber-400" />
+                )}
+                <span className="text-sm font-medium">{selectedLocation.name}</span>
+              </div>
+              
+              {mapEmbedUrl ? (
+                <iframe
+                  src={mapEmbedUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Locations Map"
+                />
+              ) : (
+                <iframe
+                  src={staticMapUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  title="Location Map"
+                />
+              )}
+            </Card>
+          </motion.div>
 
         {/* Warehouse Info - Hidden on mobile, shown below locations grid */}
         <motion.div
@@ -375,46 +516,14 @@ export function Locations() {
         </motion.div>
       </div>
 
-      {/* Mobile Warehouse Card */}
-      <div className="lg:hidden mb-4">
-        <motion.div
-          className={cn(
-            "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all",
-            "bg-white/[0.02] border",
-            selectedLocationId === null 
-              ? "border-blue-500/50 bg-blue-500/5" 
-              : "border-white/[0.08] hover:bg-white/[0.06]"
-          )}
-          onClick={() => setSelectedLocationId(null)}
-          whileTap={{ scale: 0.98 }}
-        >
-          <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-            <Warehouse className="h-5 w-5 text-blue-400" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm">Main Warehouse</p>
-            <p className="text-xs text-muted-foreground truncate">{warehouse.address}</p>
-          </div>
-          <motion.button
-            className="p-2 rounded-lg hover:bg-white/10 text-muted-foreground"
-            onClick={(e) => {
-              e.stopPropagation()
-              openEditWarehouse()
-            }}
-          >
-            <Edit className="h-4 w-4" />
-          </motion.button>
-        </motion.div>
-      </div>
-
-      {/* Search */}
+      {/* Desktop Search */}
       <motion.div
-        className="mb-4 md:mb-6"
+        className="mb-6"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="relative md:max-w-md">
+        <div className="relative max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
@@ -425,58 +534,6 @@ export function Locations() {
           />
         </div>
       </motion.div>
-
-      {/* Mobile Locations List */}
-      <div className="md:hidden space-y-1 mb-4">
-        {filteredLocations.map((location, index) => (
-          <motion.div
-            key={location.id}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.02 }}
-            className={cn(
-              "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all",
-              "bg-white/[0.02]",
-              selectedLocationId === location.id 
-                ? "border border-amber-500/50 bg-amber-500/5" 
-                : "hover:bg-white/[0.06] active:bg-white/[0.08]"
-            )}
-            onClick={() => setSelectedLocationId(location.id)}
-          >
-            <div className={cn(
-              "w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0",
-              selectedLocationId === location.id ? "bg-amber-500/20" : "bg-white/10"
-            )}>
-              <MapPin className={cn(
-                "h-4 w-4",
-                selectedLocationId === location.id ? "text-amber-400" : "text-muted-foreground"
-              )} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm">{location.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {Math.round(calculateDistance(location.coords.lat, location.coords.lng, warehouse.lat, warehouse.lng))} km to warehouse
-              </p>
-            </div>
-            <motion.button
-              className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400"
-              onClick={(e) => {
-                e.stopPropagation()
-                setLocations(prev => prev.filter(l => l.id !== location.id))
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </motion.button>
-          </motion.div>
-        ))}
-        
-        {filteredLocations.length === 0 && (
-          <div className="text-center py-12">
-            <MapPin className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
-            <p className="text-sm text-muted-foreground">No locations found</p>
-          </div>
-        )}
-      </div>
 
       {/* Desktop Locations Grid */}
       <motion.div
@@ -589,6 +646,7 @@ export function Locations() {
           </Button>
         </div>
       )}
+      </div>
 
       {/* Create Location Modal */}
       <Modal

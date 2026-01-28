@@ -882,17 +882,19 @@ export function OrderDetails() {
         size="lg"
       >
         <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <Select
-              label="Status"
-              value={editForm.status}
-              onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value as OrderStatus }))}
-              options={[
-                { value: 'pickup', label: 'Pending Pickup' },
-                { value: 'warehouse', label: 'In Warehouse' },
-                { value: 'delivered', label: 'Delivered' },
-              ]}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="relative">
+              <Select
+                label="Status"
+                value={editForm.status}
+                onChange={(value) => setEditForm(prev => ({ ...prev, status: value as OrderStatus }))}
+                options={[
+                  { value: 'pickup', label: 'Pending Pickup' },
+                  { value: 'warehouse', label: 'In Warehouse' },
+                  { value: 'delivered', label: 'Delivered' },
+                ]}
+              />
+            </div>
             <Input
               label="Collection Date"
               type="date"

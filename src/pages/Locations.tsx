@@ -195,10 +195,18 @@ export function Locations() {
   }
 
   const handleSaveWarehouse = () => {
+    const lat = parseFloat(warehouseForm.lat)
+    const lng = parseFloat(warehouseForm.lng)
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      setWarehouseLookupStatus('error')
+      return
+    }
+    
     setWarehouse({
       address: warehouseForm.address,
-      lat: parseFloat(warehouseForm.lat),
-      lng: parseFloat(warehouseForm.lng),
+      lat,
+      lng,
     })
     setIsEditWarehouseOpen(false)
     setWarehouseLookupStatus('idle')
@@ -884,7 +892,14 @@ export function Locations() {
             <Button type="button" variant="ghost" onClick={() => setIsEditWarehouseOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!warehouseForm.lat || !warehouseForm.lng}>
+            <Button 
+              type="submit" 
+              disabled={!warehouseForm.lat || !warehouseForm.lng}
+              onClick={(e) => {
+                e.preventDefault()
+                handleSaveWarehouse()
+              }}
+            >
               <Save className="h-4 w-4" />
               Save Changes
             </Button>

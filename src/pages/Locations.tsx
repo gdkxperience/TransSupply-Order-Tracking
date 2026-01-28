@@ -230,24 +230,24 @@ export function Locations() {
   return (
     <Layout>
       {/* Mobile Layout */}
-      <div className="md:hidden flex flex-col h-[calc(100vh-8rem)]">
+      <div className="md:hidden flex flex-col" style={{ height: 'calc(100vh - 10rem)' }}>
         {/* Mobile Header */}
-        <div className="flex items-center justify-between mb-3 flex-shrink-0">
-          <h1 className="text-xl font-bold">Locations</h1>
-          <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="px-3">
+        <div className="flex items-center justify-between mb-2 flex-shrink-0">
+          <h1 className="text-lg font-bold">Locations</h1>
+          <Button onClick={() => setIsCreateModalOpen(true)} size="sm" className="px-2 h-8">
             <Plus className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Mobile Map - Compact */}
-        <div className="rounded-xl overflow-hidden mb-3 flex-shrink-0 relative h-32">
-          <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 text-xs">
+        <div className="rounded-lg overflow-hidden mb-2 flex-shrink-0 relative h-28">
+          <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/70 text-[10px]">
             {selectedLocation.isWarehouse ? (
-              <Warehouse className="h-3 w-3 text-blue-400" />
+              <Warehouse className="h-2.5 w-2.5 text-blue-400" />
             ) : (
-              <MapPin className="h-3 w-3 text-amber-400" />
+              <MapPin className="h-2.5 w-2.5 text-amber-400" />
             )}
-            <span className="font-medium truncate max-w-24">{selectedLocation.name}</span>
+            <span className="font-medium truncate max-w-20">{selectedLocation.name}</span>
           </div>
           {mapEmbedUrl ? (
             <iframe
@@ -274,57 +274,53 @@ export function Locations() {
         </div>
 
         {/* Mobile Warehouse Card */}
-        <motion.div
+        <div
           className={cn(
-            "flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all mb-3 flex-shrink-0",
+            "flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all mb-2 flex-shrink-0",
             "bg-white/[0.02] border",
             selectedLocationId === null 
               ? "border-blue-500/50 bg-blue-500/5" 
               : "border-white/[0.08]"
           )}
           onClick={() => setSelectedLocationId(null)}
-          whileTap={{ scale: 0.98 }}
         >
-          <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-            <Warehouse className="h-4 w-4 text-blue-400" />
+          <div className="w-7 h-7 rounded-md bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+            <Warehouse className="h-3.5 w-3.5 text-blue-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm">Main Warehouse</p>
-            <p className="text-xs text-muted-foreground truncate">{warehouse.address}</p>
+            <p className="font-medium text-xs">Main Warehouse</p>
+            <p className="text-[10px] text-muted-foreground truncate">{warehouse.address}</p>
           </div>
           <button
-            className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground"
+            className="p-1 rounded hover:bg-white/10 text-muted-foreground"
             onClick={(e) => {
               e.stopPropagation()
               openEditWarehouse()
             }}
           >
-            <Edit className="h-3.5 w-3.5" />
+            <Edit className="h-3 w-3" />
           </button>
-        </motion.div>
+        </div>
 
         {/* Mobile Search */}
-        <div className="relative mb-3 flex-shrink-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative mb-2 flex-shrink-0">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search locations..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/5 border border-white/8 text-sm focus:outline-none focus:border-blue-500/50"
+            placeholder="Search..."
+            className="w-full pl-8 pr-2 py-1.5 rounded-lg bg-white/5 border border-white/8 text-xs focus:outline-none focus:border-blue-500/50"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
         {/* Mobile Locations List - Scrollable */}
-        <div className="flex-1 overflow-y-auto space-y-1 -mx-1 px-1">
-          {filteredLocations.map((location, index) => (
-            <motion.div
+        <div className="flex-1 overflow-y-auto overscroll-contain space-y-1 -mx-1 px-1 pb-2">
+          {filteredLocations.map((location) => (
+            <div
               key={location.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.02 }}
               className={cn(
-                "flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all",
+                "flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all",
                 "bg-white/[0.02]",
                 selectedLocationId === location.id 
                   ? "border border-amber-500/50 bg-amber-500/5" 
@@ -333,36 +329,36 @@ export function Locations() {
               onClick={() => setSelectedLocationId(location.id)}
             >
               <div className={cn(
-                "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
+                "w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0",
                 selectedLocationId === location.id ? "bg-amber-500/20" : "bg-white/10"
               )}>
                 <MapPin className={cn(
-                  "h-4 w-4",
+                  "h-3.5 w-3.5",
                   selectedLocationId === location.id ? "text-amber-400" : "text-muted-foreground"
                 )} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm">{location.name}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="font-medium text-xs">{location.name}</p>
+                <p className="text-[10px] text-muted-foreground">
                   {Math.round(calculateDistance(location.coords.lat, location.coords.lng, warehouse.lat, warehouse.lng))} km
                 </p>
               </div>
               <button
-                className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400"
+                className="p-1 rounded hover:bg-red-500/10 text-muted-foreground hover:text-red-400"
                 onClick={(e) => {
                   e.stopPropagation()
                   setLocations(prev => prev.filter(l => l.id !== location.id))
                 }}
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-3 w-3" />
               </button>
-            </motion.div>
+            </div>
           ))}
           
           {filteredLocations.length === 0 && (
-            <div className="text-center py-8">
-              <MapPin className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
-              <p className="text-sm text-muted-foreground">No locations found</p>
+            <div className="text-center py-6">
+              <MapPin className="h-6 w-6 mx-auto text-muted-foreground/50 mb-1" />
+              <p className="text-xs text-muted-foreground">No locations</p>
             </div>
           )}
         </div>

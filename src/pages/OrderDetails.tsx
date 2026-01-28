@@ -583,62 +583,63 @@ export function OrderDetails() {
 
           {/* Order Packages */}
           <Card variant="glass">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Package className="h-5 w-5 text-blue-400" />
-                Order Packages ({order.order_packages?.length || 0})
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <h2 className="text-base md:text-lg font-semibold flex items-center gap-2">
+                <Package className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
+                Packages ({order.order_packages?.length || 0})
               </h2>
               {user?.role === 'admin' && (
                 <Button
                   size="sm"
                   variant="secondary"
                   onClick={() => setIsAddPackageOpen(true)}
+                  className="px-2 md:px-3"
                 >
                   <Plus className="h-4 w-4" />
-                  Add Package
+                  <span className="hidden md:inline">Add</span>
                 </Button>
               )}
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-1.5 md:space-y-3">
               {order.order_packages?.map((pkg, index) => (
                 <motion.div
                   key={pkg.id}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10"
+                  className="flex items-center gap-2.5 md:gap-4 p-2.5 md:p-4 rounded-lg md:rounded-xl bg-white/5 border border-white/10"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.05 }}
+                  transition={{ delay: 0.3 + index * 0.03 }}
                 >
-                  <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                    <Package className="h-5 w-5 text-blue-400" />
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                    <Package className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
                   </div>
                   
-                  <div className="flex-1">
-                    <p className="font-medium">{pkg.client_ref}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {pkg.dimensions} • {pkg.colli} colli
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm md:text-base truncate">{pkg.client_ref}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground truncate">
+                      {pkg.dimensions} · {pkg.colli} colli
                     </p>
                   </div>
 
-                  <div className="text-right">
-                    <p className="font-medium">{pkg.weight_kg} kg</p>
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-medium text-sm md:text-base">{pkg.weight_kg} kg</p>
                   </div>
                 </motion.div>
               ))}
 
               {(!order.order_packages || order.order_packages.length === 0) && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Package className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                  <p>No packages added yet</p>
+                <div className="text-center py-6 md:py-8 text-muted-foreground">
+                  <Package className="h-8 w-8 md:h-10 md:w-10 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No packages added yet</p>
                   {user?.role === 'admin' && (
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="mt-3"
+                      className="mt-2"
                       onClick={() => setIsAddPackageOpen(true)}
                     >
                       <Plus className="h-4 w-4" />
-                      Add First Package
+                      Add Package
                     </Button>
                   )}
                 </div>
@@ -648,14 +649,14 @@ export function OrderDetails() {
 
           {/* Photos */}
           <Card variant="glass">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Image className="h-5 w-5 text-indigo-400" />
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <h2 className="text-base md:text-lg font-semibold flex items-center gap-2">
+                <Image className="h-4 w-4 md:h-5 md:w-5 text-indigo-400" />
                 Photos ({photos.length})
               </h2>
               {user?.role === 'admin' && (
                 <label className={cn(
-                "cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg",
+                "cursor-pointer inline-flex items-center gap-1.5 px-2 md:px-3 py-1.5 text-sm rounded-lg",
                 "bg-white/10 border border-white/10 text-foreground",
                 "hover:bg-white/15 transition-colors",
                 isUploading && "opacity-50 cursor-not-allowed"
@@ -669,18 +670,18 @@ export function OrderDetails() {
                     disabled={isUploading}
                   />
                   {isUploading ? (
-                    <>Uploading...</>
+                    <span className="text-xs">...</span>
                   ) : (
                     <>
                       <Upload className="h-4 w-4" />
-                      Upload
+                      <span className="hidden md:inline">Upload</span>
                     </>
                   )}
                 </label>
               )}
             </div>
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4">
               {photos.length > 0 ? (
                 photos.map((photo, index) => (
                   <motion.div

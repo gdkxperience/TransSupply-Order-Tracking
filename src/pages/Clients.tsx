@@ -8,7 +8,6 @@ import {
   Button,
   Input,
   Modal,
-  Badge,
 } from '../components/ui'
 import { formatDate, formatCurrency, cn } from '../lib/utils'
 import type { ClientRecord } from '../lib/supabase'
@@ -26,7 +25,6 @@ import {
   UserPlus,
   Save,
   Lock,
-  ArrowRight,
   X,
   ChevronRight,
 } from 'lucide-react'
@@ -114,15 +112,6 @@ export function Clients() {
     }, 1500)
   }
   
-  const getStatusVariant = (status: string) => {
-    switch (status) {
-      case 'pickup': return 'pickup'
-      case 'warehouse': return 'warehouse'
-      case 'delivered': return 'delivered'
-      default: return 'default'
-    }
-  }
-
   return (
     <Layout>
       {/* Header */}
@@ -404,59 +393,59 @@ export function Clients() {
         onClose={() => setViewOrdersClient(null)}
         title={`Orders - ${viewOrdersClient?.name || ''}`}
         description={`${getClientOrders(viewOrdersClient?.id || '').length} orders found`}
-        size="lg"
+        size="md"
       >
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+        <div className="space-y-1 -mx-1">
           {viewOrdersClient && getClientOrders(viewOrdersClient.id).length === 0 ? (
             <div className="text-center py-8">
-              <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-              <p className="text-muted-foreground">No orders found for this client</p>
+              <Package className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+              <p className="text-sm text-muted-foreground">No orders found for this client</p>
             </div>
           ) : (
             viewOrdersClient && getClientOrders(viewOrdersClient.id).map((order) => (
               <motion.div
                 key={order.id}
-                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
+                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/[0.06] active:bg-white/[0.08] transition-colors cursor-pointer"
                 onClick={() => {
                   setViewOrdersClient(null)
                   navigate(`/orders/${order.id}`)
                 }}
-                whileHover={{ x: 4 }}
               >
-                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                  <Package className="h-5 w-5 text-blue-400" />
+                <div className={cn(
+                  'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
+                  order.status === 'pickup' && 'bg-amber-500/20 text-amber-400',
+                  order.status === 'warehouse' && 'bg-blue-500/20 text-blue-400',
+                  order.status === 'delivered' && 'bg-emerald-500/20 text-emerald-400',
+                )}>
+                  <Package className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="font-medium">{order.internal_ref}</p>
-                    <Badge variant={getStatusVariant(order.status) as 'pickup' | 'warehouse' | 'delivered' | 'default'}>
-                      {order.status}
-                    </Badge>
+                    <span className="font-medium text-sm">{order.internal_ref}</span>
+                    <span className="text-xs text-muted-foreground">· {order.pickup_address.city}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {order.pickup_address.city} → Baku • {formatDate(order.collection_date)}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{formatDate(order.collection_date)}</p>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold text-blue-400">{formatCurrency(order.total_price)}</p>
-                  <p className="text-xs text-muted-foreground">{order.total_weight_kg} kg</p>
+                <div className="text-right flex-shrink-0">
+                  <p className="font-semibold text-sm text-blue-400">{formatCurrency(order.total_price)}</p>
+                  <p className="text-xs text-muted-foreground">{order.total_weight_kg}kg</p>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               </motion.div>
             ))
           )}
         </div>
         
         <div className="flex justify-end gap-3 pt-4 mt-4 border-t border-white/10">
-          <Button variant="ghost" onClick={() => setViewOrdersClient(null)}>
+          <Button variant="ghost" size="sm" onClick={() => setViewOrdersClient(null)}>
             Close
           </Button>
-          <Button onClick={() => {
+          <Button size="sm" onClick={() => {
             setViewOrdersClient(null)
             navigate('/orders')
           }}>
             <Package className="h-4 w-4" />
-            View All Orders
+            View All
           </Button>
         </div>
       </Modal>

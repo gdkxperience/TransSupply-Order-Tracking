@@ -52,13 +52,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <input
               type={inputType}
               className={cn(
-                'w-full px-4 py-3 rounded-xl',
+                'w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-sm md:text-base',
                 'bg-white/5 border border-white/8',
                 'text-foreground placeholder:text-neutral-500',
                 'focus:outline-none focus:border-blue-500/50',
                 'transition-all duration-300',
-                icon && 'pl-11',
-                isPassword && 'pr-11',
+                icon && 'pl-10 md:pl-11',
+                isPassword && 'pr-10 md:pr-11',
                 error && 'border-red-500/50',
                 className
               )}

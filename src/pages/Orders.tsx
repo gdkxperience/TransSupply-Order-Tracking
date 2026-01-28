@@ -923,7 +923,7 @@ export function Orders() {
               <MapPin className="h-4 w-4" />
               Pickup Location
             </h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Input
                 placeholder="Street"
                 value={formData.pickup_street}
@@ -943,7 +943,7 @@ export function Orders() {
           </div>
 
           {/* Collection & Receiver */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Input
               type="date"
               label="Collection Date"
@@ -994,41 +994,44 @@ export function Orders() {
               {formData.packages.map((pkg, index) => (
                 <motion.div
                   key={index}
-                  className="grid grid-cols-5 gap-3 p-3 rounded-xl bg-white/5 border border-white/10"
+                  className="relative p-3 rounded-xl bg-white/5 border border-white/10"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Input
-                    placeholder="Client Ref"
-                    value={pkg.client_ref}
-                    onChange={(e) => updatePackage(index, 'client_ref', e.target.value)}
-                  />
-                  <Input
-                    placeholder="Weight (kg)"
-                    type="number"
-                    value={pkg.weight_kg}
-                    onChange={(e) => updatePackage(index, 'weight_kg', e.target.value)}
-                  />
-                  <Input
-                    placeholder="LxWxH cm"
-                    value={pkg.dimensions}
-                    onChange={(e) => updatePackage(index, 'dimensions', e.target.value)}
-                  />
-                  <Input
-                    placeholder="Colli"
-                    type="number"
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+                    <Input
+                      placeholder="Client Ref"
+                      value={pkg.client_ref}
+                      onChange={(e) => updatePackage(index, 'client_ref', e.target.value)}
+                    />
+                    <Input
+                      placeholder="Weight (kg)"
+                      type="number"
+                      value={pkg.weight_kg}
+                      onChange={(e) => updatePackage(index, 'weight_kg', e.target.value)}
+                    />
+                    <Input
+                      placeholder="LxWxH cm"
+                      value={pkg.dimensions}
+                      onChange={(e) => updatePackage(index, 'dimensions', e.target.value)}
+                    />
+                    <Input
+                      placeholder="Colli"
+                      type="number"
                     value={pkg.colli}
                     onChange={(e) => updatePackage(index, 'colli', parseInt(e.target.value) || 1)}
                   />
+                  </div>
                   {formData.packages.length > 1 && (
                     <motion.button
                       type="button"
-                      className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors self-center justify-self-center"
+                      className="mt-2 md:mt-0 p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors flex items-center justify-center gap-1 text-xs md:absolute md:top-2 md:right-2"
                       onClick={() => removePackage(index)}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-3 w-3" />
+                      <span className="md:hidden">Remove</span>
                     </motion.button>
                   )}
                 </motion.div>

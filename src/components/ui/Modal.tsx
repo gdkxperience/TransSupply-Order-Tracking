@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react'
+import { Fragment, useEffect, type ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { cn } from '../../lib/utils'
@@ -21,6 +21,18 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
     full: 'max-w-[90vw]',
   }
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -36,7 +48,7 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -46,6 +58,8 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
                 'relative w-full rounded-2xl',
                 'bg-[#1a1d24] border border-white/15',
                 'shadow-2xl shadow-black/50',
+                'max-h-[calc(100vh-1.5rem)] md:max-h-[calc(100vh-2rem)]',
+                'flex flex-col',
                 sizes[size]
               )}
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -62,7 +76,7 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
 
               {/* Close button */}
               <motion.button
-                className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/10 transition-colors"
+                className="absolute top-3 md:top-4 right-3 md:right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/10 transition-colors z-10"
                 onClick={onClose}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -70,31 +84,33 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
                 <X className="h-5 w-5" />
               </motion.button>
 
-              {/* Content */}
-              <div className="p-6">
-                {(title || description) && (
-                  <div className="mb-6">
-                    {title && (
-                      <motion.h2
-                        className="text-xl font-semibold"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                      >
-                        {title}
-                      </motion.h2>
-                    )}
-                    {description && (
-                      <motion.p
-                        className="mt-1 text-sm text-muted-foreground"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                      >
-                        {description}
-                      </motion.p>
-                    )}
-                  </div>
-                )}
+              {/* Header */}
+              {(title || description) && (
+                <div className="p-4 md:p-6 pb-0 flex-shrink-0">
+                  {title && (
+                    <motion.h2
+                      className="text-lg md:text-xl font-semibold pr-8"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {title}
+                    </motion.h2>
+                  )}
+                  {description && (
+                    <motion.p
+                      className="mt-1 text-sm text-muted-foreground"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      {description}
+                    </motion.p>
+                  )}
+                </div>
+              )}
+
+              {/* Scrollable Content */}
+              <div className="p-4 md:p-6 pt-4 overflow-y-auto flex-1 overscroll-contain">
                 {children}
               </div>
             </motion.div>

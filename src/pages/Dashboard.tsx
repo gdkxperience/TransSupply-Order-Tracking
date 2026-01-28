@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useOrders } from '../context/OrderContext'
 import { Layout } from '../components/layout/Layout'
-import { Card, Badge, StatsCard } from '../components/ui'
-import { formatDate, formatCurrency } from '../lib/utils'
+import { Card, StatsCard } from '../components/ui'
+import { formatCurrency, cn } from '../lib/utils'
 import {
   Package,
   Truck,
@@ -14,7 +14,6 @@ import {
   Euro,
   ArrowRight,
   TrendingUp,
-  MapPin,
 } from 'lucide-react'
 
 export function Dashboard() {
@@ -129,57 +128,52 @@ export function Dashboard() {
               </motion.button>
             </div>
 
-            <div className="space-y-2 md:space-y-3">
+            <div className="space-y-1 md:space-y-2">
               {recentOrders.map((order, index) => (
                 <motion.div
                   key={order.id}
-                  className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 cursor-pointer transition-all active:bg-white/15"
-                  initial={{ opacity: 0, x: -20 }}
+                  className="flex items-center gap-3 p-2.5 md:p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] active:bg-white/[0.08] cursor-pointer transition-all"
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + index * 0.05 }}
-                  whileHover={{ x: 4 }}
+                  transition={{ delay: 0.4 + index * 0.03 }}
                   onClick={() => navigate(`/orders/${order.id}`)}
                 >
-                  <div className="flex-shrink-0">
-                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center ${
-                      order.status === 'pickup' ? 'bg-amber-500' :
-                      order.status === 'warehouse' ? 'bg-blue-500' :
-                      'bg-emerald-500'
-                    }`}>
-                      {order.status === 'pickup' && <Truck className="h-4 w-4 md:h-5 md:w-5 text-white" />}
-                      {order.status === 'warehouse' && <Warehouse className="h-4 w-4 md:h-5 md:w-5 text-white" />}
-                      {order.status === 'delivered' && <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-white" />}
-                    </div>
+                  {/* Status Icon */}
+                  <div className={cn(
+                    'w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center flex-shrink-0',
+                    order.status === 'pickup' && 'bg-amber-500/20 text-amber-400',
+                    order.status === 'warehouse' && 'bg-blue-500/20 text-blue-400',
+                    order.status === 'delivered' && 'bg-emerald-500/20 text-emerald-400',
+                  )}>
+                    {order.status === 'pickup' && <Truck className="h-4 w-4" />}
+                    {order.status === 'warehouse' && <Warehouse className="h-4 w-4" />}
+                    {order.status === 'delivered' && <CheckCircle2 className="h-4 w-4" />}
                   </div>
                   
+                  {/* Main Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm md:text-base">{order.internal_ref}</p>
-                      <Badge variant={order.status} pulse={order.status !== 'delivered'}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </Badge>
+                      <span className="font-medium text-sm">{order.internal_ref}</span>
+                      <span className="text-xs text-muted-foreground hidden md:inline">· {order.pickup_address.city}</span>
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {order.pickup_address.city}, {order.pickup_address.country}
-                      </span>
-                      <span>•</span>
-                      <span>{order.total_weight_kg} kg</span>
-                    </div>
+                    <p className="text-xs text-muted-foreground truncate">
+                      <span className="md:hidden">{order.pickup_address.city} · </span>
+                      {order.receiver_name}
+                    </p>
                   </div>
 
-                  <div className="text-right">
-                    <p className="font-medium">{formatCurrency(order.total_price)}</p>
-                    <p className="text-xs text-muted-foreground">{formatDate(order.collection_date)}</p>
+                  {/* Price */}
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-semibold text-sm text-blue-400">{formatCurrency(order.total_price)}</p>
+                    <p className="text-xs text-muted-foreground">{order.total_weight_kg}kg</p>
                   </div>
                 </motion.div>
               ))}
 
               {recentOrders.length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No orders yet</p>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Package className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">No orders yet</p>
                 </div>
               )}
             </div>

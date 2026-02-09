@@ -63,6 +63,19 @@ export function Orders() {
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false)
   const [isExportSheetOpen, setIsExportSheetOpen] = useState(false)
   
+  // Load locations from localStorage (synced with Locations page)
+  const savedLocations = (() => {
+    const saved = localStorage.getItem('transsupply_locations')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return demoLocations
+      }
+    }
+    return demoLocations
+  })()
+  
   const copyToClipboard = (text: string, orderId: string) => {
     navigator.clipboard.writeText(text)
     setCopiedId(orderId)
@@ -940,7 +953,7 @@ export function Orders() {
             </h3>
             <Select
               label=""
-              options={demoLocations.map(loc => ({ value: loc.name, label: loc.name }))}
+              options={savedLocations.map((loc: { name: string }) => ({ value: loc.name, label: loc.name }))}
               value={formData.pickup_city ? `${formData.pickup_city}, ${formData.pickup_country}` : ''}
               onChange={(value) => {
                 const parts = value.split(', ')

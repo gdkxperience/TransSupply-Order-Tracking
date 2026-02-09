@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Layout } from '../components/layout/Layout'
 import { Card, Button, Input, Modal, Badge } from '../components/ui'
@@ -60,7 +60,17 @@ async function geocodeAddress(address: string, apiKey: string): Promise<{ lat: n
 
 export function Locations() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [locations, setLocations] = useState<LocationItem[]>(demoLocations)
+  const [locations, setLocations] = useState<LocationItem[]>(() => {
+    const saved = localStorage.getItem('transsupply_locations')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return demoLocations
+      }
+    }
+    return demoLocations
+  })
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditWarehouseOpen, setIsEditWarehouseOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -75,17 +85,41 @@ export function Locations() {
   // Selected location for map display (null = warehouse)
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null)
 
-  // Editable warehouse state
-  const [warehouse, setWarehouse] = useState({
-    address: WAREHOUSE_ADDRESS,
-    lat: WAREHOUSE_COORDS.lat,
-    lng: WAREHOUSE_COORDS.lng,
+  // Editable warehouse state - load from localStorage or use defaults
+  const [warehouse, setWarehouse] = useState(() => {
+    const saved = localStorage.getItem('transsupply_warehouse')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return {
+          address: WAREHOUSE_ADDRESS,
+          lat: WAREHOUSE_COORDS.lat,
+          lng: WAREHOUSE_COORDS.lng,
+        }
+      }
+    }
+    return {
+      address: WAREHOUSE_ADDRESS,
+      lat: WAREHOUSE_COORDS.lat,
+      lng: WAREHOUSE_COORDS.lng,
+    }
   })
 
+  // Save warehouse to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('transsupply_warehouse', JSON.stringify(warehouse))
+  }, [warehouse])
+
+  // Save locations to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('transsupply_locations', JSON.stringify(locations))
+  }, [locations])
+
   const [warehouseForm, setWarehouseForm] = useState({
-    address: WAREHOUSE_ADDRESS,
-    lat: WAREHOUSE_COORDS.lat.toString(),
-    lng: WAREHOUSE_COORDS.lng.toString(),
+    address: warehouse.address,
+    lat: warehouse.lat.toString(),
+    lng: warehouse.lng.toString(),
   })
   const [warehouseLookingUp, setWarehouseLookingUp] = useState(false)
   const [warehouseLookupStatus, setWarehouseLookupStatus] = useState<'idle' | 'success' | 'error'>('idle')

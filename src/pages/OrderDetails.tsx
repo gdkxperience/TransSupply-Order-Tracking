@@ -275,7 +275,7 @@ export function OrderDetails() {
             </div>
             <div class="field">
               <div class="label">Destination</div>
-              <div class="value">${WAREHOUSE_ADDRESS}</div>
+              <div class="value">${savedWarehouse.address}</div>
             </div>
           </div>
         </div>
@@ -535,7 +535,7 @@ export function OrderDetails() {
                   <div className="w-3 h-3 rounded-full bg-emerald-500" />
                   <span className="text-sm text-muted-foreground">Destination</span>
                 </div>
-                <p className="font-medium">{WAREHOUSE_ADDRESS}</p>
+                <p className="font-medium">{savedWarehouse.address}</p>
               </div>
             </div>
 
@@ -851,7 +851,7 @@ export function OrderDetails() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Address</p>
-                  <p className="font-medium">{WAREHOUSE_ADDRESS}</p>
+                  <p className="font-medium">{savedWarehouse.address}</p>
                 </div>
               </div>
             </div>

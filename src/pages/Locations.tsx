@@ -73,6 +73,7 @@ export function Locations() {
   })
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditWarehouseOpen, setIsEditWarehouseOpen] = useState(false)
+  const [editingLocation, setEditingLocation] = useState<LocationItem | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -224,6 +225,34 @@ export function Locations() {
     }
     setLocations(prev => [...prev, newLocation])
     setIsCreateModalOpen(false)
+    setFormData({ name: '', address: '', lat: '', lng: '' })
+    setLookupStatus('idle')
+  }
+
+  const openEditLocation = (location: LocationItem) => {
+    setEditingLocation(location)
+    setFormData({
+      name: location.name,
+      address: location.name,
+      lat: location.coords.lat.toString(),
+      lng: location.coords.lng.toString(),
+    })
+    setLookupStatus('idle')
+  }
+
+  const handleEditLocation = () => {
+    if (!editingLocation || !formData.lat || !formData.lng) return
+    
+    setLocations(prev => prev.map(loc => 
+      loc.id === editingLocation.id 
+        ? {
+            ...loc,
+            name: formData.name || formData.address,
+            coords: { lat: parseFloat(formData.lat), lng: parseFloat(formData.lng) },
+          }
+        : loc
+    ))
+    setEditingLocation(null)
     setFormData({ name: '', address: '', lat: '', lng: '' })
     setLookupStatus('idle')
   }
@@ -619,7 +648,10 @@ export function Locations() {
                     className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openEditLocation(location)
+                    }}
                   >
                     <Edit className="h-3.5 w-3.5" />
                   </motion.button>
@@ -808,6 +840,123 @@ export function Locations() {
             </Button>
             <Button type="submit" disabled={!formData.lat || !formData.lng}>
               Add Location
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Location Modal */}
+      <Modal
+        isOpen={!!editingLocation}
+        onClose={() => {
+          setEditingLocation(null)
+          setFormData({ name: '', address: '', lat: '', lng: '' })
+          setLookupStatus('idle')
+        }}
+        title="Edit Location"
+        description="Update the location details"
+        size="md"
+      >
+        <form onSubmit={(e) => { e.preventDefault(); handleEditLocation(); }} className="space-y-4">
+          {/* Address Input with Lookup */}
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Address
+            </label>
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="e.g., Vienna, Austria"
+                  value={formData.address}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, address: e.target.value }))
+                    setLookupStatus('idle')
+                  }}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-foreground focus:outline-none focus:border-blue-500/50 transition-all"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleAddressLookup}
+                disabled={isLookingUp || !formData.address}
+              >
+                {isLookingUp ? 'Looking up...' : 'Lookup'}
+              </Button>
+            </div>
+            {lookupStatus === 'success' && (
+              <p className="mt-2 text-sm text-emerald-400 flex items-center gap-1">
+                <CheckCircle className="h-4 w-4" /> Coordinates found
+              </p>
+            )}
+            {lookupStatus === 'error' && (
+              <p className="mt-2 text-sm text-red-400">Could not find coordinates for this address</p>
+            )}
+          </div>
+
+          {/* Name Override */}
+          <Input
+            label="Display Name (optional)"
+            placeholder="e.g., Vienna Office"
+            value={formData.name}
+            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          />
+
+          {/* Coordinates */}
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              Coordinates (auto-filled from lookup)
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                label="Latitude"
+                type="number"
+                step="any"
+                placeholder="e.g., 48.2082"
+                value={formData.lat}
+                onChange={(e) => setFormData(prev => ({ ...prev, lat: e.target.value }))}
+              />
+              <Input
+                label="Longitude"
+                type="number"
+                step="any"
+                placeholder="e.g., 16.3738"
+                value={formData.lng}
+                onChange={(e) => setFormData(prev => ({ ...prev, lng: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          {/* Map Preview */}
+          {formData.lat && formData.lng && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl overflow-hidden border border-white/10"
+            >
+              <iframe
+                src={`https://maps.google.com/maps?q=${formData.lat},${formData.lng}&t=&z=10&ie=UTF8&iwloc=&output=embed`}
+                width="100%"
+                height="150"
+                style={{ border: 0 }}
+                loading="lazy"
+                title="Location Preview"
+              />
+            </motion.div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+            <Button type="button" variant="ghost" onClick={() => {
+              setEditingLocation(null)
+              setFormData({ name: '', address: '', lat: '', lng: '' })
+              setLookupStatus('idle')
+            }}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={!formData.lat || !formData.lng}>
+              Save Changes
             </Button>
           </div>
         </form>

@@ -544,7 +544,10 @@ export function OrderDetails() {
               {(() => {
                 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
                 const origin = encodeURIComponent(`${order.pickup_address.city}, ${order.pickup_address.country}`)
-                const destination = encodeURIComponent(savedWarehouse.address)
+                // Use coordinates if available for more reliable routing
+                const destination = savedWarehouse.lat && savedWarehouse.lng 
+                  ? `${savedWarehouse.lat},${savedWarehouse.lng}`
+                  : encodeURIComponent(savedWarehouse.address)
                 
                 if (apiKey && apiKey !== 'your-google-maps-api-key') {
                   // Use Directions embed for route visualization

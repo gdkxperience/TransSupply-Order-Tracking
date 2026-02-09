@@ -44,6 +44,19 @@ export function OrderDetails() {
 
   const order = getOrderById(id || '')
   
+  // Load warehouse from localStorage (synced with Locations page)
+  const savedWarehouse = (() => {
+    const saved = localStorage.getItem('transsupply_warehouse')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return { address: WAREHOUSE_ADDRESS }
+      }
+    }
+    return { address: WAREHOUSE_ADDRESS }
+  })()
+  
   // Edit modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editForm, setEditForm] = useState({
@@ -531,7 +544,7 @@ export function OrderDetails() {
               {(() => {
                 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
                 const origin = encodeURIComponent(`${order.pickup_address.city}, ${order.pickup_address.country}`)
-                const destination = encodeURIComponent(`Baku, Azerbaijan`)
+                const destination = encodeURIComponent(savedWarehouse.address)
                 
                 if (apiKey && apiKey !== 'your-google-maps-api-key') {
                   // Use Directions embed for route visualization

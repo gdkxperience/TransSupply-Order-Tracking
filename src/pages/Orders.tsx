@@ -1110,7 +1110,7 @@ export function Orders() {
                 {getStatusIcon(selectedOrder.status)}
               </div>
               <div className="flex-1">
-                <p className="font-semibold">{selectedOrder.pickup_address.city} → Baku</p>
+                <p className="font-semibold">{selectedOrder.pickup_address.city} → {savedWarehouse.address.split(',')[0]}</p>
                 <p className="text-sm text-muted-foreground">{selectedOrder.receiver_name}</p>
               </div>
               <div className="text-right">

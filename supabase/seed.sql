@@ -10,7 +10,7 @@ INSERT INTO clients (id, email, name) VALUES
   ('55555555-5555-5555-5555-555555555555', 'logistics@scpc.az', 'SCPC'),
   ('66666666-6666-6666-6666-666666666666', 'shipping@gpc.ge', 'GPC');
 
--- Insert locations
+-- Insert locations (pickup locations across Europe)
 INSERT INTO locations (name, lat, lng) VALUES
   ('Vienna, Austria', 48.2082, 16.3738),
   ('Zurich, Switzerland', 47.3769, 8.5417),
@@ -25,20 +25,20 @@ INSERT INTO locations (name, lat, lng) VALUES
   ('Eibergen, Netherlands', 52.0983, 6.6500),
   ('Agotnes, Norway', 60.4000, 5.0333);
 
--- Insert sample orders
+-- Insert sample orders (receiver is always the main warehouse)
 INSERT INTO orders (id, client_id, internal_ref, status, pickup_city, pickup_country, collection_date, receiver_name, receiver_phone, receiver_city, receiver_country, total_weight_kg, total_price) VALUES
-  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '22222222-2222-2222-2222-222222222222', '2025-04-0090', 'delivered', 'Eibergen', 'Netherlands', '2025-04-15', 'BPSD Logistics', '+994 12 345 6789', 'Baku', 'Azerbaijan', 120, 115),
-  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', '2025-04-0091', 'delivered', 'Vienna', 'Austria', '2025-04-16', 'AIOC Operations', '+994 12 345 6780', 'Baku', 'Azerbaijan', 36.6, 310),
-  ('cccccccc-cccc-cccc-cccc-cccccccccccc', '11111111-1111-1111-1111-111111111111', '2025-04-0092', 'delivered', 'Norderstedt', 'Germany', '2025-04-18', 'AIOC Hamburg Branch', '+994 12 345 6781', 'Baku', 'Azerbaijan', 29, 185),
-  ('dddddddd-dddd-dddd-dddd-dddddddddddd', '55555555-5555-5555-5555-555555555555', '2026-01-0001', 'warehouse', 'Vienna', 'Austria', '2026-01-10', 'SCPC Baku Office', '+994 12 345 6790', 'Baku', 'Azerbaijan', 52.47, 310),
-  ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', '33333333-3333-3333-3333-333333333333', '2026-01-0002', 'warehouse', 'Oskarshamn', 'Sweden', '2026-01-12', 'BTC Tbilisi HQ', '+995 32 123 4568', 'Tbilisi', 'Georgia', 1861, 850),
-  ('ffffffff-ffff-ffff-ffff-ffffffffffff', '22222222-2222-2222-2222-222222222222', '2026-01-0021', 'pickup', 'Arras', 'France', '2026-01-28', 'BPSD France Ops', '+994 12 345 6785', 'Baku', 'Azerbaijan', 5741.47, 650),
-  ('11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', '2026-01-0022', 'pickup', 'Zurich', 'Switzerland', '2026-01-29', 'AIOC Zurich', '+994 12 345 6786', 'Baku', 'Azerbaijan', 850, 320);
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '22222222-2222-2222-2222-222222222222', '2026-01-0001', 'delivered', 'Eibergen', 'Netherlands', '2026-01-15', 'BPSD Logistics', '+31 12 345 6789', 'Gorinchem', 'Netherlands', 120, 115),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', '2026-01-0002', 'delivered', 'Vienna', 'Austria', '2026-01-16', 'AIOC Operations', '+31 12 345 6780', 'Gorinchem', 'Netherlands', 36.6, 310),
+  ('cccccccc-cccc-cccc-cccc-cccccccccccc', '11111111-1111-1111-1111-111111111111', '2026-01-0003', 'delivered', 'Norderstedt', 'Germany', '2026-01-18', 'AIOC Hamburg Branch', '+31 12 345 6781', 'Gorinchem', 'Netherlands', 29, 185),
+  ('dddddddd-dddd-dddd-dddd-dddddddddddd', '55555555-5555-5555-5555-555555555555', '2026-01-0004', 'warehouse', 'Vienna', 'Austria', '2026-01-20', 'SCPC Office', '+31 12 345 6790', 'Gorinchem', 'Netherlands', 52.47, 310),
+  ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', '33333333-3333-3333-3333-333333333333', '2026-01-0005', 'warehouse', 'Oskarshamn', 'Sweden', '2026-01-22', 'BTC HQ', '+31 12 345 4568', 'Gorinchem', 'Netherlands', 926, 850),
+  ('ffffffff-ffff-ffff-ffff-ffffffffffff', '22222222-2222-2222-2222-222222222222', '2026-02-0001', 'pickup', 'Arras', 'France', '2026-02-10', 'BPSD France Ops', '+31 12 345 6785', 'Gorinchem', 'Netherlands', 2443.8, 650),
+  ('11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', '2026-02-0002', 'pickup', 'Zurich', 'Switzerland', '2026-02-12', 'AIOC Zurich', '+31 12 345 6786', 'Gorinchem', 'Netherlands', 850, 320);
 
--- Insert order packages (each package is a separate entry, colli=1 unless explicitly grouped)
-INSERT INTO order_packages (order_id, client_ref, weight_kg, dimensions, colli) VALUES
+-- Insert order boxes (packages) - uses order_boxes table with packages column
+INSERT INTO order_boxes (order_id, client_ref, weight_kg, dimensions, packages) VALUES
   ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'N3178987', 120, '120x85x69', 1),
-  -- Order bbbbbbbb: N3180282 split into 2 packages, N3180411 split into 3 packages
+  -- Order bbbbbbbb: Multiple packages
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180282-1', 4.97, '32x32x32', 1),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180282-2', 4.97, '32x32x32', 1),
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'N3180297', 0.75, '32x32x12', 1),

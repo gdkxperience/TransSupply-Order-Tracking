@@ -80,6 +80,6 @@ export const demoLocations: Location[] = [
   { id: '12', name: 'Agotnes, Norway', coords: { lat: 60.4000, lng: 5.0333 } },
 ]
 
-// Baku destination coordinates (main delivery hub)
-export const WAREHOUSE_COORDS = { lat: 40.4093, lng: 49.8671 }
-export const WAREHOUSE_ADDRESS = 'Baku Logistics Hub, Azerbaijan'
+// Main warehouse/destination hub coordinates
+export const WAREHOUSE_COORDS = { lat: 51.8380, lng: 5.0184 }
+export const WAREHOUSE_ADDRESS = 'Tanssupply BV, Griendweg 6'

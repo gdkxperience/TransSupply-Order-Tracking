@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useOrders } from '../context/OrderContext'
@@ -53,9 +53,13 @@ export function Orders() {
   const { user } = useAuth()
   const { orders, clients, createOrder, deleteOrder, loading } = useOrders()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [statusFilter, setStatusFilter] = useState<string>(() => {
+    const urlStatus = searchParams.get('status')
+    return urlStatus && ['pickup', 'warehouse', 'delivered'].includes(urlStatus) ? urlStatus : 'all'
+  })
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set())
   const [copiedId, setCopiedId] = useState<string | null>(null)

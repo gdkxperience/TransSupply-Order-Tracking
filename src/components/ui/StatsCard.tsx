@@ -10,6 +10,7 @@ interface StatsCardProps {
   icon: ElementType
   color?: 'blue' | 'amber' | 'emerald' | 'cyan' | 'rose' | 'slate'
   delay?: number
+  onClick?: () => void
 }
 
 export function StatsCard({
@@ -19,7 +20,8 @@ export function StatsCard({
   changeType = 'neutral',
   icon: Icon,
   color = 'slate',
-  delay = 0
+  delay = 0,
+  onClick
 }: StatsCardProps) {
   const colorClasses = {
     blue: 'bg-blue-500',
@@ -32,10 +34,16 @@ export function StatsCard({
 
   return (
     <motion.div
-      className="rounded-xl md:rounded-2xl bg-white/[0.04] border border-white/[0.08] p-3 md:p-6"
+      className={cn(
+        "rounded-xl md:rounded-2xl bg-white/[0.04] border border-white/[0.08] p-3 md:p-6",
+        onClick && "cursor-pointer hover:bg-white/[0.08] transition-colors"
+      )}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
+      onClick={onClick}
+      whileHover={onClick ? { scale: 1.02 } : undefined}
+      whileTap={onClick ? { scale: 0.98 } : undefined}
     >
       <div className="flex items-start gap-3 md:gap-4">
         {/* Icon */}

@@ -61,6 +61,7 @@ export function Dashboard() {
           icon={Package}
           color="blue"
           delay={0}
+          onClick={() => navigate('/orders')}
         />
         <StatsCard
           title="Pending Pickups"
@@ -68,6 +69,7 @@ export function Dashboard() {
           icon={Truck}
           color="amber"
           delay={0.05}
+          onClick={() => navigate('/orders?status=pickup')}
         />
         <StatsCard
           title="In Warehouse"
@@ -75,6 +77,7 @@ export function Dashboard() {
           icon={Warehouse}
           color="blue"
           delay={0.1}
+          onClick={() => navigate('/orders?status=warehouse')}
         />
         <StatsCard
           title="Delivered"
@@ -82,6 +85,7 @@ export function Dashboard() {
           icon={CheckCircle2}
           color="emerald"
           delay={0.15}
+          onClick={() => navigate('/orders?status=delivered')}
         />
         <StatsCard
           title="Total Weight"

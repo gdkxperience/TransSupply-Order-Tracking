@@ -21,7 +21,7 @@ import {
   BottomSheetAction,
 } from '../components/ui'
 import type { Order } from '../lib/supabase'
-import { demoLocations } from '../lib/supabase'
+import { demoLocations, WAREHOUSE_ADDRESS } from '../lib/supabase'
 import { formatDate, formatCurrency, cn } from '../lib/utils'
 import type { OrderStatus } from '../lib/supabase'
 import {
@@ -74,6 +74,19 @@ export function Orders() {
       }
     }
     return demoLocations
+  })()
+  
+  // Load warehouse from localStorage (synced with Locations page)
+  const savedWarehouse = (() => {
+    const saved = localStorage.getItem('transsupply_warehouse')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return { address: WAREHOUSE_ADDRESS }
+      }
+    }
+    return { address: WAREHOUSE_ADDRESS }
   })()
   
   const copyToClipboard = (text: string, orderId: string) => {
@@ -421,7 +434,7 @@ export function Orders() {
       collection_date: formData.collection_date,
       receiver_name: formData.receiver_name,
       receiver_phone: formData.receiver_phone,
-      receiver_address: { city: 'Baku', country: 'Azerbaijan' },
+      receiver_address: { city: savedWarehouse.address, country: '' },
       total_weight_kg: totalWeight,
       total_price: Number(formData.total_price),
       photos: [],

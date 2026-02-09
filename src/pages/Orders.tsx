@@ -116,16 +116,18 @@ export function Orders() {
     packages: [{ client_ref: '', weight_kg: '', dimensions: '', colli: 1 }],
   })
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
-      order.internal_ref.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.receiver_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.pickup_address.city.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter
-    
-    return matchesSearch && matchesStatus
-  })
+  const filteredOrders = orders
+    .filter(order => {
+      const matchesSearch = 
+        order.internal_ref.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.receiver_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.pickup_address.city.toLowerCase().includes(searchQuery.toLowerCase())
+      
+      const matchesStatus = statusFilter === 'all' || order.status === statusFilter
+      
+      return matchesSearch && matchesStatus
+    })
+    .sort((a, b) => b.internal_ref.localeCompare(a.internal_ref))
 
   const ordersWithPackages = filteredOrders.filter(o => o.order_packages && o.order_packages.length > 0)
   const allExpanded = ordersWithPackages.length > 0 && ordersWithPackages.every(o => expandedOrders.has(o.id))

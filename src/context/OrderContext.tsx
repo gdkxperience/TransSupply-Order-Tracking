@@ -50,8 +50,38 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     setError(null)
 
     if (!USE_SUPABASE) {
-      // Use demo data
-      setOrders(demoOrders)
+      // Load saved order updates from localStorage
+      const savedOrderUpdates = localStorage.getItem('transsupply_order_updates')
+      let orderUpdates: Record<string, Partial<Order>> = {}
+      if (savedOrderUpdates) {
+        try {
+          orderUpdates = JSON.parse(savedOrderUpdates)
+        } catch {
+          orderUpdates = {}
+        }
+      }
+      
+      // Merge demo orders with saved updates (for photos, etc.)
+      const mergedOrders = demoOrders.map(order => {
+        const updates = orderUpdates[order.id]
+        if (updates) {
+          return { ...order, ...updates }
+        }
+        return order
+      })
+      
+      // Also add any completely new orders from localStorage
+      const savedNewOrders = localStorage.getItem('transsupply_new_orders')
+      let newOrders: Order[] = []
+      if (savedNewOrders) {
+        try {
+          newOrders = JSON.parse(savedNewOrders)
+        } catch {
+          newOrders = []
+        }
+      }
+      
+      setOrders([...newOrders, ...mergedOrders])
       setClients(demoClients)
       setLoading(false)
       return
@@ -164,6 +194,20 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         updated_at: new Date().toISOString(),
       }
       setOrders(prev => [...prev, newOrder])
+      
+      // Persist new order to localStorage
+      const savedNewOrders = localStorage.getItem('transsupply_new_orders')
+      let newOrders: Order[] = []
+      if (savedNewOrders) {
+        try {
+          newOrders = JSON.parse(savedNewOrders)
+        } catch {
+          newOrders = []
+        }
+      }
+      newOrders.push(newOrder)
+      localStorage.setItem('transsupply_new_orders', JSON.stringify(newOrders))
+      
       return newOrder
     }
 
@@ -215,6 +259,19 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           ? { ...o, ...updates, updated_at: new Date().toISOString() }
           : o
       ))
+      
+      // Persist updates to localStorage
+      const savedOrderUpdates = localStorage.getItem('transsupply_order_updates')
+      let orderUpdates: Record<string, Partial<Order>> = {}
+      if (savedOrderUpdates) {
+        try {
+          orderUpdates = JSON.parse(savedOrderUpdates)
+        } catch {
+          orderUpdates = {}
+        }
+      }
+      orderUpdates[id] = { ...(orderUpdates[id] || {}), ...updates }
+      localStorage.setItem('transsupply_order_updates', JSON.stringify(orderUpdates))
       return
     }
 

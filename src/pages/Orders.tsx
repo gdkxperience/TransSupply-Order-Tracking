@@ -21,6 +21,7 @@ import {
   BottomSheetAction,
 } from '../components/ui'
 import type { Order } from '../lib/supabase'
+import { demoLocations } from '../lib/supabase'
 import { formatDate, formatCurrency, cn } from '../lib/utils'
 import type { OrderStatus } from '../lib/supabase'
 import {
@@ -931,29 +932,29 @@ export function Orders() {
             </div>
           </div>
 
-          {/* Pickup Address */}
+          {/* Pickup Location */}
           <div>
             <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
               <MapPin className="h-4 w-4" />
               Pickup Location
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <Input
-                placeholder="Street"
-                value={formData.pickup_street}
-                onChange={(e) => setFormData(prev => ({ ...prev, pickup_street: e.target.value }))}
-              />
-              <Input
-                placeholder="City"
-                value={formData.pickup_city}
-                onChange={(e) => setFormData(prev => ({ ...prev, pickup_city: e.target.value }))}
-              />
-              <Input
-                placeholder="Country"
-                value={formData.pickup_country}
-                onChange={(e) => setFormData(prev => ({ ...prev, pickup_country: e.target.value }))}
-              />
-            </div>
+            <Select
+              label=""
+              options={demoLocations.map(loc => ({ value: loc.name, label: loc.name }))}
+              value={formData.pickup_city ? `${formData.pickup_city}, ${formData.pickup_country}` : ''}
+              onChange={(value) => {
+                const parts = value.split(', ')
+                const city = parts[0] || ''
+                const country = parts.slice(1).join(', ') || ''
+                setFormData(prev => ({ 
+                  ...prev, 
+                  pickup_city: city, 
+                  pickup_country: country,
+                  pickup_street: ''
+                }))
+              }}
+              placeholder="Select pickup location"
+            />
           </div>
 
           {/* Collection & Receiver */}

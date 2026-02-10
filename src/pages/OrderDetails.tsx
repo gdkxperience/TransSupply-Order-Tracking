@@ -86,10 +86,10 @@ export function OrderDetails() {
   
   // Sync photos when order loads/changes
   useEffect(() => {
-    if (order?.photos) {
-      setPhotos(order.photos)
+    if (order) {
+      setPhotos(order.photos || [])
     }
-  }, [order?.photos])
+  }, [order])
   
   // Initialize edit form when opening modal
   const openEditModal = () => {
@@ -162,8 +162,9 @@ export function OrderDetails() {
         const file = files[i]
         // Convert to base64 for demo (in production, upload to storage)
         const reader = new FileReader()
-        const base64 = await new Promise<string>((resolve) => {
+        const base64 = await new Promise<string>((resolve, reject) => {
           reader.onload = () => resolve(reader.result as string)
+          reader.onerror = reject
           reader.readAsDataURL(file)
         })
         newPhotos.push(base64)
@@ -176,8 +177,11 @@ export function OrderDetails() {
       await updateOrder(order.id, { photos: updatedPhotos })
     } catch (error) {
       console.error('Error uploading photos:', error)
+      alert('Error uploading photos. The file might be too large.')
     } finally {
       setIsUploading(false)
+      // Reset file input so the same file can be selected again
+      e.target.value = ''
     }
   }
   

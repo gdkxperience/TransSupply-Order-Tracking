@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
@@ -83,6 +83,8 @@ export function OrderDetails() {
   const [photos, setPhotos] = useState<string[]>([])
   const [previewPhoto, setPreviewPhoto] = useState<{ url: string; index: number } | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef2 = useRef<HTMLInputElement>(null)
   
   // Sync photos when order loads/changes
   useEffect(() => {
@@ -148,6 +150,44 @@ export function OrderDetails() {
     }
   }
   
+  // Compress image to reduce size for localStorage
+  const compressImage = (file: File, maxWidth = 800, quality = 0.7): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = new window.Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          let width = img.width
+          let height = img.height
+          
+          // Scale down if too large
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width
+            width = maxWidth
+          }
+          
+          canvas.width = width
+          canvas.height = height
+          
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            reject(new Error('Could not get canvas context'))
+            return
+          }
+          
+          ctx.drawImage(img, 0, 0, width, height)
+          const compressed = canvas.toDataURL('image/jpeg', quality)
+          resolve(compressed)
+        }
+        img.onerror = reject
+        img.src = e.target?.result as string
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
   // Photo upload handler
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -160,14 +200,9 @@ export function OrderDetails() {
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        // Convert to base64 for demo (in production, upload to storage)
-        const reader = new FileReader()
-        const base64 = await new Promise<string>((resolve, reject) => {
-          reader.onload = () => resolve(reader.result as string)
-          reader.onerror = reject
-          reader.readAsDataURL(file)
-        })
-        newPhotos.push(base64)
+        // Compress image before storing
+        const compressed = await compressImage(file)
+        newPhotos.push(compressed)
       }
       
       const updatedPhotos = [...photos, ...newPhotos]
@@ -177,11 +212,12 @@ export function OrderDetails() {
       await updateOrder(order.id, { photos: updatedPhotos })
     } catch (error) {
       console.error('Error uploading photos:', error)
-      alert('Error uploading photos. The file might be too large.')
+      alert('Error uploading photos. Please try a smaller image.')
     } finally {
       setIsUploading(false)
-      // Reset file input so the same file can be selected again
-      e.target.value = ''
+      // Reset file inputs so the same file can be selected again
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      if (fileInputRef2.current) fileInputRef2.current.value = ''
     }
   }
   
@@ -682,6 +718,7 @@ export function OrderDetails() {
                 isUploading && "opacity-50 cursor-not-allowed"
               )}>
                   <input
+                    ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     multiple
@@ -754,6 +791,7 @@ export function OrderDetails() {
                       "hover:bg-white/10 transition-colors text-muted-foreground hover:text-foreground"
                     )}>
                       <input
+                        ref={fileInputRef2}
                         type="file"
                         accept="image/*"
                         multiple

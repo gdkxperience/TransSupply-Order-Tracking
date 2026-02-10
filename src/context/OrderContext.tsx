@@ -96,12 +96,13 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
       if (clientsError) throw clientsError
       
-      // Fetch orders with packages
+      // Fetch orders with packages and photos
       const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
         .select(`
           *,
-          order_packages (*)
+          order_packages (*),
+          order_photos (*)
         `)
         .order('created_at', { ascending: false })
 
@@ -127,7 +128,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         },
         total_weight_kg: parseFloat(order.total_weight_kg) || 0,
         total_price: parseFloat(order.total_price) || 0,
-        photos: [],
+        photos: (order.order_photos || []).map((p: any) => p.url),
         created_at: order.created_at,
         updated_at: order.updated_at,
         order_packages: (order.order_packages || []).map((pkg: any) => ({
@@ -275,24 +276,73 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    const { error } = await supabase
-      .from('orders')
-      .update({
-        status: updates.status,
-        pickup_city: updates.pickup_address?.city,
-        pickup_country: updates.pickup_address?.country,
-        pickup_street: updates.pickup_address?.street,
-        collection_date: updates.collection_date,
-        receiver_name: updates.receiver_name,
-        receiver_phone: updates.receiver_phone,
-        receiver_city: updates.receiver_address?.city,
-        receiver_country: updates.receiver_address?.country,
-        total_weight_kg: updates.total_weight_kg,
-        total_price: updates.total_price,
-      })
-      .eq('id', id)
+    // Update order fields (only if there are non-photo updates)
+    const hasNonPhotoUpdates = Object.keys(updates).some(key => key !== 'photos')
+    if (hasNonPhotoUpdates) {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          status: updates.status,
+          pickup_city: updates.pickup_address?.city,
+          pickup_country: updates.pickup_address?.country,
+          pickup_street: updates.pickup_address?.street,
+          collection_date: updates.collection_date,
+          receiver_name: updates.receiver_name,
+          receiver_phone: updates.receiver_phone,
+          receiver_city: updates.receiver_address?.city,
+          receiver_country: updates.receiver_address?.country,
+          total_weight_kg: updates.total_weight_kg,
+          total_price: updates.total_price,
+        })
+        .eq('id', id)
 
-    if (error) throw error
+      if (error) throw error
+    }
+
+    // Handle photos update - sync with order_photos table
+    if (updates.photos !== undefined) {
+      // Get current photos from database
+      const { data: existingPhotos } = await supabase
+        .from('order_photos')
+        .select('url')
+        .eq('order_id', id)
+      
+      const existingUrls = new Set((existingPhotos || []).map(p => p.url))
+      const newUrls = new Set(updates.photos)
+      
+      // Find photos to add (in new but not in existing)
+      const photosToAdd = updates.photos.filter(url => !existingUrls.has(url))
+      
+      // Find photos to remove (in existing but not in new)
+      const photosToRemove = (existingPhotos || [])
+        .filter(p => !newUrls.has(p.url))
+        .map(p => p.url)
+      
+      // Insert new photos
+      if (photosToAdd.length > 0) {
+        const { error: insertError } = await supabase
+          .from('order_photos')
+          .insert(photosToAdd.map(url => ({ order_id: id, url })))
+        
+        if (insertError) {
+          console.error('Error inserting photos:', insertError)
+        }
+      }
+      
+      // Delete removed photos
+      if (photosToRemove.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('order_photos')
+          .delete()
+          .eq('order_id', id)
+          .in('url', photosToRemove)
+        
+        if (deleteError) {
+          console.error('Error deleting photos:', deleteError)
+        }
+      }
+    }
+
     await refreshData()
   }
 

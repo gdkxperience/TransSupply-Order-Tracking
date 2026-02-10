@@ -83,3 +83,73 @@ export const demoLocations: Location[] = [
 // Main warehouse/destination hub coordinates
 export const WAREHOUSE_COORDS = { lat: 51.8380, lng: 5.0184 }
 export const WAREHOUSE_ADDRESS = 'Tanssupply BV, Griendweg 6'
+
+// Check if Supabase is properly configured
+export const USE_SUPABASE = supabaseUrl !== 'https://your-project.supabase.co' && supabaseAnonKey !== 'your-anon-key'
+
+// Storage bucket name for order photos
+const PHOTOS_BUCKET = 'order-photos'
+
+// Upload image to Supabase Storage
+export async function uploadOrderPhoto(orderId: string, file: File): Promise<string | null> {
+  if (!USE_SUPABASE) {
+    console.warn('Supabase not configured, cannot upload to storage')
+    return null
+  }
+
+  try {
+    // Generate unique filename
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${orderId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from(PHOTOS_BUCKET)
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (error) {
+      console.error('Error uploading photo:', error)
+      return null
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from(PHOTOS_BUCKET)
+      .getPublicUrl(data.path)
+
+    return urlData.publicUrl
+  } catch (error) {
+    console.error('Error uploading photo:', error)
+    return null
+  }
+}
+
+// Delete image from Supabase Storage
+export async function deleteOrderPhoto(photoUrl: string): Promise<boolean> {
+  if (!USE_SUPABASE) return false
+
+  try {
+    // Extract path from URL
+    const url = new URL(photoUrl)
+    const pathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/order-photos\/(.+)/)
+    if (!pathMatch) return false
+
+    const filePath = pathMatch[1]
+    const { error } = await supabase.storage
+      .from(PHOTOS_BUCKET)
+      .remove([filePath])
+
+    if (error) {
+      console.error('Error deleting photo:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error deleting photo:', error)
+    return false
+  }
+}

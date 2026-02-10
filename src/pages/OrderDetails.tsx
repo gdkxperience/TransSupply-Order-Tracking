@@ -6,7 +6,7 @@ import { useOrders } from '../context/OrderContext'
 import { Layout } from '../components/layout/Layout'
 import { Card, Badge, Button, Modal, Input, Select } from '../components/ui'
 import { formatDate, formatCurrency, cn } from '../lib/utils'
-import { WAREHOUSE_ADDRESS } from '../lib/supabase'
+import { WAREHOUSE_ADDRESS, uploadOrderPhoto, USE_SUPABASE, deleteOrderPhoto } from '../lib/supabase'
 import type { OrderStatus } from '../lib/supabase'
 import {
   ArrowLeft,
@@ -206,9 +206,18 @@ export function OrderDetails() {
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        // Compress image before storing
-        const compressed = await compressImage(file)
-        newPhotos.push(compressed)
+        
+        if (USE_SUPABASE) {
+          // Upload to Supabase Storage
+          const url = await uploadOrderPhoto(order.id, file)
+          if (url) {
+            newPhotos.push(url)
+          }
+        } else {
+          // Fallback: Compress and store as base64 in localStorage
+          const compressed = await compressImage(file)
+          newPhotos.push(compressed)
+        }
       }
       
       const updatedPhotos = [...photos, ...newPhotos]
@@ -231,6 +240,13 @@ export function OrderDetails() {
   // Delete photo
   const handleDeletePhoto = async (index: number) => {
     if (!order) return
+    
+    const photoToDelete = photos[index]
+    
+    // Delete from Supabase Storage if it's a URL (not base64)
+    if (USE_SUPABASE && photoToDelete && photoToDelete.startsWith('http')) {
+      await deleteOrderPhoto(photoToDelete)
+    }
     
     const updatedPhotos = photos.filter((_, i) => i !== index)
     setPhotos(updatedPhotos)

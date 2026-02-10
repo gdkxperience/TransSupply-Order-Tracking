@@ -115,3 +115,16 @@ VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ```
+
+## Supabase Setup
+
+### Database
+Run the SQL files in the Supabase SQL Editor:
+1. `supabase/schema.sql` - Creates tables and policies
+2. `supabase/seed.sql` - Optional sample data
+
+### Storage (for photo uploads)
+1. Go to Supabase Dashboard → Storage → New Bucket
+2. Create a bucket named `order-photos`
+3. Set it to **Public** (toggle ON)
+4. Run `supabase/storage-setup.sql` to configure access policies

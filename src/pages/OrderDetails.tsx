@@ -85,13 +85,14 @@ export function OrderDetails() {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef2 = useRef<HTMLInputElement>(null)
+  const isUpdatingPhotos = useRef(false)
   
-  // Sync photos when order loads/changes
+  // Sync photos when order loads - only on initial load, not during updates
   useEffect(() => {
-    if (order) {
+    if (order && !isUpdatingPhotos.current) {
       setPhotos(order.photos || [])
     }
-  }, [order])
+  }, [order?.id]) // Only sync on order ID change, not every order update
   
   // Initialize edit form when opening modal
   const openEditModal = () => {
@@ -194,6 +195,7 @@ export function OrderDetails() {
     if (!files || files.length === 0 || !order) return
     
     setIsUploading(true)
+    isUpdatingPhotos.current = true
     
     try {
       const newPhotos: string[] = []
@@ -215,6 +217,7 @@ export function OrderDetails() {
       alert('Error uploading photos. Please try a smaller image.')
     } finally {
       setIsUploading(false)
+      isUpdatingPhotos.current = false
       // Reset file inputs so the same file can be selected again
       if (fileInputRef.current) fileInputRef.current.value = ''
       if (fileInputRef2.current) fileInputRef2.current.value = ''

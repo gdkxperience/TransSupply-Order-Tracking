@@ -87,12 +87,16 @@ export function OrderDetails() {
   const fileInputRef2 = useRef<HTMLInputElement>(null)
   const isUpdatingPhotos = useRef(false)
   
-  // Sync photos when order loads - only on initial load, not during updates
+  // Sync photos when order loads - initialize from order data
+  const prevOrderId = useRef<string | null>(null)
   useEffect(() => {
-    if (order && !isUpdatingPhotos.current) {
+    // Only sync when order ID changes (initial load or navigation)
+    // Don't sync if we're currently uploading
+    if (order && order.id !== prevOrderId.current && !isUpdatingPhotos.current) {
+      prevOrderId.current = order.id
       setPhotos(order.photos || [])
     }
-  }, [order?.id]) // Only sync on order ID change, not every order update
+  }, [order])
   
   // Initialize edit form when opening modal
   const openEditModal = () => {
